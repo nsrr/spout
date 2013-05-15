@@ -13,3 +13,4 @@
     - `include Spout::Tests::JsonValidation` to verify valid JSON formats of domains and variables
     - `include Spout::Tests::VariableTypeValidation` to verify valid variable type for variables
     - `include Spout::Tests::DomainExistenceValidation` to verify existence of domains referenced by variables
+- Added `spout new FOLDER` to create an empty data dictionary in the specified `FOLDER`
