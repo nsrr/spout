@@ -25,7 +25,7 @@ spout new my_data_dictionary
 
 cd my_data_dictionary
 
-spout import CSV=data_dictionary.csv
+spout import data_dictionary.csv
 ```
 
 ### Test your repository
