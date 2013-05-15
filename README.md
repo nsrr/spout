@@ -57,5 +57,5 @@ Then run either `bundle exec rake` or `spout test` to run your tests
 Provide an optional version parameter to name the folder the CSVs will be generated in, defaults to 1.0.0 currently.
 
 ```
-bundle exec rake dd:create [VERSION]
+bundle exec rake dd:create [VERSION=1.0.0]
 ```
