@@ -2,6 +2,17 @@
 
 ### Enhancements
 - Existing Data Dictionaries can be converted to JSON format from a CSV file
+  - Recognized columns:
+    - `folder`
+    - `id`
+    - `display_name`
+    - `description`
+    - `type`
+    - `domain`
+    - `units`
+    - `calculation`
+    - `labels`
+  - All other columns will go into an `Other` JSON hash
 - Added a rake task to create CSVs of the JSON data dictionary
 - Added tests for JSON validity of variables and domains
 - Added test to check presence/validity of variable type

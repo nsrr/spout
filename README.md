@@ -25,7 +25,7 @@ spout new my_data_dictionary
 
 cd my_data_dictionary
 
-bundle exec rake dd:import CSV=data_dictionary.csv
+spout import CSV=data_dictionary.csv
 ```
 
 ### Test your repository
@@ -55,6 +55,12 @@ Then run either `bundle exec rake` or `spout test` to run your tests
 ### Create a CSV Data Dictionary from your JSON repository
 
 Provide an optional version parameter to name the folder the CSVs will be generated in, defaults to 1.0.0 currently.
+
+```
+spout export
+```
+
+or
 
 ```
 bundle exec rake dd:create [VERSION=1.0.0]

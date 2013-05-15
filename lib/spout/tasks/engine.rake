@@ -22,12 +22,12 @@ namespace :dd do
     FileUtils.mkpath folder
 
     CSV.open("#{folder}/variables.csv", "wb") do |csv|
-      keys = %w(id display_name description type domain)
+      keys = %w(id display_name description type units domain labels calculation)
       csv << ['folder'] + keys
       Dir.glob("variables/**/*.json").each do |file|
         if json = JSON.parse(File.read(file)) rescue false
           variable_folder = file.gsub(/variables\//, '').split('/')[0..-2].join('/')
-          csv << [variable_folder] + keys.collect{|key| json[key]}
+          csv << [variable_folder] + keys.collect{|key| json[key].kind_of?(Array) ? json[key].join(';') : json[key].to_s}
         end
       end
     end
@@ -53,24 +53,31 @@ namespace :dd do
     if File.exists?(ENV['CSV'].to_s)
       CSV.parse( File.open(ENV['CSV'].to_s, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true ) do |line|
         row = line.to_hash
-        next if row['COLUMN'] == ''
-        folder = File.join('variables', row['FOLDER'])
+        next if row['id'] == ''
+        folder = File.join('variables', row['folder'])
         FileUtils.mkpath folder
         hash = {}
-        hash['id'] = row['COLUMN']
-        hash['display_name'] = row['DISPLAY_NAME']
-        hash['description'] = row['DESCRIPTION'].to_s
-        hash['type'] = row['VARIABLE_TYPE']
-        hash['domain'] = row['DOMAIN'] if row['DOMAIN'] != '' and row['DOMAIN'] != nil
-        hash['units'] = row['UNITS'] if row['UNITS'] != '' and row['UNITS'] != nil
-        hash['calculation'] = row['CALCULATION'] if row['DOMAIN'] != '' and row['CALCULATION'] != nil
-        hash['labels'] = row['LABELS'].to_s.split(';') if row['LABELS'].to_s.split(';').size > 0
+        id = row.delete('id')
+        hash['id'] = id
+        hash['display_name'] = row.delete('display_name')
+        hash['description'] = row.delete('description').to_s
+        hash['type'] = row.delete('type')
+        domain = row.delete('domain').to_s
+        hash['domain'] = domain if domain != ''
+        units = row.delete('units').to_s
+        hash['units'] = units if units != ''
+        calculation = row.delete('calculation').to_s
+        hash['calculation'] = calculation if calculation != ''
+        labels = row.delete('labels').to_s.split(';')
+        hash['labels'] = labels if labels.size > 0
+        hash['other'] = row
 
-        File.open(File.join(folder, row['COLUMN'].downcase + '.json'), 'w') do |file|
+        file_name = File.join(folder, id.downcase + '.json')
+        File.open(file_name, 'w') do |file|
           file.write(JSON.pretty_generate(hash))
         end
+        puts "      create  #{file_name}"
       end
-      puts "Data Dictionary Imported from CSV."
     else
       puts "Please specify a valid CSV file."
     end
