@@ -30,6 +30,15 @@ spout import data_dictionary.csv
 
 ### Test your repository
 
+If you created your data dictionary repository using `spout new`, you can go ahead and test using:
+
+```
+spout test
+```
+
+If not, you can add the following to your `test` directory to include all Spout tests, or just a subset of Spout tests.
+
+`test/dictionary_test.rb`
 
 ```
 require 'spout/tests'
@@ -49,7 +58,7 @@ class DictionaryTest < Test::Unit::TestCase
 end
 ```
 
-Then run either `bundle exec rake` or `spout test` to run your tests
+Then run either `spout test` or `bundle exec rake` to run your tests.
 
 
 ### Create a CSV Data Dictionary from your JSON repository
