@@ -1,7 +1,7 @@
 module Spout
-  module Actions
+  class Actions
 
-    def self.help
+    def help
       help_message = <<-EOT
 
 Usage: spout COMMAND [ARGS]
@@ -16,16 +16,14 @@ EOT
       puts help_message
     end
 
-    def self.interpret(argv)
+    def interpret(argv)
       case argv.first
       when '--version', '-v', 'version'
         puts "Spout #{Spout::VERSION::STRING}"
-        # exit(0)
       when 'help', '--help', '-h'
         help
-        exit(0)
       else
-        require 'spout/test_helpers'
+        system "bundle exec rake"
       end
     end
 

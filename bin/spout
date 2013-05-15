@@ -3,6 +3,6 @@
 require File.expand_path('../../lib/spout', __FILE__)
 
 if ARGV.size > 0
-  Spout::Actions.interpret(ARGV)
+  Spout::Actions.new.interpret(ARGV)
   exit(0)
 end
