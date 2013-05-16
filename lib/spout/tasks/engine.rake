@@ -54,7 +54,7 @@ namespace :dd do
       CSV.parse( File.open(ENV['CSV'].to_s, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true ) do |line|
         row = line.to_hash
         next if row['id'] == ''
-        folder = File.join('variables', row['folder'])
+        folder = File.join('variables', row.delete('folder').to_s.gsub(':', '/'))
         FileUtils.mkpath folder
         hash = {}
         id = row.delete('id')
