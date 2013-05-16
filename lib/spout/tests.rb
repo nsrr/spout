@@ -12,5 +12,7 @@ module Spout
     include Spout::Tests::JsonValidation
     include Spout::Tests::VariableTypeValidation
     include Spout::Tests::DomainExistenceValidation
+
+    Turn.config.trace = 1
   end
 end
