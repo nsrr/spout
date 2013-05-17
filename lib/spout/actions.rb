@@ -89,7 +89,7 @@ EOT
         directory 'test'
         copy_file 'test/dictionary_test.rb'
         copy_file 'test/test_helper.rb'
-        puts "         run  bundle install"
+        puts "         run".colorize( :green ) + "  bundle install".colorize( :blue )
         Dir.chdir(@full_path)
         system "bundle install"
       end
@@ -100,13 +100,13 @@ EOT
         file_name = template_file if file_name == ''
         file_path = File.join(@full_path, file_name)
         template_file_path = File.join(File.expand_path(File.dirname(__FILE__)), "templates", template_file)
-        puts "      create  #{file_name}"
+        puts "      create".colorize( :green ) + "  #{file_name}"
         FileUtils.copy(template_file_path, file_path)
       end
 
       def directory(directory_name)
         directory_path = File.join(@full_path, directory_name)
-        puts "      create  #{directory_name}"
+        puts "      create".colorize( :green ) + "  #{directory_name}"
         FileUtils.mkpath(directory_path)
       end
 

@@ -1,4 +1,5 @@
 require 'rake/testtask'
+require 'colorize'
 
 Rake::TestTask.new do |t|
   t.libs << "test"
@@ -50,10 +51,16 @@ namespace :dd do
 
   desc 'Initialize JSON repository from a CSV file: CSV=datadictionary.csv'
   task :import do
+    additional_csv_info =  "\n\nFor additional information on specifying CSV column headers before import see:\n\n    " + "https://github.com/sleepepi/spout#generate-a-new-repository-from-an-existing-csv-file".colorize( :blue ).underline + "\n\n"
+
     puts ENV['CSV'].inspect
     if File.exists?(ENV['CSV'].to_s)
       CSV.parse( File.open(ENV['CSV'].to_s, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true ) do |line|
         row = line.to_hash
+        if not row.keys.include?('id')
+          puts "\nMissing column header `id` in data dictionary.".colorize( :red ) + additional_csv_info
+          exit(1)
+        end
         next if row['id'] == ''
         folder = File.join('variables', row.delete('folder').to_s)
         FileUtils.mkpath folder
@@ -71,16 +78,16 @@ namespace :dd do
         hash['calculation'] = calculation if calculation != ''
         labels = row.delete('labels').to_s.split(';')
         hash['labels'] = labels if labels.size > 0
-        hash['other'] = row
+        hash['other'] = row unless row.empty?
 
         file_name = File.join(folder, id.downcase + '.json')
         File.open(file_name, 'w') do |file|
           file.write(JSON.pretty_generate(hash))
         end
-        puts "      create  #{file_name}"
+        puts "      create".colorize( :green ) + "  #{file_name}"
       end
     else
-      puts "Please specify a valid CSV file."
+      puts "\nPlease specify a valid CSV file.".colorize( :red ) + additional_csv_info
     end
   end
 end
