@@ -89,7 +89,7 @@ EOT
         directory 'test'
         copy_file 'test/dictionary_test.rb'
         copy_file 'test/test_helper.rb'
-        puts "         run".colorize( :green ) + "  bundle install".colorize( :blue )
+        puts "         run".colorize( :green ) + "  bundle install".colorize( :light_cyan )
         Dir.chdir(@full_path)
         system "bundle install"
       end

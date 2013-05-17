@@ -51,14 +51,14 @@ namespace :dd do
 
   desc 'Initialize JSON repository from a CSV file: CSV=datadictionary.csv'
   task :import do
-    additional_csv_info =  "\n\nFor additional information on specifying CSV column headers before import see:\n\n    " + "https://github.com/sleepepi/spout#generate-a-new-repository-from-an-existing-csv-file".colorize( :blue ).underline + "\n\n"
+    additional_csv_info =  "\n\nFor additional information on specifying CSV column headers before import see:\n\n    " + "https://github.com/sleepepi/spout#generate-a-new-repository-from-an-existing-csv-file".colorize( :light_cyan ) + "\n\n"
 
     puts ENV['CSV'].inspect
     if File.exists?(ENV['CSV'].to_s)
       CSV.parse( File.open(ENV['CSV'].to_s, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true ) do |line|
         row = line.to_hash
         if not row.keys.include?('id')
-          puts "\nMissing column header `id` in data dictionary.".colorize( :red ) + additional_csv_info
+          puts "\nMissing column header `".colorize( :red ) + "id".colorize( :light_cyan ) + "` in data dictionary.".colorize( :red ) + additional_csv_info
           exit(1)
         end
         next if row['id'] == ''
