@@ -21,7 +21,7 @@ module Spout
       end
 
       Dir.glob("domains/**/*.json").each do |file|
-        define_method("test_json: "+file) do
+        define_method("test_domain_format: "+file) do
           assert_domain_format file
         end
       end
