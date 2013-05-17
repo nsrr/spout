@@ -5,16 +5,16 @@ module Spout
       case argv.first
       when 'new'
         new_template_dictionary(argv)
-      when '--version', '-v', 'version'
+      when '--version', '-v', '-ve', '-ver', 'version', 'v', 've', 'ver'
         puts "Spout #{Spout::VERSION::STRING}"
-      when 'help', '--help', '-h'
-        help
+      when 'test', 't', 'te', 'tes', '--test', '-t', '-te', '-tes'
+        system "bundle exec rake"
       when 'import'
         import_from_csv(argv)
       when 'export'
-        system "bundle exec rake dd:create"
+        new_data_dictionary_export(argv)
       else
-        system "bundle exec rake"
+        help
       end
     end
 
@@ -45,13 +45,19 @@ Usage: spout COMMAND [ARGS]
 The most common spout commands are:
   new         Create a new Spout dictionary. "spout new my_dd" creates a
               new data dictionary called MyDD in "./my_dd"
-  test        Running the test file (short-cut alias: "t")
+  [t]est      Running the test file (short-cut alias: "t")
   import      Import a CSV file into the JSON repository
   export      Export the JSON respository to a CSV
-  version     Returns the version of Spout
+  [v]ersion   Returns the version of Spout (short-cut alias: "v")
 
 EOT
         puts help_message
+      end
+
+      def new_data_dictionary_export(argv)
+        version = argv[1].to_s.gsub(/[^a-zA-Z0-9\.-]/, '_').strip
+        version_string = (version == '' ? "" : "VERSION=#{version}")
+        system "bundle exec rake dd:create #{version_string}"
       end
 
       def new_template_dictionary(argv)

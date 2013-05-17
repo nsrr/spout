@@ -7,7 +7,6 @@ module Spout
           domain_name = JSON.parse(File.read(item))["domain"]+".json"
           File.exists?(File.join("domains", domain_name))
         rescue JSON::ParserError => e
-          error = e
           false
         end
         full_message = build_message(msg, "The domain \"domains/#{domain_name}\" referenced by ? does not exist.", item)

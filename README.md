@@ -101,6 +101,12 @@ Provide an optional version parameter to name the folder the CSVs will be genera
 spout export
 ```
 
+You can optionally provide a version string
+
+```
+spout export [1.0.0]
+```
+
 or
 
 ```
