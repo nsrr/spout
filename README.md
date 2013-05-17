@@ -28,6 +28,38 @@ cd my_data_dictionary
 spout import data_dictionary.csv
 ```
 
+The CSV should contain at minimal the two column headers:
+
+`id`: This column will give the variable it's name, and also be used to name the file, i.e. `<id>.json`
+`folder`: This can be blank, however it is used to place variables into a folder hiearchy. The folder column can contain colons `:` to place a variable into a subfolder. An example may be, id: 'myvarid', folder: 'Demographics:Subfolder' would create a file `variables\Demographics\Subfolder\myvarid.json`
+
+Other columns that will be interpreted include:
+
+`display_name`: The variable name as it is presented to the user. The display name should be reasonable in length and not unreasonably long.
+
+`description`: A longer description of the variable.
+
+`type`: Should be a valid variable type, i.e.:
+  - 'identifier'
+  - 'choices'
+  - 'integer'
+  - 'numeric'
+  - 'string'
+  - 'text'
+  - 'date'
+  - 'time'
+  - 'file'
+
+`domain`: The name of the domain that is associated with the variable. Typically, only variable of type `choices` have domains.  These domains then reside in `domains` folder.
+
+`units`: A string of the associated that are appended to variable values, or added to coordinates in graphs representing the variable.
+
+`calculation`: A calculation represented using algebraic expressions along with `id` of other variables.
+
+`labels`: A series of different names for the variable that are colon (`:`) separated. These labels are commonly synonyms, or related terms used primarily for searching.
+
+All other columns get grouped into a hash labeled `other`.
+
 ### Test your repository
 
 If you created your data dictionary repository using `spout new`, you can go ahead and test using:
