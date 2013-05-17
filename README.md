@@ -31,7 +31,7 @@ spout import data_dictionary.csv
 The CSV should contain at minimal the two column headers:
 
 `id`: This column will give the variable it's name, and also be used to name the file, i.e. `<id>.json`
-`folder`: This can be blank, however it is used to place variables into a folder hiearchy. The folder column can contain colons `:` to place a variable into a subfolder. An example may be, id: 'myvarid', folder: 'Demographics:Subfolder' would create a file `variables\Demographics\Subfolder\myvarid.json`
+`folder`: This can be blank, however it is used to place variables into a folder hiearchy. The folder column can contain forward slashes `/` to place a variable into a subfolder. An example may be, id: 'myvarid', folder: 'Demographics/Subfolder' would create a file `variables/Demographics/Subfolder/myvarid.json`
 
 Other columns that will be interpreted include:
 
@@ -56,7 +56,7 @@ Other columns that will be interpreted include:
 
 `calculation`: A calculation represented using algebraic expressions along with `id` of other variables.
 
-`labels`: A series of different names for the variable that are colon (`:`) separated. These labels are commonly synonyms, or related terms used primarily for searching.
+`labels`: A series of different names for the variable that are semi-colon (`;`) separated. These labels are commonly synonyms, or related terms used primarily for searching.
 
 All other columns get grouped into a hash labeled `other`.
 

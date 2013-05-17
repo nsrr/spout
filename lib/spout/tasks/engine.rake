@@ -33,12 +33,13 @@ namespace :dd do
     end
     CSV.open("#{folder}/domains.csv", "wb") do |csv|
       keys = %w(value display_name description)
-      csv << ['id'] + keys
+      csv << ['folder', 'id'] + keys
       Dir.glob("domains/**/*.json").each do |file|
         if json = JSON.parse(File.read(file)) rescue false
-          domain_name = file.gsub(/domains\//, '')
+          domain_folder = file.gsub(/domains\//, '').split('/')[0..-2].join('/')
+          domain_name = file.gsub(/domains\//, '').split('/').last.to_s.gsub(/.json/, '')
           json.each do |hash|
-            csv << [domain_name] + keys.collect{|key| hash[key]}
+            csv << [domain_folder, domain_name] + keys.collect{|key| hash[key]}
           end
         end
       end
@@ -54,7 +55,7 @@ namespace :dd do
       CSV.parse( File.open(ENV['CSV'].to_s, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true ) do |line|
         row = line.to_hash
         next if row['id'] == ''
-        folder = File.join('variables', row.delete('folder').to_s.gsub(':', '/'))
+        folder = File.join('variables', row.delete('folder').to_s)
         FileUtils.mkpath folder
         hash = {}
         id = row.delete('id')

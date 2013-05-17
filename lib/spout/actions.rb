@@ -3,15 +3,15 @@ module Spout
 
     def interpret(argv)
       case argv.first
-      when 'new'
+      when 'new', 'n', 'ne', '-new', '-n', '-ne'
         new_template_dictionary(argv)
       when '--version', '-v', '-ve', '-ver', 'version', 'v', 've', 'ver'
         puts "Spout #{Spout::VERSION::STRING}"
       when 'test', 't', 'te', 'tes', '--test', '-t', '-te', '-tes'
         system "bundle exec rake"
-      when 'import'
+      when 'import', 'i', 'im', 'imp', '--import', '-i', '-im', '-imp'
         import_from_csv(argv)
-      when 'export'
+      when 'export', 'e', 'ex', 'exp', '--export', '-e', '-ex', '-exp'
         new_data_dictionary_export(argv)
       else
         help
@@ -43,12 +43,14 @@ EOT
 Usage: spout COMMAND [ARGS]
 
 The most common spout commands are:
-  new         Create a new Spout dictionary. "spout new my_dd" creates a
+  [n]ew       Create a new Spout dictionary. "spout new my_dd" creates a
               new data dictionary called MyDD in "./my_dd"
-  [t]est      Running the test file (short-cut alias: "t")
-  import      Import a CSV file into the JSON repository
-  export      Export the JSON respository to a CSV
-  [v]ersion   Returns the version of Spout (short-cut alias: "v")
+  [t]est      Running the test file
+  [i]mport    Import a CSV file into the JSON repository
+  [e]xport    Export the JSON respository to a CSV
+  [v]ersion   Returns the version of Spout
+
+Each command can be referenced by the first letter: Ex: `spout t`, for test
 
 EOT
         puts help_message
