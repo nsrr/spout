@@ -40,15 +40,15 @@ Other columns that will be interpreted include:
 `description`: A longer description of the variable.
 
 `type`: Should be a valid variable type, i.e.:
-  - 'identifier'
-  - 'choices'
-  - 'integer'
-  - 'numeric'
-  - 'string'
-  - 'text'
-  - 'date'
-  - 'time'
-  - 'file'
+  - `identifier`
+  - `choices`
+  - `integer`
+  - `numeric`
+  - `string`
+  - `text`
+  - `date`
+  - `time`
+  - `file`
 
 `domain`: The name of the domain that is associated with the variable. Typically, only variable of type `choices` have domains.  These domains then reside in `domains` folder.
 
