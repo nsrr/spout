@@ -1,4 +1,6 @@
-## 0.1.0
+## 0.2.0
+
+## 0.1.0 (May 21, 2013)
 
 ### Enhancements
 - Existing Data Dictionaries can be converted to JSON format from a CSV file
