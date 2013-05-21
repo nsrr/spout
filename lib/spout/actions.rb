@@ -11,6 +11,8 @@ module Spout
         system "bundle exec rake"
       when 'import', 'i', 'im', 'imp', '--import', '-i', '-im', '-imp'
         import_from_csv(argv)
+      when 'import_domain', '--import_domain'
+        import_from_csv(argv, 'domains')
       when 'export', 'e', 'ex', 'exp', '--export', '-e', '-ex', '-exp'
         new_data_dictionary_export(argv)
       else
@@ -20,7 +22,7 @@ module Spout
 
     protected
 
-      def import_from_csv(argv)
+      def csv_usage
         usage = <<-EOT
 
 Usage: spout import CSVFILE
@@ -28,12 +30,15 @@ Usage: spout import CSVFILE
 The CSVFILE must be the location of a valid CSV file.
 
 EOT
+        usage
+      end
 
+      def import_from_csv(argv, type = "")
         csv_file = File.join(argv[1].to_s.strip)
         if File.exists?(csv_file)
-          system "bundle exec rake dd:import CSV=#{csv_file}"
+          system "bundle exec rake dd:import CSV=#{csv_file} #{'TYPE='+type if type.to_s != ''}"
         else
-          puts usage
+          puts csv_usage
         end
       end
 

@@ -34,7 +34,7 @@ spout import data_dictionary.csv
 
 The CSV should contain at minimal the two column headers:
 
-`id`: This column will give the variable it's name, and also be used to name the file, i.e. `<id>.json`
+`id`: This column will give the variable its name, and also be used to name the file, i.e. `<id>.json`
 `folder`: This can be blank, however it is used to place variables into a folder hiearchy. The folder column can contain forward slashes `/` to place a variable into a subfolder. An example may be, `id`: `myvarid`, `folder`: `Demographics/Subfolder` would create a file `variables/Demographics/Subfolder/myvarid.json`
 
 Other columns that will be interpreted include:
@@ -63,6 +63,24 @@ Other columns that will be interpreted include:
 `labels`: A series of different names for the variable that are semi-colon `;` separated. These labels are commonly synonyms, or related terms used primarily for searching.
 
 All other columns get grouped into a hash labeled `other`.
+
+#### Importing domains from an existing CSV file
+
+```
+spout import_domains data_dictionary_domains.csv
+```
+
+The CSV should contain at minimal three column headers:
+
+`domain_id`: The name of the associated domain for the choice/option.
+`value`: The value of the choice/option.
+`display_name`: The display name of the choice/option.
+
+Other columns that are imported include:
+
+`description`: A longer description of the choice/option.
+`folder`: The name of the folder path where the domain resides.
+
 
 ### Test your repository
 
