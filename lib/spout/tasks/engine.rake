@@ -22,29 +22,13 @@ namespace :dd do
     folder = "dd/#{ENV['VERSION'] || Spout::Application.new.version}"
     FileUtils.mkpath folder
 
-    CSV.open("#{folder}/variables.csv", "wb") do |csv|
-      keys = %w(id display_name description type units domain labels calculation)
-      csv << ['folder'] + keys
-      Dir.glob("variables/**/*.json").each do |file|
-        if json = JSON.parse(File.read(file)) rescue false
-          variable_folder = file.gsub(/variables\//, '').split('/')[0..-2].join('/')
-          csv << [variable_folder] + keys.collect{|key| json[key].kind_of?(Array) ? json[key].join(';') : json[key].to_s}
-        end
-      end
+    case ENV['TYPE']
+    when 'hybrid'
+      hybrid_export(folder)
+    else
+      standard_export(folder)
     end
-    CSV.open("#{folder}/domains.csv", "wb") do |csv|
-      keys = %w(value display_name description)
-      csv << ['folder', 'domain_id'] + keys
-      Dir.glob("domains/**/*.json").each do |file|
-        if json = JSON.parse(File.read(file)) rescue false
-          domain_folder = file.gsub(/domains\//, '').split('/')[0..-2].join('/')
-          domain_name = file.gsub(/domains\//, '').split('/').last.to_s.gsub(/.json/, '')
-          json.each do |hash|
-            csv << [domain_folder, domain_name] + keys.collect{|key| hash[key]}
-          end
-        end
-      end
-    end
+
 
     puts "Data Dictionary Created in #{folder}"
   end
@@ -56,6 +40,122 @@ namespace :dd do
       ENV['TYPE'] == 'domains' ? import_domains : import_variables
     else
       puts "\nPlease specify a valid CSV file.".colorize( :red ) + additional_csv_info
+    end
+  end
+end
+
+def standard_export(folder)
+  CSV.open("#{folder}/variables.csv", "wb") do |csv|
+    keys = %w(id display_name description type units domain labels calculation)
+    csv << ['folder'] + keys
+    Dir.glob("variables/**/*.json").each do |file|
+      if json = JSON.parse(File.read(file)) rescue false
+        variable_folder = variable_folder_path(file)
+        csv << [variable_folder] + keys.collect{|key| json[key].kind_of?(Array) ? json[key].join(';') : json[key].to_s}
+      end
+    end
+  end
+  CSV.open("#{folder}/domains.csv", "wb") do |csv|
+    keys = %w(value display_name description)
+    csv << ['folder', 'domain_id'] + keys
+    Dir.glob("domains/**/*.json").each do |file|
+      if json = JSON.parse(File.read(file)) rescue false
+        domain_folder = domain_folder_path(file)
+        domain_name = extract_domain_name(file)
+        json.each do |hash|
+          csv << [domain_folder, domain_name] + keys.collect{|key| hash[key]}
+        end
+      end
+    end
+  end
+end
+
+def extract_domain_name(file)
+  file.gsub(/domains\//, '').split('/').last.to_s.gsub(/.json/, '')
+end
+
+def domain_folder_path(file)
+  file.gsub(/domains\//, '').split('/')[0..-2].join('/')
+end
+
+def variable_folder_path(file)
+  file.gsub(/variables\//, '').split('/')[0..-2].join('/')
+end
+
+def hybrid_concept_type(json)
+  if json['hybrid'] and json['hybrid']['type'].to_s != ''
+    json['hybrid']['type']
+  else
+    hybrid_concept_type_map(json['type'])
+  end
+end
+
+def hybrid_concept_type_map(variable_type)
+  hybrid_types = { "choices" => "categorical",
+                   "numeric" => "continuous",
+                   "integer" => "continuous",
+                   "string" => "free text",
+                   "text" => "free text",
+                   "date" => "datetime",
+                   "time" => "datetime",
+                   "file" => "free text" }
+  hybrid_types[variable_type] || variable_type
+end
+
+def hybrid_property(json, property)
+  json['hybrid'] ? json['hybrid'][property] : ''
+end
+
+def hybrid_export(folder)
+  CSV.open("#{folder}/hybrid.csv", "wb") do |csv|
+    csv << ["#URI", "Namespace", "Short Name", "Description", "Concept Type", "Units", "Terms", "Internal Terms", "Parents", "Children", "Field Values", "Sensitivity", "Display Name", "Commonly Used", "Folder", "Calculation"]
+    Dir.glob("variables/**/*.json").each do |file|
+      if json = JSON.parse(File.read(file)) rescue false
+        row = [
+          '',                         # URI
+          '',                         # Namespace
+          json['id'],                 # Short Name
+          json['description'],        # Description
+          hybrid_concept_type(json),  # Concept Type
+          json['units'],              # Units
+          '',                         # Terms
+          '',                         # Internal Terms
+          '',                         # Parents
+          '',                         # Children
+          '',                         # Field Values
+          hybrid_property(json, 'access level'),   # Sensitivity
+          json['display_name'],       # Display Name
+          hybrid_property(json, 'Commonly Used'), # Commonly Used
+          variable_folder_path(file).gsub('/', ':'), # Folder
+          json['calculation'],                         # Calculation
+        ]
+        csv << row
+      end
+    end
+    Dir.glob("domains/**/*.json").each do |file|
+      if json = JSON.parse(File.read(file)) rescue false
+        json.each do |option|
+          row = [
+            '',                         # URI
+            '',                         # Namespace
+            extract_domain_name(file)+'_'+option['value'].to_s,  # Short Name
+            option['description'],      # Description
+            'boolean',  # Concept Type
+            '',              # Units
+            '',                         # Terms
+            option['value'],            # Internal Terms
+            '',                         # Parents
+            '',                         # Children
+            '',                         # Field Values
+            '',                         # Sensitivity
+            option['display_name'],     # Display Name
+            '', # Commonly Used
+            domain_folder_path(file).gsub('/', ':'), # Folder
+            '',                         # Calculation
+          ]
+          csv << row
+        end
+      end
     end
   end
 end

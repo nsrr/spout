@@ -15,6 +15,8 @@ module Spout
         import_from_csv(argv, 'domains')
       when 'export', 'e', 'ex', 'exp', '--export', '-e', '-ex', '-exp'
         new_data_dictionary_export(argv)
+      when 'hybrid', '-hybrid'
+        new_data_dictionary_export(argv, 'hybrid')
       else
         help
       end
@@ -61,10 +63,11 @@ EOT
         puts help_message
       end
 
-      def new_data_dictionary_export(argv)
+      def new_data_dictionary_export(argv, type = '')
         version = argv[1].to_s.gsub(/[^a-zA-Z0-9\.-]/, '_').strip
         version_string = (version == '' ? "" : "VERSION=#{version}")
-        system "bundle exec rake dd:create #{version_string}"
+        type_string =  type.to_s == '' ? "" : "TYPE=#{type}"
+        system "bundle exec rake dd:create #{version_string} #{type_string}"
       end
 
       def new_template_dictionary(argv)
