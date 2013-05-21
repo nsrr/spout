@@ -1,7 +1,7 @@
 ## 0.2.0
 
 ### Enhancements
-- Domains can now be imported using `spout import_domain CSVFILE`
+- Domains can now be imported using `spout import_domains CSVFILE`
 
 ## 0.1.0 (May 21, 2013)
 

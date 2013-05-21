@@ -11,7 +11,7 @@ module Spout
         system "bundle exec rake"
       when 'import', 'i', 'im', 'imp', '--import', '-i', '-im', '-imp'
         import_from_csv(argv)
-      when 'import_domain', '--import_domain'
+      when 'import_domain', '--import_domain', 'import_domains', '--import_domains'
         import_from_csv(argv, 'domains')
       when 'export', 'e', 'ex', 'exp', '--export', '-e', '-ex', '-exp'
         new_data_dictionary_export(argv)
