@@ -122,7 +122,7 @@ def hybrid_export(folder)
           json['description'],                                    # Description
           hybrid_concept_type(json),                              # Concept Type
           json['units'],                                          # Units
-          '',                                                     # Terms
+          (json['labels'] || []).join(';'),                       # Terms
           '',                                                     # Internal Terms
           '',                                                     # Parents
           '',                                                     # Children
