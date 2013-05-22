@@ -130,7 +130,7 @@ def hybrid_export(folder)
           '',                         # Field Values
           hybrid_property(json, 'access level'),   # Sensitivity
           json['display_name'],       # Display Name
-          hybrid_property(json, 'Commonly Used'), # Commonly Used
+          hybrid_property(json, 'most commonly used'), # Commonly Used
           variable_folder_path(file).gsub('/', ':'), # Folder
           json['calculation'],                         # Calculation
           hybrid_property(json, 'SOURCE'), # Source Name
