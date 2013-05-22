@@ -107,10 +107,15 @@ def hybrid_property(json, property)
 end
 
 def hybrid_export(folder)
+  domain_parents = {}
   CSV.open("#{folder}/hybrid.csv", "wb") do |csv|
-    csv << ["#URI", "Namespace", "Short Name", "Description", "Concept Type", "Units", "Terms", "Internal Terms", "Parents", "Children", "Field Values", "Sensitivity", "Display Name", "Commonly Used", "Folder", "Calculation"]
+    csv << ["#URI", "Namespace", "Short Name", "Description", "Concept Type", "Units", "Terms", "Internal Terms", "Parents", "Children", "Field Values", "Sensitivity", "Display Name", "Commonly Used", "Folder", "Calculation", "Source Name", "Source File"]
     Dir.glob("variables/**/*.json").each do |file|
       if json = JSON.parse(File.read(file)) rescue false
+        if json['domain'].to_s != ''
+          domain_parents[json['domain'].to_s.downcase] ||= []
+          domain_parents[json['domain'].to_s.downcase] << "#"+json['id'].to_s
+        end
         row = [
           '',                         # URI
           '',                         # Namespace
@@ -128,6 +133,8 @@ def hybrid_export(folder)
           hybrid_property(json, 'Commonly Used'), # Commonly Used
           variable_folder_path(file).gsub('/', ':'), # Folder
           json['calculation'],                         # Calculation
+          hybrid_property(json, 'SOURCE'), # Source Name
+          hybrid_property(json, 'filename') # Source File
         ]
         csv << row
       end
@@ -144,10 +151,10 @@ def hybrid_export(folder)
             '',              # Units
             '',                         # Terms
             option['value'],            # Internal Terms
-            '',                         # Parents
+            (domain_parents[extract_domain_name(file).downcase] || []).join(';'),                         # Parents
             '',                         # Children
             '',                         # Field Values
-            '',                         # Sensitivity
+            '0',                        # Sensitivity
             option['display_name'],     # Display Name
             '', # Commonly Used
             domain_folder_path(file).gsub('/', ':'), # Folder
