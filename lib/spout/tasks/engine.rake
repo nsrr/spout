@@ -109,32 +109,30 @@ end
 def hybrid_export(folder)
   domain_parents = {}
   CSV.open("#{folder}/hybrid.csv", "wb") do |csv|
-    csv << ["#URI", "Namespace", "Short Name", "Description", "Concept Type", "Units", "Terms", "Internal Terms", "Parents", "Children", "Field Values", "Sensitivity", "Display Name", "Commonly Used", "Folder", "Calculation", "Source Name", "Source File"]
+    csv << ["Folder", "Short Name", "Description", "Concept Type", "Units", "Terms", "Internal Terms", "Parents", "Children", "Field Values", "Sensitivity", "Display Name", "Commonly Used", "Calculation", "Source Name", "Source File"]
     Dir.glob("variables/**/*.json").each do |file|
       if json = JSON.parse(File.read(file)) rescue false
         if json['domain'].to_s != ''
           domain_parents[json['domain'].to_s.downcase] ||= []
-          domain_parents[json['domain'].to_s.downcase] << "#"+json['id'].to_s
+          domain_parents[json['domain'].to_s.downcase] << json['id'].to_s
         end
         row = [
-          '',                         # URI
-          '',                         # Namespace
-          json['id'],                 # Short Name
-          json['description'],        # Description
-          hybrid_concept_type(json),  # Concept Type
-          json['units'],              # Units
-          '',                         # Terms
-          '',                         # Internal Terms
-          '',                         # Parents
-          '',                         # Children
-          '',                         # Field Values
-          hybrid_property(json, 'access level'),   # Sensitivity
-          json['display_name'],       # Display Name
-          hybrid_property(json, 'most commonly used'), # Commonly Used
-          variable_folder_path(file).gsub('/', ':'), # Folder
-          json['calculation'],                         # Calculation
-          hybrid_property(json, 'SOURCE'), # Source Name
-          hybrid_property(json, 'filename') # Source File
+          variable_folder_path(file),                             # Folder
+          json['id'],                                             # Short Name
+          json['description'],                                    # Description
+          hybrid_concept_type(json),                              # Concept Type
+          json['units'],                                          # Units
+          '',                                                     # Terms
+          '',                                                     # Internal Terms
+          '',                                                     # Parents
+          '',                                                     # Children
+          '',                                                     # Field Values
+          hybrid_property(json, 'access level'),                  # Sensitivity
+          json['display_name'],                                   # Display Name
+          hybrid_property(json, 'most commonly used'),            # Commonly Used
+          json['calculation'],                                    # Calculation
+          hybrid_property(json, 'SOURCE'),                        # Source Name
+          hybrid_property(json, 'filename')                       # Source File
         ]
         csv << row
       end
@@ -143,22 +141,20 @@ def hybrid_export(folder)
       if json = JSON.parse(File.read(file)) rescue false
         json.each do |option|
           row = [
-            '',                         # URI
-            '',                         # Namespace
-            extract_domain_name(file)+'_'+option['value'].to_s,  # Short Name
-            option['description'],      # Description
-            'boolean',  # Concept Type
-            '',              # Units
-            '',                         # Terms
-            option['value'],            # Internal Terms
-            (domain_parents[extract_domain_name(file).downcase] || []).join(';'),                         # Parents
-            '',                         # Children
-            '',                         # Field Values
-            '0',                        # Sensitivity
-            option['display_name'],     # Display Name
-            '', # Commonly Used
-            domain_folder_path(file).gsub('/', ':'), # Folder
-            '',                         # Calculation
+            domain_folder_path(file),                             # Folder
+            extract_domain_name(file)+'_'+option['value'].to_s,   # Short Name
+            option['description'],                                # Description
+            'boolean',                                            # Concept Type
+            '',                                                   # Units
+            '',                                                   # Terms
+            option['value'],                                      # Internal Terms
+            (domain_parents[extract_domain_name(file).downcase] || []).join(';'), # Parents
+            '',                                                   # Children
+            '',                                                   # Field Values
+            '0',                                                  # Sensitivity
+            option['display_name'],                               # Display Name
+            '',                                                   # Commonly Used
+            '',                                                   # Calculation
           ]
           csv << row
         end
