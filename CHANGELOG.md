@@ -1,4 +1,4 @@
-## 0.2.0
+## 0.2.0 (June 26, 2013)
 
 ### Enhancements
 - Domains can now be imported using `spout import_domains CSVFILE`
