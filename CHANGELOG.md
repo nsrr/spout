@@ -2,8 +2,8 @@
 
 ### Enhancements
 - Domains can now be imported using `spout import_domains CSVFILE`
-- Data Dictionary can now be exported to the Hybrid data dictionary CSV format using:
-  - `spout hybrid`
+- Data Dictionary can now be exported to the Hybrid data dictionary CSV format along with an optional version number:
+  - `spout hybrid [1.0.0]`
 
 ## 0.1.0 (May 21, 2013)
 

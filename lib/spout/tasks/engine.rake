@@ -19,7 +19,7 @@ namespace :dd do
   desc 'Create Data Dictionary from repository'
   task :create do
 
-    folder = "dd/#{ENV['VERSION'] || Spout::Application.new.version}"
+    folder = "dd/#{ENV['VERSION'] || '1.0.0'}"
     FileUtils.mkpath folder
 
     case ENV['TYPE']

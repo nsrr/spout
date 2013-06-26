@@ -15,7 +15,7 @@ module Spout
         import_from_csv(argv, 'domains')
       when 'export', 'e', 'ex', 'exp', '--export', '-e', '-ex', '-exp'
         new_data_dictionary_export(argv)
-      when 'hybrid', '-hybrid'
+      when 'hybrid', '-hybrid', '--hybrid', 'y', 'hy', '-y', '-hy'
         new_data_dictionary_export(argv, 'hybrid')
       else
         help
@@ -50,14 +50,18 @@ EOT
 Usage: spout COMMAND [ARGS]
 
 The most common spout commands are:
-  [n]ew       Create a new Spout dictionary. "spout new my_dd" creates a
-              new data dictionary called MyDD in "./my_dd"
-  [t]est      Running the test file
-  [i]mport    Import a CSV file into the JSON repository
-  [e]xport    Export the JSON respository to a CSV
-  [v]ersion   Returns the version of Spout
+  [n]ew             Create a new Spout dictionary.
+                    "spout new my_dd" creates a new data
+                    dictionary called MyDD in "./my_dd"
+  [t]est            Running the test file
+  [i]mport          Import a CSV file into the JSON repository
+  [e]xport [1.0.0]  Export the JSON respository to a CSV
+ h[y]brid  [1.0.0]  Export the JSON repository in the Hybrid
+                    Dictionary format
+  [v]ersion         Returns the version of Spout
 
-Each command can be referenced by the first letter: Ex: `spout t`, for test
+Commands can be referenced by the first letter:
+  Ex: `spout t`, for test
 
 EOT
         puts help_message
