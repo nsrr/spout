@@ -117,7 +117,7 @@ Then run either `spout test` or `bundle exec rake` to run your tests.
 
 ### Create a CSV Data Dictionary from your JSON repository
 
-Provide an optional version parameter to name the folder the CSVs will be generated in, defaults to 1.0.0 currently.
+Provide an optional version parameter to name the folder the CSVs will be generated in, defaults to 1.0.0.
 
 ```
 spout export
