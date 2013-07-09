@@ -19,7 +19,7 @@ namespace :dd do
   desc 'Create Data Dictionary from repository'
   task :create do
 
-    folder = "dd/#{ENV['VERSION'] || '1.0.0'}"
+    folder = "dd/#{ENV['VERSION'] || standard_version}"
     FileUtils.mkpath folder
 
     case ENV['TYPE']
@@ -42,6 +42,11 @@ namespace :dd do
       puts "\nPlease specify a valid CSV file.".colorize( :red ) + additional_csv_info
     end
   end
+end
+
+def standard_version
+  version = File.open('VERSION', &:readline).strip rescue ''
+  version == '' ? '1.0.0' : version
 end
 
 def standard_export(folder)

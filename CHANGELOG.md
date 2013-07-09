@@ -1,6 +1,10 @@
 ## 0.3.0
 
 ### Enhancements
+- Exports will now create a folder based on the version specified in the `VERSION` file located in the root of the data dictionary
+  - If a version is specified, `spout export 1.0.1` then the command line version is used
+  - If no version is specified, and no `VERSION` file exists, then the default `1.0.0` is used
+  - The version must be specified on the first line in the `VERSION` file
 - Use of Ruby 2.0.0-p247 is now recommended
 
 ## 0.2.0 (June 26, 2013)
