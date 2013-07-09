@@ -9,6 +9,8 @@ module Spout
         puts "Spout #{Spout::VERSION::STRING}"
       when 'test', 't', 'te', 'tes', '--test', '-t', '-te', '-tes'
         system "bundle exec rake"
+      when 'tv'
+        system "bundle exec rake VERBOSE_TESTS=true"
       when 'import', 'i', 'im', 'imp', '--import', '-i', '-im', '-imp'
         import_from_csv(argv)
       when 'import_domain', '--import_domain', 'import_domains', '--import_domains'
@@ -53,7 +55,9 @@ The most common spout commands are:
   [n]ew             Create a new Spout dictionary.
                     "spout new my_dd" creates a new data
                     dictionary called MyDD in "./my_dd"
-  [t]est            Running the test file
+  [t]est            Run tests and show failing tests
+  [tv]              Run the tests and show passing and failing
+                    tests
   [i]mport          Import a CSV file into the JSON repository
   [e]xport [1.0.0]  Export the JSON respository to a CSV
  h[y]brid  [1.0.0]  Export the JSON repository in the Hybrid

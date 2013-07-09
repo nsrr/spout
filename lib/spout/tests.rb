@@ -18,3 +18,13 @@ module Spout
     Turn.config.trace = 1
   end
 end
+
+require 'spout/hidden_reporter'
+
+module Turn
+  class Configuration
+    def reporter
+      @reporter ||= Spout::HiddenReporter.new(ENV['VERBOSE_TESTS'] == 'true')
+    end
+  end
+end

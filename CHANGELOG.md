@@ -1,6 +1,8 @@
 ## 0.3.0
 
 ### Enhancements
+- Tests now hide passing tests by default
+  - To show all tests, use `spout tv`, or verbose tests
 - Exports will now create a folder based on the version specified in the `VERSION` file located in the root of the data dictionary
   - If a version is specified, `spout export 1.0.1` then the command line version is used
   - If no version is specified, and no `VERSION` file exists, then the default `1.0.0` is used
