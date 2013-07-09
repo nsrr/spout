@@ -24,7 +24,7 @@ require 'spout/hidden_reporter'
 module Turn
   class Configuration
     def reporter
-      @reporter ||= Spout::HiddenReporter.new(ENV['VERBOSE_TESTS'] == 'true')
+      @reporter ||= Spout::HiddenReporter.new(ENV['HIDE_PASSING_TESTS'] == 'true')
     end
   end
 end

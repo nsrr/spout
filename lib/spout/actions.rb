@@ -8,9 +8,9 @@ module Spout
       when '--version', '-v', '-ve', '-ver', 'version', 'v', 've', 'ver'
         puts "Spout #{Spout::VERSION::STRING}"
       when 'test', 't', 'te', 'tes', '--test', '-t', '-te', '-tes'
-        system "bundle exec rake"
+        system "bundle exec rake HIDE_PASSING_TESTS=true"
       when 'tv'
-        system "bundle exec rake VERBOSE_TESTS=true"
+        system "bundle exec rake"
       when 'import', 'i', 'im', 'imp', '--import', '-i', '-im', '-imp'
         import_from_csv(argv)
       when 'import_domain', '--import_domain', 'import_domains', '--import_domains'

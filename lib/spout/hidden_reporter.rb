@@ -17,13 +17,13 @@ module Spout
     # Character to put in front of backtrace.
     TRACE_MARK = '@ '
 
-    def initialize(show_passing = false)
+    def initialize(hide_passing_tests)
       @io      = $stdout
       @trace   = nil
       @natural = nil
       @verbose = nil
       @mark    = 0
-      @show_passing = show_passing
+      @hide_passing_tests = hide_passing_tests
     end
 
     # At the very start, before any testcases are run, this is called.
@@ -56,7 +56,7 @@ module Spout
 
     # Invoked when a test passes.
     def pass(message=nil)
-      if @show_passing
+      unless @hide_passing_tests
         banner PASS
 
         if message
