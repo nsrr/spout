@@ -88,7 +88,7 @@ The FOLDER must be empty or new.
 
 EOT
 
-        if @full_path == '' or (Dir.exists?(@full_path) and (Dir.entries(@full_path) - ['.', '..']).size > 0)
+        if @full_path == '' or ( Dir.exists?(@full_path) and (Dir.entries(@full_path) & ['.gitignore', '.ruby-version', '.travis.yml', 'Gemfile', 'Rakefile', 'domains', 'variables', 'test']).size > 0 )
           puts usage
           exit(0)
         end
