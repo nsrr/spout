@@ -52,6 +52,7 @@ Other columns that will be interpreted include:
   - `text`
   - `date`
   - `time`
+  - `datetime`
   - `file`
 
 `domain`: The name of the domain that is associated with the variable. Typically, only variable of type `choices` have domains.  These domains then reside in `domains` folder.
