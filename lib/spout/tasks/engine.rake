@@ -18,19 +18,19 @@ namespace :dd do
 
   desc 'Create Data Dictionary from repository'
   task :create do
-
     folder = "dd/#{ENV['VERSION'] || standard_version}"
+    puts "      create".colorize( :green ) + "  #{folder}"
     FileUtils.mkpath folder
 
-    case ENV['TYPE']
-    when 'hybrid'
-      hybrid_export(folder)
-    else
-      standard_export(folder)
+    export_name = nil
+    additional_keys = []
+
+    if ENV['TYPE'] == 'hybrid'
+      export_name = 'hybrid'
+      additional_keys = [['hybrid', 'design_name'], ['hybrid', 'design_file'], ['hybrid', 'sensitivity'], ['hybrid', 'commonly_used']]
     end
 
-
-    puts "Data Dictionary Created in #{folder}"
+    expanded_export(folder, export_name, additional_keys)
   end
 
   desc 'Initialize JSON repository from a CSV file: CSV=datadictionary.csv'
@@ -49,18 +49,22 @@ def standard_version
   version == '' ? '1.0.0' : version
 end
 
-def standard_export(folder)
-  CSV.open("#{folder}/variables.csv", "wb") do |csv|
+def expanded_export(folder, export_name = nil, additional_keys = [])
+  variables_export_file = "#{[export_name, 'variables'].compact.join('-')}.csv"
+  puts "      export".colorize( :blue ) + "  #{folder}/#{variables_export_file}"
+  CSV.open("#{folder}/#{variables_export_file}", "wb") do |csv|
     keys = %w(id display_name description type units domain labels calculation)
-    csv << ['folder'] + keys
+    csv << ['folder'] + keys + additional_keys.collect{|i| i[1]}
     Dir.glob("variables/**/*.json").each do |file|
       if json = JSON.parse(File.read(file)) rescue false
         variable_folder = variable_folder_path(file)
-        csv << [variable_folder] + keys.collect{|key| json[key].kind_of?(Array) ? json[key].join(';') : json[key].to_s}
+        csv << [variable_folder] + keys.collect{|key| json[key].kind_of?(Array) ? json[key].join(';') : json[key].to_s} + additional_keys.collect{|i| other_property(i[0], json, i[1])}
       end
     end
   end
-  CSV.open("#{folder}/domains.csv", "wb") do |csv|
+  domains_export_file = "#{[export_name, 'domains'].compact.join('-')}.csv"
+  puts "      export".colorize( :blue ) + "  #{folder}/#{domains_export_file}"
+  CSV.open("#{folder}/#{domains_export_file}", "wb") do |csv|
     keys = %w(value display_name description)
     csv << ['folder', 'domain_id'] + keys
     Dir.glob("domains/**/*.json").each do |file|
@@ -87,85 +91,8 @@ def variable_folder_path(file)
   file.gsub(/variables\//, '').split('/')[0..-2].join('/')
 end
 
-def hybrid_concept_type(json)
-  if json['hybrid'] and json['hybrid']['type'].to_s != ''
-    json['hybrid']['type']
-  else
-    hybrid_concept_type_map(json['type'])
-  end
-end
-
-def hybrid_concept_type_map(variable_type)
-  hybrid_types = { "choices" => "categorical",
-                   "numeric" => "continuous",
-                   "integer" => "continuous",
-                   "string" => "free text",
-                   "text" => "free text",
-                   "date" => "datetime",
-                   "time" => "datetime",
-                   "file" => "free text" }
-  hybrid_types[variable_type] || variable_type
-end
-
-def hybrid_property(json, property)
-  json['hybrid'] ? json['hybrid'][property] : ''
-end
-
-def hybrid_export(folder)
-  domain_parents = {}
-  CSV.open("#{folder}/hybrid.csv", "wb") do |csv|
-    csv << ["Folder", "Short Name", "Description", "Concept Type", "Units", "Terms", "Internal Terms", "Parents", "Children", "Field Values", "Sensitivity", "Display Name", "Commonly Used", "Calculation", "Source Name", "Source File"]
-    Dir.glob("variables/**/*.json").each do |file|
-      if json = JSON.parse(File.read(file)) rescue false
-        if json['domain'].to_s != ''
-          domain_parents[json['domain'].to_s.downcase] ||= []
-          domain_parents[json['domain'].to_s.downcase] << json['id'].to_s
-        end
-        row = [
-          variable_folder_path(file),                             # Folder
-          json['id'],                                             # Short Name
-          json['description'],                                    # Description
-          hybrid_concept_type(json),                              # Concept Type
-          json['units'],                                          # Units
-          (json['labels'] || []).join(';'),                       # Terms
-          '',                                                     # Internal Terms
-          '',                                                     # Parents
-          '',                                                     # Children
-          '',                                                     # Field Values
-          hybrid_property(json, 'access level'),                  # Sensitivity
-          json['display_name'],                                   # Display Name
-          hybrid_property(json, 'most commonly used'),            # Commonly Used
-          json['calculation'],                                    # Calculation
-          hybrid_property(json, 'SOURCE'),                        # Source Name
-          hybrid_property(json, 'filename')                       # Source File
-        ]
-        csv << row
-      end
-    end
-    Dir.glob("domains/**/*.json").each do |file|
-      if json = JSON.parse(File.read(file)) rescue false
-        json.each do |option|
-          row = [
-            domain_folder_path(file),                             # Folder
-            extract_domain_name(file)+'_'+option['value'].to_s,   # Short Name
-            option['description'],                                # Description
-            'boolean',                                            # Concept Type
-            '',                                                   # Units
-            '',                                                   # Terms
-            option['value'],                                      # Internal Terms
-            (domain_parents[extract_domain_name(file).downcase] || []).join(';'), # Parents
-            '',                                                   # Children
-            '',                                                   # Field Values
-            '0',                                                  # Sensitivity
-            option['display_name'],                               # Display Name
-            '',                                                   # Commonly Used
-            '',                                                   # Calculation
-          ]
-          csv << row
-        end
-      end
-    end
-  end
+def other_property(parent, json, property)
+  json[parent] ? json[parent][property] : ''
 end
 
 def import_variables
