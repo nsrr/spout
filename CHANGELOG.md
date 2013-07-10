@@ -14,6 +14,9 @@
 - Spout can now create a new Spout project in a folder that was cloned from a Git repository
 - Use of Ruby 2.0.0-p247 is now recommended
 
+### Bug Fix
+- `DomainExistenceValidation` tests are now case-insensitive
+
 ## 0.2.0 (June 26, 2013)
 
 ### Enhancements

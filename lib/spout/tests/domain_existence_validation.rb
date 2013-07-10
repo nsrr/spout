@@ -5,7 +5,7 @@ module Spout
       def assert_domain_existence(item, msg = nil)
         result = begin
           domain_name = JSON.parse(File.read(item))["domain"]+".json"
-          File.exists?(File.join("domains", domain_name))
+          Dir.glob(File.join("domains", domain_name), File::FNM_CASEFOLD).size > 0
         rescue JSON::ParserError
           false
         end
