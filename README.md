@@ -110,6 +110,10 @@ class DictionaryTest < Test::Unit::TestCase
   # Or only include certain tests
   include Spout::Tests::JsonValidation
   include Spout::Tests::VariableTypeValidation
+  include Spout::Tests::VariableNameUniqueness
+  include Spout::Tests::DomainExistenceValidation
+  include Spout::Tests::DomainFormat
+  include Spout::Tests::DomainNameUniqueness
 end
 ```
 
@@ -118,7 +122,7 @@ Then run either `spout test` or `bundle exec rake` to run your tests.
 
 ### Create a CSV Data Dictionary from your JSON repository
 
-Provide an optional version parameter to name the folder the CSVs will be generated in, defaults to 1.0.0.
+Provide an optional version parameter to name the folder the CSVs will be generated in, defaults to what is in `VERSION` file, or if that does not exist `1.0.0`.
 
 ```
 spout export
@@ -128,12 +132,6 @@ You can optionally provide a version string
 
 ```
 spout export [1.0.0]
-```
-
-or
-
-```
-bundle exec rake dd:create [VERSION=1.0.0]
 ```
 
 
