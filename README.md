@@ -4,7 +4,7 @@
 [![Dependency Status](https://gemnasium.com/sleepepi/spout.png)](https://gemnasium.com/sleepepi/spout)
 [![Code Climate](https://codeclimate.com/github/sleepepi/spout.png)](https://codeclimate.com/github/sleepepi/spout)
 
-Turn your CSV data dictionary into a JSON repository. Collaborate with others to update the data dictionary in JSON format. Generate new Data Dictionary from the JSON repository. Test and validate your data dictionary using built-in tests, or add your own for further validations.
+Turn your CSV data dictionary into a JSON repository. Collaborate with others to update the data dictionary in JSON format. Generate new Data Dictionary from the JSON repository. Test and validate your data dictionary using built-in tests, or add your own tests and validations.
 
 ## Installation
 
@@ -39,7 +39,7 @@ The CSV should contain at minimal the two column headers:
 
 Other columns that will be interpreted include:
 
-`display_name`: The variable name as it is presented to the user. The display name should be reasonable in length and not unreasonably long.
+`display_name`: The variable name as it is presented to the user. The display name should be fit on a single line.
 
 `description`: A longer description of the variable.
 
