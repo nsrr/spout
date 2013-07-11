@@ -1,4 +1,4 @@
-## 0.3.0
+## 0.3.0 (July 11, 2013)
 
 ### Enhancements
 - Tests now hide passing tests by default
