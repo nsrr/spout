@@ -1,5 +1,11 @@
 ## 0.4.0
 
+### Enhancements
+- Tests for domain existence have changed and now only require the domain name be referenced from the variable instead of the entire domain path
+  - To reference a domain from a variable, only the domain name is now required.
+  - This change decouples the relative domain folder location from needing to be added among multiple variables which now allows domains to be reorganized without requiring the corresponding variables to be updated to reflect the new path
+  - This change is possible since domains need to have a unique name regardless of where they are located
+
 ## 0.3.0 (July 11, 2013)
 
 ### Enhancements
