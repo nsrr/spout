@@ -1,4 +1,4 @@
-## 0.4.0
+## 0.4.0 (August 7, 2013)
 
 ### Enhancements
 - Tests for domain existence have changed and now only require the domain name be referenced from the variable instead of the entire domain path
