@@ -1,4 +1,4 @@
-## 0.4.1
+## 0.4.1 (August 16, 2013)
 
 ### Enhancement
 - The `spout new <project_name>` command now adds .keep files to the variables and domains folders so they don't need to be recreated in a cloned empty repository
