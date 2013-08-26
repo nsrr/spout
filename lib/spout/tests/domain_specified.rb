@@ -14,7 +14,7 @@ module Spout
       Dir.glob("variables/**/*.json").each do |file|
         if json_value(file, :type) == "choices"
           define_method("test_domain_specified:"+file) do
-            assert_domain_present json_value(file, :domain)
+            assert_domain_specified json_value(file, :domain)
           end
         end
       end
