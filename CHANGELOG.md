@@ -2,6 +2,7 @@
 
 ### Enhancement
 - Tests added to check that variables of type choices have specified a domain
+- Tests added to make sure the JSON object `id` matches the variable file name
 
 ## 0.4.1 (August 16, 2013)
 
