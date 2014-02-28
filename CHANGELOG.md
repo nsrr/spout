@@ -1,5 +1,10 @@
 ## 0.6.0
 
+### Enhancement
+- Added `spout match` command that generates a coverage report of how well a dataset matches the data dictionary
+- **Gem Changes**
+  - Updated to colorize 0.6.0
+
 ## 0.5.0 (February 28, 2014)
 
 ### Enhancement
