@@ -19,6 +19,8 @@ module Spout
         new_data_dictionary_export(argv)
       when 'hybrid', '-hybrid', '--hybrid', 'y', 'hy', '-y', '-hy'
         new_data_dictionary_export(argv, 'hybrid')
+      when 'dataset', '-dataset', '--dataset', 'd', '-d', 'match', '-match', '--match', 'm', '-m'
+        match_dataset_report(argv)
       else
         help
       end
@@ -110,6 +112,10 @@ EOT
         puts "         run".colorize( :green ) + "  bundle install".colorize( :light_cyan )
         Dir.chdir(@full_path)
         system "bundle install"
+      end
+
+      def match_dataset_report(argv)
+        system "bundle exec rake dd:coverage"
       end
 
     private

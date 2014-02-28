@@ -1,0 +1,78 @@
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="data:image/vnd.microsoft.icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAIAAAAMIAAAAiAAAAAAAAAAAAAAAAAAAARAAAAEEAAAAcAAAAwQAAACEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAADCAAAAIgAAAAAAAAAAAAAAAAAAAEQAAABBAAAAHAAAAMEAAAAhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAwwAAACIAAAAAAAAAAAAAAAAAAABEAAAAQQAAABwAAADBAAAAIQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAAAAKoAAAAeAAAAAAAAAAAAAAAAAAAARAAAAEEAAAAYAAAAqwAAAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAWAAAACAAAAB8AAAAfAAAAAAAAAEQAAABDAAAAAAAAABgAAAAIAAAAHQAAAB0AAAAEAAAAAAAAAAAAAAAAAAAAAAAAABkAAACuAAAArQAAABQAAABCAAAAQwAAAAAAAAAAAAAAGAAAAK0AAACrAAAAFgAAAAAAAAAAAAAAAAAAAAAAAAADAAAAGQAAABkAAAAAAAAARAAAAEMAAAAAAAAAAAAAAAMAAAAZAAAAGQAAAAMAAAAAAAAATAAAAEwAAABOAAAATAAAAEoAAABKAAAASQAAAHwAAAB7AAAASgAAAEwAAABMAAAASgAAAEoAAABMAAAATAAAAFAAAABnAAAA0AAAAGcAAABRAAAAUgAAAE8AAACAAAAAfgAAAE0AAABQAAAAUAAAAFAAAABSAAAAUgAAAFIAAAAAAAAAIAAAAL8AAAAfAAAAAAAAAAAAAAAAAAAARQAAAFkAAAAbAAAAHgAAAB8AAAAbAAAABAAAAAAAAAAAAAAAAAAAACAAAAC/AAAAHwAAAAIAAAAXAAAAAAAAAEgAAADPAAAAwwAAAMMAAADFAAAArAAAABgAAAAAAAAAAAAAAAAAAAAgAAAAvwAAAB4AAAAcAAAAqwAAABkAAABDAAAAWgAAAB0AAAAgAAAAHwAAABsAAAAEAAAAAAAAAAAAAAAAAAAAHAAAAKgAAAAaAAAAIAAAAMMAAAAdAAAAQgAAAEMAAAAAAAAABAAAABsAAAAfAAAAIAAAACEAAAAhAAAAAAAAAAQAAAAXAAAAAgAAACIAAADDAAAAHQAAAEIAAABDAAAAAAAAABkAAACrAAAAwwAAAMIAAADCAAAAwQAAAAAAAAAAAAAAAAAAAAAAAAAiAAAAwwAAAB0AAABCAAAAQwAAAAAAAAAEAAAAHQAAACEAAAAgAAAAIAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAIgAAAMMAAAAdAAAAQgAAAEMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAjg8AAI4PAACODwAAjg8AAIABAADgYQAA4mEAAAAAAAAAAAAAjgMAAIIDAACAAwAAgEAAAIBAAADwQAAA8H8AAA==">
+
+    <title>Starter Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <style type="text/css">
+body {
+  padding-top: 50px;
+}
+    </style>
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Spout Dataset and Data Dictionary Coverage</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" style="padding-top:50px">
+
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>Dataset Column Header</th>
+            <th>JSON File</th>
+            <th>Found in Data Dictionary</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @all_column_headers.each do |column| %>
+            <tr>
+              <td><%= column %></td>
+              <td>
+                <% if @variable_file_names.include?(column) %>
+                  <span class="text-success">File Found</span>
+                <% else %>
+                  <span class="text-danger">No JSON File Found, expecting: <code><%= column %>.json</code></span>
+                <% end %>
+              </td>
+              <td>
+                <% if @variable_json_ids.include?(column) %>
+                  <span class="text-success">JSON ID Found</span>
+                <% else %>
+                  <span class="text-danger">No Matching JSON ID</span>
+                  <pre>{
+  "id": "---", ...
+}</pre>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
+    </div><!-- /.container -->
+
+
+</body></html>

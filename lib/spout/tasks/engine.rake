@@ -15,6 +15,7 @@ namespace :dd do
   require 'fileutils'
   require 'rubygems'
   require 'json'
+  require 'erb'
 
   desc 'Create Data Dictionary from repository'
   task :create do
@@ -42,6 +43,61 @@ namespace :dd do
       puts "\nPlease specify a valid CSV file.".colorize( :red ) + additional_csv_info
     end
   end
+
+  desc 'Match CSV dataset with JSON repository'
+  task :coverage do
+    puts 'MDR'
+    puts Dir.pwd
+    puts csvs = Dir.glob("dd/csvs/*.csv")
+
+    @all_column_headers = []
+
+    @variable_json_ids = []
+    @variable_file_names = []
+
+    Dir.glob("variables/**/*.json").each do |file|
+      if json = JSON.parse(File.read(file)) rescue false
+        @variable_json_ids << json['id']
+      end
+      @variable_file_names << file.split('/').last.to_s.split('.json').first.to_s
+    end
+
+    csvs.each do |csv_file|
+      column_headers = []
+
+      CSV.parse( File.open(csv_file, 'r:iso-8859-1:utf-8'){|f| f.read} ) do |line|
+        column_headers = line
+        break # Only read first line
+      end
+
+      column_headers.each do |column_header|
+
+      end
+
+      @all_column_headers += column_headers
+    end
+
+
+    @all_column_headers
+
+    # puts File.join(File.dirname(__FILE__), '../views/', "")
+
+    coverage_file = File.join(Dir.pwd, 'dd', 'index.html')
+
+    File.open(coverage_file, 'w+') do |file|
+      name = 'index.html'
+      erb_location = File.join(File.dirname(__FILE__), '../views/', "#{name}.erb")
+      file.puts ERB.new(File.read(erb_location)).result(binding)
+    end
+
+    open_command = 'open'  if RUBY_PLATFORM.match(/darwin/) != nil
+    open_command = 'start' if RUBY_PLATFORM.match(/mingw/) != nil
+
+
+    system "#{open_command} #{coverage_file}" if ['start', 'open'].include?(open_command)
+    puts coverage_file
+  end
+
 end
 
 def standard_version
