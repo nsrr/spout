@@ -1,4 +1,4 @@
-## 0.5.0
+## 0.5.0 (February 28, 2014)
 
 ### Enhancement
 - Tests added to check that variables of type choices have specified a domain
