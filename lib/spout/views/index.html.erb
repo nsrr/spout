@@ -38,27 +38,56 @@ body {
 
     <div class="container" style="padding-top:50px">
 
+      <table class="table">
+        <thead>
+          <tr>
+            <th>CSV</th>
+            <th>Coverage</th>
+            <th>Columns</th>
+            <th>Columns Missed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @coverage_results.each do |csv, total_column_count, mapped_column_count| %>
+            <tr>
+              <td><%= csv %></td>
+              <td>
+                <% if total_column_count.to_i > 0 %>
+                  <%= "%0.02f %" % (mapped_column_count * 100.0 / total_column_count) %>
+                <% else %>
+                  <span class="text-muted">---</span>
+                <% end %>
+              </td>
+              <td><%= total_column_count %></td>
+              <td><%= total_column_count - mapped_column_count %> </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+
       <table class="table table-bordered table-hover">
         <thead>
           <tr>
+            <th>CSV</th>
             <th>Dataset Column Header</th>
             <th>JSON File</th>
             <th>Found in Data Dictionary</th>
           </tr>
         </thead>
         <tbody>
-          <% @all_column_headers.each do |column| %>
+          <% @matching_results.each do |csv, column, file_name_test, json_id_test| %>
             <tr>
+              <td><code><%= csv %></code></td>
               <td><%= column %></td>
               <td>
-                <% if @variable_file_names.include?(column) %>
+                <% if file_name_test %>
                   <span class="text-success">File Found</span>
                 <% else %>
                   <span class="text-danger">No JSON File Found, expecting: <code><%= column %>.json</code></span>
                 <% end %>
               </td>
               <td>
-                <% if @variable_json_ids.include?(column) %>
+                <% if json_id_test %>
                   <span class="text-success">JSON ID Found</span>
                 <% else %>
                   <span class="text-danger">No Matching JSON ID</span>

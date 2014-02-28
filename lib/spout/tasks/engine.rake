@@ -46,41 +46,56 @@ namespace :dd do
 
   desc 'Match CSV dataset with JSON repository'
   task :coverage do
-    puts 'MDR'
-    puts Dir.pwd
     puts csvs = Dir.glob("dd/csvs/*.csv")
 
-    @all_column_headers = []
+    all_column_headers = []
 
-    @variable_json_ids = []
-    @variable_file_names = []
+    variable_json_ids = []
+    variable_file_names = []
 
     Dir.glob("variables/**/*.json").each do |file|
       if json = JSON.parse(File.read(file)) rescue false
-        @variable_json_ids << json['id']
+        variable_json_ids << json['id']
       end
-      @variable_file_names << file.split('/').last.to_s.split('.json').first.to_s
+      variable_file_names << file.split('/').last.to_s.split('.json').first.to_s
     end
 
     csvs.each do |csv_file|
+      csv_name = csv_file.split('/').last.to_s
       column_headers = []
 
       CSV.parse( File.open(csv_file, 'r:iso-8859-1:utf-8'){|f| f.read} ) do |line|
-        column_headers = line
+        column_headers = line.collect{|l| [csv_name, l.to_s.downcase]}
         break # Only read first line
       end
 
-      column_headers.each do |column_header|
-
-      end
-
-      @all_column_headers += column_headers
+      all_column_headers += column_headers
     end
 
 
-    @all_column_headers
+    all_column_headers
 
-    # puts File.join(File.dirname(__FILE__), '../views/', "")
+    @matching_results = []
+
+    all_column_headers.each do |csv, column|
+      file_name_test = variable_file_names.include?(column)
+      json_id_test = variable_json_ids.include?(column)
+      # SpoutCoverageResult
+      @matching_results << [ csv, column, file_name_test, json_id_test ]
+    end
+
+    @matching_results.sort!{|a,b| [(a[2] && a[3] ? 1 : 0), a[0].to_s, a[1].to_s] <=> [(b[2] && b[3] ? 1 : 0), b[0].to_s, b[1].to_s]}
+
+    @coverage_results = []
+
+    csvs.each do |csv_file|
+      csv_name = csv_file.split('/').last.to_s
+
+      total_column_count = @matching_results.select{|mr| mr[0] == csv_name}.count
+      mapped_column_count = @matching_results.select{|mr| mr[0] == csv_name and mr[2] and mr[3]}.count
+
+      @coverage_results << [ csv_name, total_column_count, mapped_column_count ]
+    end
 
     coverage_file = File.join(Dir.pwd, 'dd', 'index.html')
 
@@ -92,7 +107,6 @@ namespace :dd do
 
     open_command = 'open'  if RUBY_PLATFORM.match(/darwin/) != nil
     open_command = 'start' if RUBY_PLATFORM.match(/mingw/) != nil
-
 
     system "#{open_command} #{coverage_file}" if ['start', 'open'].include?(open_command)
     puts coverage_file
@@ -235,3 +249,12 @@ end
 def additional_csv_info
   "\n\nFor additional information on specifying CSV column headers before import see:\n\n    " + "https://github.com/sleepepi/spout#generate-a-new-repository-from-an-existing-csv-file".colorize( :light_cyan ) + "\n\n"
 end
+
+
+# class SpoutCoverageResult
+#   attr_accessor :error, :error_message
+
+#   def errored?
+#     error == true
+#   end
+# end

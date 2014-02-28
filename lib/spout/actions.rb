@@ -19,7 +19,7 @@ module Spout
         new_data_dictionary_export(argv)
       when 'hybrid', '-hybrid', '--hybrid', 'y', 'hy', '-y', '-hy'
         new_data_dictionary_export(argv, 'hybrid')
-      when 'dataset', '-dataset', '--dataset', 'd', '-d', 'match', '-match', '--match', 'm', '-m'
+      when 'dataset', '-dataset', '--dataset', 'd', '-d', 'match', '-match', '--match', 'm', '-m', 'coverage', '-coverage', '--coverage', 'c', '-c'
         match_dataset_report(argv)
       else
         help
