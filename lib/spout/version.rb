@@ -1,9 +1,9 @@
 module Spout
   module VERSION #:nodoc:
     MAJOR = 0
-    MINOR = 5
+    MINOR = 6
     TINY = 0
-    BUILD = nil # nil, "pre", "rc", "rc2"
+    BUILD = "pre" # nil, "pre", "rc", "rc2"
 
     STRING = [MAJOR, MINOR, TINY, BUILD].compact.join('.')
   end
