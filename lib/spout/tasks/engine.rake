@@ -48,48 +48,43 @@ namespace :dd do
   task :coverage do
     require 'spout/tests/variable_type_validation'
 
-    puts csvs = Dir.glob("dd/csvs/*.csv")
-
-    all_column_headers = []
-
     choice_variables = []
-    variable_file_names = []
 
     Dir.glob("variables/**/*.json").each do |file|
       if json = JSON.parse(File.read(file)) rescue false
         choice_variables << json['id'] if json['type'] == 'choices'
       end
-      variable_file_names << file.split('/').last.to_s.split('.json').first.to_s
     end
 
-    csvs.each do |csv_file|
-      csv_name = csv_file.split('/').last.to_s
-      column_headers = []
-
-      CSV.parse( File.open(csv_file, 'r:iso-8859-1:utf-8'){|f| f.read} ) do |line|
-        column_headers = line.collect{|l| [csv_name, l.to_s.downcase]}
-        break # Only read first line
-      end
-
-      all_column_headers += column_headers
-    end
-
+    all_column_headers = []
     value_hash = {}
-    row_count = 0
+    csv_names = []
 
-    csvs.each do |csv_file|
-      total_row_count = CSV.readlines(csv_file, 'r:iso-8859-1:utf-8').size - 1
+    Dir.glob("dd/csvs/*.csv").each do |csv_file|
+      csv_name = csv_file.split('/').last.to_s
+      csv_names << csv_name
+      puts "\nParsing: #{csv_name}"
+
+      column_headers = []
+      row_count = 0
+
       CSV.parse( File.open(csv_file, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true ) do |line|
-        puts "ROW: #{row_count+1} of #{total_row_count}"
         row = line.to_hash
+        column_headers = row.collect{|key, val| [csv_name, key.to_s.downcase]} if row_count == 0
+
+        print "." if row_count % 100 == 0
+
         choice_variables.each do |column_name|
           value_hash[column_name] ||= []
           value_hash[column_name] = value_hash[column_name] | [row[column_name]] if row[column_name]
         end
 
         row_count += 1
-        # break if row_count > 100
       end
+
+      print "done\n"
+
+      all_column_headers += column_headers
     end
 
     @matching_results = []
@@ -103,16 +98,14 @@ namespace :dd do
 
     @coverage_results = []
 
-    csvs.each do |csv_file|
-      csv_name = csv_file.split('/').last.to_s
-
+    csv_names.each do |csv_name|
       total_column_count = @matching_results.select{|mr| mr[0] == csv_name}.count
       mapped_column_count = @matching_results.select{|mr| mr[0] == csv_name and mr[2].number_of_errors == 0}.count
-
       @coverage_results << [ csv_name, total_column_count, mapped_column_count ]
     end
 
     coverage_file = File.join(Dir.pwd, 'dd', 'index.html')
+    puts "\nGenerating: index.html\n\n"
 
     File.open(coverage_file, 'w+') do |file|
       name = 'index.html'
@@ -124,7 +117,7 @@ namespace :dd do
     open_command = 'start' if RUBY_PLATFORM.match(/mingw/) != nil
 
     system "#{open_command} #{coverage_file}" if ['start', 'open'].include?(open_command)
-    puts coverage_file
+    puts "#{coverage_file}\n\n"
   end
 
 end
