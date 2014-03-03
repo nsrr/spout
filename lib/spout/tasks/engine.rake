@@ -72,19 +72,40 @@ namespace :dd do
       all_column_headers += column_headers
     end
 
+    value_hash = {}
+    row_count = 0
 
-    all_column_headers
+    csvs.each do |csv_file|
+      CSV.parse( File.open(csv_file, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true ) do |line|
+        row = line.to_hash
+        row.each do |column_name, value|
+          value_hash[column_name] ||= []
+          value_hash[column_name] = value_hash[column_name] | [value]
+        end
+
+        row_count += 1
+        # break if row_count > 10
+      end
+    end
 
     @matching_results = []
 
     all_column_headers.each do |csv, column|
-      file_name_test = variable_file_names.include?(column)
-      json_id_test = variable_json_ids.include?(column)
-      # SpoutCoverageResult
-      @matching_results << [ csv, column, file_name_test, json_id_test ]
+      file = Dir.glob("variables/**/#{column}.json").first
+      valid_values = []
+      variable_type = ''
+      if json = JSON.parse(File.read(file)) rescue false
+        variable_type = json['type']
+        if variable_type == 'choices'
+          valid_values = load_valid_domain_values(json['domain'])
+        end
+      end
+
+      scr = SpoutCoverageResult.new(csv, column, variable_file_names, variable_json_ids, variable_type, valid_values, value_hash[column])
+      @matching_results << [ csv, column, scr ]
     end
 
-    @matching_results.sort!{|a,b| [(a[2] && a[3] ? 1 : 0), a[0].to_s, a[1].to_s] <=> [(b[2] && b[3] ? 1 : 0), b[0].to_s, b[1].to_s]}
+    @matching_results.sort!{|a,b| [b[2].number_of_errors, a[0].to_s, a[1].to_s] <=> [a[2].number_of_errors, b[0].to_s, b[1].to_s]}
 
     @coverage_results = []
 
@@ -92,7 +113,7 @@ namespace :dd do
       csv_name = csv_file.split('/').last.to_s
 
       total_column_count = @matching_results.select{|mr| mr[0] == csv_name}.count
-      mapped_column_count = @matching_results.select{|mr| mr[0] == csv_name and mr[2] and mr[3]}.count
+      mapped_column_count = @matching_results.select{|mr| mr[0] == csv_name and mr[2].number_of_errors == 0}.count
 
       @coverage_results << [ csv_name, total_column_count, mapped_column_count ]
     end
@@ -112,6 +133,45 @@ namespace :dd do
     puts coverage_file
   end
 
+end
+
+def load_valid_domain_values(domain_name)
+  values = []
+  file = Dir.glob("domains/**/#{domain_name}.json").first
+  if json = JSON.parse(File.read(file)) rescue false
+    values = json.collect{|hash| hash['value']}
+  end
+  values
+end
+
+class SpoutCoverageResult
+  attr_accessor :error, :error_message, :file_name_test, :json_id_test, :values_test, :valid_values, :csv_values, :variable_type
+
+  def initialize(csv, column, variable_file_names, variable_json_ids, variable_type, valid_values, csv_values)
+    # puts "Initialize"
+    @file_name_test = variable_file_names.include?(column)
+    @json_id_test = variable_json_ids.include?(column)
+    @variable_type = variable_type
+    @valid_values = valid_values
+    @csv_values = csv_values
+    @values_test = check_values
+  end
+
+  def number_of_errors
+    @file_name_test && @json_id_test && @values_test ? 0 : 1
+  end
+
+  def check_values
+    variable_type != 'choices' || (valid_values | csv_values.compact).size == valid_values.size
+  end
+
+  def errored?
+    error == true
+  end
+end
+
+def number_with_delimiter(number, delimiter = ",")
+  number.to_s.gsub(/(\d)(?=(\d\d\d)+(?!\d))/, "\\1#{delimiter}")
 end
 
 def standard_version
@@ -249,12 +309,3 @@ end
 def additional_csv_info
   "\n\nFor additional information on specifying CSV column headers before import see:\n\n    " + "https://github.com/sleepepi/spout#generate-a-new-repository-from-an-existing-csv-file".colorize( :light_cyan ) + "\n\n"
 end
-
-
-# class SpoutCoverageResult
-#   attr_accessor :error, :error_message
-
-#   def errored?
-#     error == true
-#   end
-# end

@@ -3,6 +3,7 @@
 ### Enhancement
 - Added `spout match` command that generates a coverage report of how well a dataset matches the data dictionary
   - Spout Match generates a viewable report in `dd\index.html` that shows which columns are covered in CSVs located in `dd\csvs`
+  - Spout Match checks that all collected values for a variable with a domain exist in the associated domain
 - **Gem Changes**
   - Updated to colorize 0.6.0
 
