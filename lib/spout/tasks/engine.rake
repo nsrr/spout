@@ -51,11 +51,13 @@ namespace :dd do
     all_column_headers = []
 
     variable_json_ids = []
+    choice_variables = []
     variable_file_names = []
 
     Dir.glob("variables/**/*.json").each do |file|
       if json = JSON.parse(File.read(file)) rescue false
         variable_json_ids << json['id']
+        choice_variables << json['id'] if json['type'] == 'choices'
       end
       variable_file_names << file.split('/').last.to_s.split('.json').first.to_s
     end
@@ -76,11 +78,13 @@ namespace :dd do
     row_count = 0
 
     csvs.each do |csv_file|
+      total_row_count = CSV.readlines(csv_file, 'r:iso-8859-1:utf-8').size - 1
       CSV.parse( File.open(csv_file, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true ) do |line|
+        puts "ROW: #{row_count+1} of #{total_row_count}"
         row = line.to_hash
-        row.each do |column_name, value|
+        choice_variables.each do |column_name|
           value_hash[column_name] ||= []
-          value_hash[column_name] = value_hash[column_name] | [value]
+          value_hash[column_name] = value_hash[column_name] | [row[column_name]] if row[column_name]
         end
 
         row_count += 1
