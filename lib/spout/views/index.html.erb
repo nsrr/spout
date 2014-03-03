@@ -6,7 +6,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="data:image/vnd.microsoft.icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAIAAAAMIAAAAiAAAAAAAAAAAAAAAAAAAARAAAAEEAAAAcAAAAwQAAACEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAADCAAAAIgAAAAAAAAAAAAAAAAAAAEQAAABBAAAAHAAAAMEAAAAhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAwwAAACIAAAAAAAAAAAAAAAAAAABEAAAAQQAAABwAAADBAAAAIQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAAAAKoAAAAeAAAAAAAAAAAAAAAAAAAARAAAAEEAAAAYAAAAqwAAAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAWAAAACAAAAB8AAAAfAAAAAAAAAEQAAABDAAAAAAAAABgAAAAIAAAAHQAAAB0AAAAEAAAAAAAAAAAAAAAAAAAAAAAAABkAAACuAAAArQAAABQAAABCAAAAQwAAAAAAAAAAAAAAGAAAAK0AAACrAAAAFgAAAAAAAAAAAAAAAAAAAAAAAAADAAAAGQAAABkAAAAAAAAARAAAAEMAAAAAAAAAAAAAAAMAAAAZAAAAGQAAAAMAAAAAAAAATAAAAEwAAABOAAAATAAAAEoAAABKAAAASQAAAHwAAAB7AAAASgAAAEwAAABMAAAASgAAAEoAAABMAAAATAAAAFAAAABnAAAA0AAAAGcAAABRAAAAUgAAAE8AAACAAAAAfgAAAE0AAABQAAAAUAAAAFAAAABSAAAAUgAAAFIAAAAAAAAAIAAAAL8AAAAfAAAAAAAAAAAAAAAAAAAARQAAAFkAAAAbAAAAHgAAAB8AAAAbAAAABAAAAAAAAAAAAAAAAAAAACAAAAC/AAAAHwAAAAIAAAAXAAAAAAAAAEgAAADPAAAAwwAAAMMAAADFAAAArAAAABgAAAAAAAAAAAAAAAAAAAAgAAAAvwAAAB4AAAAcAAAAqwAAABkAAABDAAAAWgAAAB0AAAAgAAAAHwAAABsAAAAEAAAAAAAAAAAAAAAAAAAAHAAAAKgAAAAaAAAAIAAAAMMAAAAdAAAAQgAAAEMAAAAAAAAABAAAABsAAAAfAAAAIAAAACEAAAAhAAAAAAAAAAQAAAAXAAAAAgAAACIAAADDAAAAHQAAAEIAAABDAAAAAAAAABkAAACrAAAAwwAAAMIAAADCAAAAwQAAAAAAAAAAAAAAAAAAAAAAAAAiAAAAwwAAAB0AAABCAAAAQwAAAAAAAAAEAAAAHQAAACEAAAAgAAAAIAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAIgAAAMMAAAAdAAAAQgAAAEMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAjg8AAI4PAACODwAAjg8AAIABAADgYQAA4mEAAAAAAAAAAAAAjgMAAIIDAACAAwAAgEAAAIBAAADwQAAA8H8AAA==">
 
-    <title>Spout Dataset and Data Dictionary Coverage</title>
+    <title>Spout Coverage</title>
 
     <!-- Bootstrap core CSS -->
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
@@ -37,6 +37,10 @@ body {
   height: 60px;
   background-color: #f5f5f5;
 }
+code.success {
+  color: #468847;
+  background-color: #dff0d8;
+}
     </style>
   </head>
 
@@ -45,7 +49,7 @@ body {
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">Spout Dataset and Data Dictionary Coverage</a>
+          <a class="navbar-brand" href="#">Spout Coverage</a>
         </div>
       </div>
     </div>
@@ -83,44 +87,57 @@ body {
         <thead>
           <tr>
             <th>CSV</th>
-            <th>Dataset Column Header</th>
+            <th>Column</th>
             <th>JSON File</th>
-            <th>Found in Data Dictionary</th>
+            <th>Variable ID</th>
             <th>Variable Type</th>
+            <th>Variable Domain</th>
             <th>Values</th>
           </tr>
         </thead>
         <tbody>
           <% @matching_results.each do |csv, column, scr| %>
             <tr>
-              <td><code><%= csv %></code></td>
+              <td><code class="<%= 'success' if scr.number_of_errors == 0 %>"><%= csv %></code></td>
               <td><%= column %></td>
               <td>
                 <% if scr.file_name_test %>
-                  <span class="text-success">File Found</span>
+                  <div class="text-success" style="text-align:center"><span class="glyphicon glyphicon-ok"></span></div>
                 <% else %>
-                  <span class="text-danger">No JSON File Found, expecting: <code><%= column %>.json</code></span>
+                  <span class="text-danger"><code><%= column %>.json</code> missing</span>
                 <% end %>
               </td>
               <td>
-                <% if scr.json_id_test %>
-                  <span class="text-success">JSON ID Found</span>
-                <% else %>
-                  <span class="text-danger">No Matching JSON ID</span>
-                  <pre>{
-  "id": "---", ...
-}</pre>
+                <% if scr.file_name_test %>
+                  <% if scr.json_id_test %>
+                    <code class="success">"id": "<%= column %>"</code>
+                  <% else %>
+                    <code>"id": <%= scr.json['id'].inspect %></code>
+                  <% end %>
                 <% end %>
               </td>
-              <td><%= scr.variable_type %></td>
               <td>
-                <% if scr.values_test %>
-                  <span class="text-success">Valid Values</span>
-                <% else %>
-                  VALID: <%= scr.valid_values %><br /><br />
-                  Bad Values:
-                  <% (scr.csv_values.compact - scr.valid_values).each do |value| %>
-                    <code><%= value %></code>
+                <% if scr.file_name_test %>
+                  <code class="<%= 'success' if scr.variable_type_test %>">"type": <%= scr.json['type'].inspect %></code>
+                <% end %>
+              </td>
+              <td>
+                <% if scr.json['type'] == 'choices' and scr.file_name_test %>
+                  <% if scr.domain_test or scr.json['domain'].to_s.strip == '' %>
+                    <code class="<%= 'success' if scr.domain_test %>">"domain": <%= scr.json['domain'].inspect %></code>
+                  <% else %>
+                    <span class="text-danger"><code><%= scr.json['domain'] %>.json</code> missing</span>
+                  <% end %>
+                <% end %>
+              </td>
+              <td>
+                <% if scr.json['type'] == 'choices' %>
+                  <% if scr.values_test %>
+                    <div class="text-success" style="text-align:center"><span class="glyphicon glyphicon-ok"></span></div>
+                  <% else %>
+                    <% (scr.valid_values + scr.csv_values.compact.sort).uniq.each do |value| %>
+                      <code class="<%= 'success' if scr.valid_values.include?(value) %>"><%= value %></code>
+                    <% end %>
                   <% end %>
                 <% end %>
               </td>
@@ -133,7 +150,7 @@ body {
 
     <div id="footer">
       <div class="container">
-        <p class="text-muted" style="margin: 20px 0;">Generated by <a href="https://github.com/sleepepi/spout">Spout v<%= Spout::VERSION::STRING %></a></p>
+        <p class="text-muted" style="margin: 20px 0;">Generated by <a href="https://github.com/sleepepi/spout">Spout</a> v<%= Spout::VERSION::STRING %></p>
       </div>
     </div>
 

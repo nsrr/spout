@@ -46,17 +46,17 @@ namespace :dd do
 
   desc 'Match CSV dataset with JSON repository'
   task :coverage do
+    require 'spout/tests/variable_type_validation'
+
     puts csvs = Dir.glob("dd/csvs/*.csv")
 
     all_column_headers = []
 
-    variable_json_ids = []
     choice_variables = []
     variable_file_names = []
 
     Dir.glob("variables/**/*.json").each do |file|
       if json = JSON.parse(File.read(file)) rescue false
-        variable_json_ids << json['id']
         choice_variables << json['id'] if json['type'] == 'choices'
       end
       variable_file_names << file.split('/').last.to_s.split('.json').first.to_s
@@ -88,24 +88,14 @@ namespace :dd do
         end
 
         row_count += 1
-        # break if row_count > 10
+        # break if row_count > 100
       end
     end
 
     @matching_results = []
 
     all_column_headers.each do |csv, column|
-      file = Dir.glob("variables/**/#{column}.json").first
-      valid_values = []
-      variable_type = ''
-      if json = JSON.parse(File.read(file)) rescue false
-        variable_type = json['type']
-        if variable_type == 'choices'
-          valid_values = load_valid_domain_values(json['domain'])
-        end
-      end
-
-      scr = SpoutCoverageResult.new(csv, column, variable_file_names, variable_json_ids, variable_type, valid_values, value_hash[column])
+      scr = SpoutCoverageResult.new(csv, column, value_hash[column])
       @matching_results << [ csv, column, scr ]
     end
 
@@ -139,34 +129,59 @@ namespace :dd do
 
 end
 
-def load_valid_domain_values(domain_name)
-  values = []
-  file = Dir.glob("domains/**/#{domain_name}.json").first
-  if json = JSON.parse(File.read(file)) rescue false
-    values = json.collect{|hash| hash['value']}
-  end
-  values
-end
-
 class SpoutCoverageResult
-  attr_accessor :error, :error_message, :file_name_test, :json_id_test, :values_test, :valid_values, :csv_values, :variable_type
+  attr_accessor :error, :error_message, :file_name_test, :json_id_test, :values_test, :valid_values, :csv_values, :variable_type_test, :json, :domain_test
 
-  def initialize(csv, column, variable_file_names, variable_json_ids, variable_type, valid_values, csv_values)
-    # puts "Initialize"
-    @file_name_test = variable_file_names.include?(column)
-    @json_id_test = variable_json_ids.include?(column)
-    @variable_type = variable_type
-    @valid_values = valid_values
+  def initialize(csv, column, csv_values)
+    load_json(column)
+    load_valid_values
+
     @csv_values = csv_values
     @values_test = check_values
+    @variable_type_test = check_variable_type
+    @domain_test = check_domain_specified
+  end
+
+  def load_json(column)
+    file = Dir.glob("variables/**/#{column}.json").first
+    @file_name_test = (file != nil)
+    @json = JSON.parse(File.read(file)) rescue @json = {}
+    @json_id_test = (@json['id'].downcase == column)
+  end
+
+  def load_valid_values
+    valid_values = []
+    if @json['type'] == 'choices'
+      file = Dir.glob("domains/**/#{@json['domain']}.json").first
+      if json = JSON.parse(File.read(file)) rescue false
+        valid_values = json.collect{|hash| hash['value']}
+      end
+    end
+    @valid_values = valid_values
   end
 
   def number_of_errors
-    @file_name_test && @json_id_test && @values_test ? 0 : 1
+    @file_name_test && @json_id_test && @values_test && @variable_type_test && @domain_test ? 0 : 1
   end
 
   def check_values
-    variable_type != 'choices' || (valid_values | csv_values.compact).size == valid_values.size
+    @json['type'] != 'choices' || (@valid_values | @csv_values.compact).size == @valid_values.size
+  end
+
+  def check_variable_type
+    Spout::Tests::VariableTypeValidation::VALID_VARIABLE_TYPES.include?(@json['type'])
+  end
+
+  def check_domain_specified
+    if @json['type'] != 'choices'
+      true
+    else
+      domain_file = Dir.glob("domains/**/#{@json['domain']}.json").first
+      if domain_json = JSON.parse(File.read(domain_file)) rescue false
+        return domain_json.kind_of?(Array)
+      end
+      false
+    end
   end
 
   def errored?
