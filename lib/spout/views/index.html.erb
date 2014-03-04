@@ -36,10 +36,19 @@ body {
   /* Set the fixed height of the footer here */
   height: 60px;
   background-color: #f5f5f5;
+  padding: 0px 30px;
 }
 code.success {
   color: #468847;
   background-color: #dff0d8;
+}
+code.default {
+  color: #333;
+  background-color: #f5f5f5;
+}
+tfoot td {
+  vertical-align: middle !important;
+  padding-bottom: 0px !important;
 }
     </style>
   </head>
@@ -47,14 +56,12 @@ code.success {
   <body>
 
     <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">Spout Coverage</a>
-        </div>
+      <div class="navbar-header" style="padding: 0px 30px">
+        <a class="navbar-brand" href="#">Spout Coverage</a>
       </div>
     </div>
 
-    <div class="container" style="padding-top:50px">
+    <div style="padding: 30px 30px 10px 30px;">
 
       <table class="table">
         <thead>
@@ -62,6 +69,7 @@ code.success {
             <th>CSV</th>
             <th>Coverage</th>
             <th>Columns</th>
+            <th>Columns Defined</th>
             <th>Columns Missed</th>
           </tr>
         </thead>
@@ -76,8 +84,9 @@ code.success {
                   <span class="text-muted">---</span>
                 <% end %>
               </td>
-              <td><%= number_with_delimiter( total_column_count ) %></td>
-              <td><%= number_with_delimiter( total_column_count - mapped_column_count ) %></td>
+              <td><code class="default"><%= number_with_delimiter( total_column_count ) %></code></td>
+              <td><code class="success"><%= number_with_delimiter( mapped_column_count ) %></code></td>
+              <td><code><%= number_with_delimiter( total_column_count - mapped_column_count ) %></code></td>
             </tr>
           <% end %>
         </tbody>
@@ -95,6 +104,60 @@ code.success {
             <th>Values</th>
           </tr>
         </thead>
+        <tfoot>
+          <tr>
+            <td style="text-align:middle"><p class="lead">Coverage</p></td>
+            <td style="text-align:middle"><p class="lead"><%= total_count = @matching_results.count %></p></td>
+            <td style="text-align:center">
+              <% matched = @matching_results.count{|csv, column, scr| scr.file_name_test} %>
+              <% matched_percent = (matched * 100.0 / total_count).floor %>
+              <% missing_percent = 100 - matched_percent %>
+              <%= number_with_delimiter( matched ) %> of <%= number_with_delimiter( total_count ) %>
+              <div class="progress progress-striped">
+                <div class="progress-bar progress-bar-success" style="width: <%= matched_percent %>%"></div>
+                <div class="progress-bar progress-bar-danger" style="width: <%= missing_percent %>%"></div>
+              </div>
+            </td>
+            <td style="text-align:center">
+              <% matched = @matching_results.count{|csv, column, scr| scr.json_id_test} %>
+              <% matched_percent = (matched * 100.0 / total_count).floor %>
+              <% missing_percent = 100 - matched_percent %>
+              <%= number_with_delimiter( matched ) %> of <%= number_with_delimiter( total_count ) %>
+              <div class="progress progress-striped">
+                <div class="progress-bar progress-bar-success" style="width: <%= matched_percent %>%"></div>
+                <div class="progress-bar progress-bar-danger" style="width: <%= missing_percent %>%"></div>
+              </div>
+            </td>
+            <td style="text-align:center">
+              <% matched = @matching_results.count{|csv, column, scr| scr.variable_type_test} %>
+              <% matched_percent = (matched * 100.0 / total_count).floor %>
+              <% missing_percent = 100 - matched_percent %>
+              <%= number_with_delimiter( matched ) %> of <%= number_with_delimiter( total_count ) %>
+              <div class="progress progress-striped">
+                <div class="progress-bar progress-bar-success" style="width: <%= matched_percent %>%"></div>
+                <div class="progress-bar progress-bar-danger" style="width: <%= missing_percent %>%"></div>
+              </div>
+            </td>
+            <td style="text-align:center">
+              <% matched = @matching_results.count{|csv, column, scr| scr.json['type'] == 'choices' and scr.domain_test} %>
+              <% total_count = @matching_results.count{|csv, column, scr| scr.json['type'] == 'choices'} %>
+              <% matched_percent = (matched * 100.0 / total_count).floor %>
+              <% missing_percent = 100 - matched_percent %>
+              <%= number_with_delimiter( matched ) %> of <%= number_with_delimiter( total_count ) %>
+              <div class="progress progress-striped">
+                <div class="progress-bar progress-bar-success" style="width: <%= matched_percent %>%"></div>
+                <div class="progress-bar progress-bar-danger" style="width: <%= missing_percent %>%"></div>
+              </div>
+            </td>
+            <td>
+              <ul class="list-unstyled">
+                <li><code class="success">Value exists in dataset, and value exists in domain</code></li>
+                <li><code class="default">Value <b>does not exist</b> in dataset, but value exists in domain</code></li>
+                <li><code>Value exists in dataset, but value <b>does not exist</b> in domain</code></li>
+              </ul>
+            </td>
+          </tr>
+        </tfoot>
         <tbody>
           <% @matching_results.each do |csv, column, scr| %>
             <tr>
@@ -132,11 +195,15 @@ code.success {
               </td>
               <td style="white-space:nowrap">
                 <% if scr.json['type'] == 'choices' %>
-                  <% if scr.values_test %>
+                  <% unused_values = scr.valid_values - scr.csv_values %>
+                  <% if scr.values_test and unused_values.size == 0 %>
                     <div class="text-success" style="text-align:center"><span class="glyphicon glyphicon-ok"></span></div>
                   <% else %>
                     <% (scr.valid_values + scr.csv_values.compact.sort).uniq.each do |value| %>
-                      <code class="<%= 'success' if scr.valid_values.include?(value) %>"><%= value %></code>
+                      <% class_type = '' %>
+                      <% class_type = 'success' if scr.valid_values.include?(value) %>
+                      <% class_type = 'default' if unused_values.include?(value)  %>
+                      <code class="<%= class_type %>"><%= value %></code>
                     <% end %>
                   <% end %>
                 <% end %>
@@ -149,9 +216,7 @@ code.success {
     </div><!-- /.container -->
 
     <div id="footer">
-      <div class="container">
-        <p class="text-muted" style="margin: 20px 0;">Generated by <a href="https://github.com/sleepepi/spout">Spout</a> v<%= Spout::VERSION::STRING %></p>
-      </div>
+      <p class="text-muted" style="margin: 20px 0;">Generated by <a href="https://github.com/sleepepi/spout">Spout</a> v<%= Spout::VERSION::STRING %></p>
     </div>
 
 </body></html>
