@@ -139,7 +139,7 @@ class SpoutCoverageResult
     file = Dir.glob("variables/**/#{column}.json").first
     @file_name_test = (file != nil)
     @json = JSON.parse(File.read(file)) rescue @json = {}
-    @json_id_test = (@json['id'].downcase == column)
+    @json_id_test = (@json['id'].to_s.downcase == column)
   end
 
   def load_valid_values
@@ -263,7 +263,7 @@ def import_variables
     hash['labels'] = labels if labels.size > 0
     hash['other'] = row unless row.empty?
 
-    file_name = File.join(folder, id.downcase + '.json')
+    file_name = File.join(folder, id.to_s.downcase + '.json')
     File.open(file_name, 'w') do |file|
       file.write(JSON.pretty_generate(hash) + "\n")
     end
@@ -308,7 +308,7 @@ def import_domains
     folder = domain_hash["folder"]
     FileUtils.mkpath folder
 
-    file_name = File.join(folder, domain_name.downcase + '.json')
+    file_name = File.join(folder, domain_name.to_s.downcase + '.json')
 
     File.open(file_name, 'w') do |file|
       file.write(JSON.pretty_generate(domain_hash["options"]) + "\n")
