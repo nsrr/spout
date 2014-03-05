@@ -120,6 +120,18 @@ end
 Then run either `spout test` or `bundle exec rake` to run your tests.
 
 
+### Test your data dictionary coverage of your dataset
+
+Spout lets you generate a nice visual coverage report that displays how well the data dictionary covers your dataset. Place your dataset csvs into `./csvs/` and then run the following Spout command:
+
+```
+spout coverage
+```
+
+This will generate an `index.html` file that can be opened and viewed in any browser.
+
+Spout coverage validates that values stored in your dataset match up with variables and domains defined in your data dictionary.
+
 ### Create a CSV Data Dictionary from your JSON repository
 
 Provide an optional version parameter to name the folder the CSVs will be generated in, defaults to what is in `VERSION` file, or if that does not exist `1.0.0`.

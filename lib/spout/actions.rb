@@ -19,8 +19,8 @@ module Spout
         new_data_dictionary_export(argv)
       when 'hybrid', '-hybrid', '--hybrid', 'y', 'hy', '-y', '-hy'
         new_data_dictionary_export(argv, 'hybrid')
-      when 'dataset', '-dataset', '--dataset', 'd', '-d', 'match', '-match', '--match', 'm', '-m', 'coverage', '-coverage', '--coverage', 'c', '-c'
-        match_dataset_report(argv)
+      when 'coverage', '-coverage', '--coverage', 'c', '-c'
+        coverage_report(argv)
       else
         help
       end
@@ -42,7 +42,7 @@ EOT
       def import_from_csv(argv, type = "")
         csv_file = File.join(argv[1].to_s.strip)
         if File.exists?(csv_file)
-          system "bundle exec rake dd:import CSV=#{csv_file} #{'TYPE='+type if type.to_s != ''}"
+          system "bundle exec rake spout:import CSV=#{csv_file} #{'TYPE='+type if type.to_s != ''}"
         else
           puts csv_usage
         end
@@ -55,15 +55,17 @@ Usage: spout COMMAND [ARGS]
 
 The most common spout commands are:
   [n]ew             Create a new Spout dictionary.
-                    "spout new my_dd" creates a new data
-                    dictionary called MyDD in "./my_dd"
+                    `spout new <project_name>` creates a new
+                    data dictionary in `./<project_name>`
   [t]est            Run tests and show failing tests
   [tv]              Run the tests and show passing and failing
                     tests
-  [i]mport          Import a CSV file into the JSON repository
-  [e]xport [1.0.0]  Export the JSON respository to a CSV
- h[y]brid  [1.0.0]  Export the JSON repository in the Hybrid
-                    Dictionary format
+  [i]mport          Import a CSV file into the JSON dictionary
+  [e]xport [1.0.0]  Export the JSON dictionary to a CSV
+ h[y]brid  [1.0.0]  Export the JSON dictionary in the Hybrid
+                    dictionary format
+  [c]overage        Coverage report, requires dataset CSVs
+                    in `<project_name>/csvs/`
   [v]ersion         Returns the version of Spout
 
 Commands can be referenced by the first letter:
@@ -77,7 +79,7 @@ EOT
         version = argv[1].to_s.gsub(/[^a-zA-Z0-9\.-]/, '_').strip
         version_string = (version == '' ? "" : "VERSION=#{version}")
         type_string =  type.to_s == '' ? "" : "TYPE=#{type}"
-        system "bundle exec rake dd:create #{version_string} #{type_string}"
+        system "bundle exec rake spout:create #{version_string} #{type_string}"
       end
 
       def new_template_dictionary(argv)
@@ -114,8 +116,8 @@ EOT
         system "bundle install"
       end
 
-      def match_dataset_report(argv)
-        system "bundle exec rake dd:coverage"
+      def coverage_report(argv)
+        system "bundle exec rake spout:coverage"
       end
 
     private

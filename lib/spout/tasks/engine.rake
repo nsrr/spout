@@ -8,9 +8,9 @@ Rake::TestTask.new do |t|
   t.verbose = true
 end
 
-task :default => :test
+task default: :test
 
-namespace :dd do
+namespace :spout do
   require 'csv'
   require 'fileutils'
   require 'rubygems'
@@ -60,7 +60,7 @@ namespace :dd do
     value_hash = {}
     csv_names = []
 
-    Dir.glob("dd/csvs/*.csv").each do |csv_file|
+    Dir.glob("csvs/*.csv").each do |csv_file|
       csv_name = csv_file.split('/').last.to_s
       csv_names << csv_name
       puts "\nParsing: #{csv_name}"
@@ -104,8 +104,10 @@ namespace :dd do
       @coverage_results << [ csv_name, total_column_count, mapped_column_count ]
     end
 
-    coverage_file = File.join(Dir.pwd, 'dd', 'index.html')
-    puts "\nGenerating: index.html\n\n"
+    coverage_folder = File.join(Dir.pwd, 'coverage')
+    FileUtils.mkpath coverage_folder
+    coverage_file = File.join(coverage_folder, 'index.html')
+    print "\nGenerating: index.html\n\n"
 
     File.open(coverage_file, 'w+') do |file|
       name = 'index.html'
