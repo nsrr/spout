@@ -1,4 +1,4 @@
-## 0.6.0
+## 0.6.0 (March 7, 2014)
 
 ### Enhancement
 - Added `spout coverage` command that generates a coverage report of how well a dataset matches the data dictionary
