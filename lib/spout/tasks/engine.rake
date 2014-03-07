@@ -107,11 +107,11 @@ namespace :spout do
     coverage_folder = File.join(Dir.pwd, 'coverage')
     FileUtils.mkpath coverage_folder
     coverage_file = File.join(coverage_folder, 'index.html')
+
     print "\nGenerating: index.html\n\n"
 
     File.open(coverage_file, 'w+') do |file|
-      name = 'index.html'
-      erb_location = File.join(File.dirname(__FILE__), '../views/', "#{name}.erb")
+      erb_location = File.join( File.dirname(__FILE__), '../views/index.html.erb' )
       file.puts ERB.new(File.read(erb_location)).result(binding)
     end
 
