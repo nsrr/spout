@@ -122,6 +122,12 @@ namespace :spout do
     puts "#{coverage_file}\n\n"
   end
 
+  desc 'Match CSV dataset with JSON repository'
+  task :graphs do
+    require 'spout/commands/graphs'
+    Spout::Commands::Graphs.new()
+  end
+
 end
 
 class SpoutCoverageResult

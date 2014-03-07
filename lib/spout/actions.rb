@@ -21,6 +21,8 @@ module Spout
         new_data_dictionary_export(argv, 'hybrid')
       when 'coverage', '-coverage', '--coverage', 'c', '-c'
         coverage_report(argv)
+      when 'graphs', '-graphs', '--graphs', 'g', '-g'
+        generate_graphs(argv)
       else
         help
       end
@@ -66,6 +68,9 @@ The most common spout commands are:
                     dictionary format
   [c]overage        Coverage report, requires dataset CSVs
                     in `<project_name>/csvs/`
+  [g]raphs          Generates graphs for each variable in a
+                    dataset and places them
+                    in `<project_name>/graphs/`
   [v]ersion         Returns the version of Spout
 
 Commands can be referenced by the first letter:
@@ -118,6 +123,10 @@ EOT
 
       def coverage_report(argv)
         system "bundle exec rake spout:coverage"
+      end
+
+      def generate_graphs(argv)
+        system "bundle exec rake spout:graphs"
       end
 
     private

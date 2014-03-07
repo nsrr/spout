@@ -1,5 +1,8 @@
 ## 0.7.0
 
+### Enhancements
+- Added `spout graphs` command that generates pie charts and histograms of each variable in a dataset
+
 ## 0.6.0 (March 7, 2014)
 
 ### Enhancement

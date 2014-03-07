@@ -146,6 +146,17 @@ You can optionally provide a version string
 spout export [1.0.0]
 ```
 
+### Generate graphs for data in your dataset
+
+Spout lets you generate graphs for each variable defined in your dataset. Make sure to run `spout coverage` first to validate that your data dictionary and dataset match.
+
+This command will take some time, and requires [PhantomJS](http://phantomjs.org/) to be installed on your system.
+
+```
+spout graphs
+```
+
+Generated graphs will be placed in: `./graphs/`
 
 ### Export to the Hybrid Data Dictionary format from your JSON repository
 
