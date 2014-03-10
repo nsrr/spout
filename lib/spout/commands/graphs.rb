@@ -13,7 +13,9 @@ module Spout
 
         last_completed = 0
 
-        tmp_options_file = File.join( 'graphs', 'options.json' )
+        options_folder = 'graphs'
+        FileUtils.mkpath( options_folder )
+        tmp_options_file = File.join( options_folder, 'options.json' )
 
         Dir.glob("csvs/*.csv").each do |csv_file|
           puts "Working on: #{csv_file}"
