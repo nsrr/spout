@@ -125,7 +125,10 @@ namespace :spout do
   desc 'Match CSV dataset with JSON repository'
   task :graphs do
     require 'spout/commands/graphs'
-    Spout::Commands::Graphs.new()
+    types         = ENV['types'].to_s.split(',').collect{|t| t.to_s.downcase}
+    variable_ids  = ENV['variable_ids'].to_s.split(',').collect{|vid| vid.to_s.downcase}
+    sizes         = ENV['sizes'].to_s.split(',').collect{|s| s.to_s.downcase}
+    Spout::Commands::Graphs.new(types, variable_ids, sizes)
   end
 
 end

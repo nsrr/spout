@@ -156,7 +156,19 @@ This command will take some time, and requires [PhantomJS](http://phantomjs.org/
 spout graphs
 ```
 
-Generated graphs will be placed in: `./graphs/`
+The following flags can be passed to the `spout graphs` command:
+
+- `spout g --type-numeric`
+- `spout g --type-integer`
+- `spout g --type-choices`
+- `spout g --size-lg`
+- `spout g --size-sm`
+- `spout g --type-numeric --size-sm`
+
+For specific variables the following can be used:
+  - `spout g --id-<variable_id>`
+
+Generated graphs are placed in: `./graphs/`
 
 ### Export to the Hybrid Data Dictionary format from your JSON repository
 

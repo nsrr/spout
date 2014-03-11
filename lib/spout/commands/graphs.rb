@@ -7,7 +7,7 @@ module Spout
   module Commands
     class Graphs
 
-      def initialize
+      def initialize(types, variable_ids, sizes)
 
         total_index_count = Dir.glob("variables/**/*.json").count
 
@@ -20,7 +20,7 @@ module Spout
         Dir.glob("csvs/*.csv").each do |csv_file|
           puts "Working on: #{csv_file}"
           t = Time.now
-          csv_table = CSV.table(csv_file,  encoding: 'iso-8859-1').by_col!
+          csv_table = CSV.table(csv_file, encoding: 'iso-8859-1').by_col!
           puts "Loaded #{csv_file} in #{Time.now - t} seconds."
 
           total_header_count = csv_table.headers.count
@@ -30,6 +30,8 @@ module Spout
               json = JSON.parse(File.read(variable_file)) rescue json = nil
               next unless json
               next unless ["choices", "numeric", "integer"].include?(json["type"])
+              next unless types.size == 0 or types.include?(json['type'])
+              next unless variable_ids.size == 0 or variable_ids.include?(json['id'].to_s.downcase)
 
               basename = File.basename(variable_file).gsub(/\.json$/, '').downcase
               col_data = csv_table[header]
@@ -40,14 +42,14 @@ module Spout
                 next unless domain_json
 
                 create_pie_chart_options_file(col_data, tmp_options_file, domain_json)
-              when "numeric", "integer"
+              when 'numeric', 'integer'
                 create_line_chart_options_file(col_data, tmp_options_file, json["units"])
               else
                 next
               end
 
-              run_phantom_js("#{basename}-lg.png", 600, tmp_options_file)
-              run_phantom_js("#{basename}.png",     75, tmp_options_file)
+              run_phantom_js("#{basename}-lg.png", 600, tmp_options_file) if sizes.size == 0 or sizes.include?('lg')
+              run_phantom_js("#{basename}.png",     75, tmp_options_file) if sizes.size == 0 or sizes.include?('sm')
             end
           end
         end

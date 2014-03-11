@@ -2,6 +2,15 @@
 
 ### Enhancements
 - Added `spout graphs` command that generates pie charts and histograms of each variable in a dataset
+  - The following flags are available:
+    - `spout g --type-numeric`
+    - `spout g --type-integer`
+    - `spout g --type-choices`
+    - `spout g --size-lg`
+    - `spout g --size-sm`
+    - `spout g --type-numeric --size-sm`
+  - For specific variables the following can be used:
+    - `spout g --id-<variable_id>`
 
 ## 0.6.0 (March 7, 2014)
 

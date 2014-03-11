@@ -22,7 +22,7 @@ module Spout
       when 'coverage', '-coverage', '--coverage', 'c', '-c'
         coverage_report(argv)
       when 'graphs', '-graphs', '--graphs', 'g', '-g'
-        generate_graphs(argv)
+        generate_graphs(argv.last(argv.size - 1))
       else
         help
       end
@@ -125,8 +125,19 @@ EOT
         system "bundle exec rake spout:coverage"
       end
 
-      def generate_graphs(argv)
-        system "bundle exec rake spout:graphs"
+      def flag_values(flags, param)
+        flags.select{|f| f[0..((param.size + 3) - 1)] == "--#{param}-" and f.length > param.size + 3}.collect{|f| f[(param.size + 3)..-1]}
+      end
+
+      def generate_graphs(flags)
+        params = {}
+        params['types']        = flag_values(flags, 'type')
+        params['variable_ids'] = flag_values(flags, 'id')
+        params['sizes']        = flag_values(flags, 'size')
+
+        params_string = params.collect{|key, values| "#{key}=#{values.join(',')}"}.join(' ')
+
+        system "bundle exec rake spout:graphs #{params_string}"
       end
 
     private
