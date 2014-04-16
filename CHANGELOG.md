@@ -1,5 +1,9 @@
 ## 0.8.0
 
+### Enhancements
+- **Gem Changes**
+  - Updated to colorize 0.7.2
+
 ## 0.7.0 (April 16, 2014)
 
 ### Enhancements
