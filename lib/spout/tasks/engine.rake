@@ -123,19 +123,19 @@ namespace :spout do
   end
 
   desc 'Match CSV dataset with JSON repository'
-  task :graphs do
-    require 'spout/commands/graphs'
+  task :images do
+    require 'spout/commands/images'
     types         = ENV['types'].to_s.split(',').collect{|t| t.to_s.downcase}
     variable_ids  = ENV['variable_ids'].to_s.split(',').collect{|vid| vid.to_s.downcase}
     sizes         = ENV['sizes'].to_s.split(',').collect{|s| s.to_s.downcase}
-    Spout::Commands::Graphs.new(types, variable_ids, sizes)
+    Spout::Commands::Images.new(types, variable_ids, sizes, standard_version)
   end
 
   desc 'Generate JSON charts and tables'
   task :json do
     require 'spout/commands/json_charts_and_tables'
     variables = ENV['variables'].to_s.split(',').collect{|s| s.to_s.downcase}
-    Spout::Commands::JsonChartsAndTables.new(variables)
+    Spout::Commands::JsonChartsAndTables.new(variables, standard_version)
   end
 
 end

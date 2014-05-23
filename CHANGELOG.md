@@ -1,7 +1,7 @@
 ## 0.8.0
 
 ### Enhancements
-- Added `spout json` command that generates JSON charts and tables of each variable in a dataset
+- Added `spout graphs` command that generates JSON charts and tables of each variable in a dataset
   - This command requires a .spout.yml file to be specified to identify the following variables:
     - `visit`: This variable is used to separate subject encounters in a histogram
     - `charts`: Array of choices, numeric, or integer variables for charts
@@ -12,16 +12,16 @@
 ## 0.7.0 (April 16, 2014)
 
 ### Enhancements
-- Added `spout graphs` command that generates pie charts and histograms of each variable in a dataset
+- Added `spout pngs` command that generates pie charts and histograms of each variable in a dataset
   - The following flags are available:
-    - `spout g --type-numeric`
-    - `spout g --type-integer`
-    - `spout g --type-choices`
-    - `spout g --size-lg`
-    - `spout g --size-sm`
-    - `spout g --type-numeric --size-sm`
+    - `spout p --type-numeric`
+    - `spout p --type-integer`
+    - `spout p --type-choices`
+    - `spout p --size-lg`
+    - `spout p --size-sm`
+    - `spout p --type-numeric --size-sm`
   - For specific variables the following can be used:
-    - `spout g --id-<variable_id>`
+    - `spout p --id-<variable_id>`
 
 ## 0.6.0 (March 7, 2014)
 

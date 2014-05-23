@@ -146,35 +146,35 @@ You can optionally provide a version string
 spout export [1.0.0]
 ```
 
-### Generate graphs for data in your dataset
+### Generate images for data in your dataset
 
-Spout lets you generate graphs for each variable defined in your dataset. Make sure to run `spout coverage` first to validate that your data dictionary and dataset match.
+Spout lets you generate images for each variable defined in your dataset. Make sure to run `spout coverage` first to validate that your data dictionary and dataset match.
 
 This command will take some time, and requires [PhantomJS](http://phantomjs.org/) to be installed on your system.
 
 ```
-spout graphs
+spout pngs
 ```
 
-The following flags can be passed to the `spout graphs` command:
+The following flags can be passed to the `spout pngs` command:
 
-- `spout g --type-numeric`
-- `spout g --type-integer`
-- `spout g --type-choices`
-- `spout g --size-lg`
-- `spout g --size-sm`
-- `spout g --type-numeric --size-sm`
+- `spout p --type-numeric`
+- `spout p --type-integer`
+- `spout p --type-choices`
+- `spout p --size-lg`
+- `spout p --size-sm`
+- `spout p --type-numeric --size-sm`
 
 For specific variables the following can be used:
-  - `spout g --id-<variable_id>`
+  - `spout p --id-<variable_id>`
 
-Generated graphs are placed in: `./graphs/`
+Generated images are placed in: `./images/`
 
 
 ### Generate charts and tables for data in your dataset
 
 ```
-spout json
+spout graphs
 ```
 
 This command generates JSON charts and tables of each variable in a dataset
@@ -193,6 +193,23 @@ charts:
   - gender
   - race
 ```
+
+To only generate graphs for a few select variables, add the variable names after the `spout graphs` command.
+
+For example, the command below will only generate graphs for the two variables `ahi` and `bmi`.
+
+```
+spout g ahi bmi
+```
+
+You can also specify a limit to the amount of rows to read in from the CSV files by specifying the `-rows` flag
+
+```
+spout -rows=10 ahi
+```
+
+This will generate a graph for ahi for the first 10 rows of each dataset CSV.
+
 
 This will generate charts and tables for each variable in the dataset plotted against the variables listed under `charts`.
 

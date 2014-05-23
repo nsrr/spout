@@ -21,9 +21,9 @@ module Spout
         new_data_dictionary_export(argv, 'hybrid')
       when 'coverage', '-coverage', '--coverage', 'c', '-c'
         coverage_report(argv)
+      when 'pngs', '-pngs', '--pngs', 'p', '-p'
+        generate_images(argv.last(argv.size - 1))
       when 'graphs', '-graphs', '--graphs', 'g', '-g'
-        generate_graphs(argv.last(argv.size - 1))
-      when 'json', 'j'
         generate_charts_and_tables(argv.last(argv.size - 1))
       else
         help
@@ -70,9 +70,12 @@ The most common spout commands are:
                     dictionary format
   [c]overage        Coverage report, requires dataset CSVs
                     in `<project_name>/csvs/`
-  [g]raphs          Generates graphs for each variable in a
+  [i]mages          Generates images for each variable in a
                     dataset and places them
-                    in `<project_name>/graphs/`
+                    in `<project_name>/images/<version>/`
+  [g]raphs          Generates JSON graphs for each variable
+                    in a dataset and places them
+                    in `<project_name>/graphs/<version>/`
   [v]ersion         Returns the version of Spout
 
 Commands can be referenced by the first letter:
@@ -131,7 +134,7 @@ EOT
         flags.select{|f| f[0..((param.size + 3) - 1)] == "--#{param}-" and f.length > param.size + 3}.collect{|f| f[(param.size + 3)..-1]}
       end
 
-      def generate_graphs(flags)
+      def generate_images(flags)
         params = {}
         params['types']        = flag_values(flags, 'type')
         params['variable_ids'] = flag_values(flags, 'id')
@@ -139,7 +142,7 @@ EOT
 
         params_string = params.collect{|key, values| "#{key}=#{values.join(',')}"}.join(' ')
 
-        system "bundle exec rake spout:graphs #{params_string}"
+        system "bundle exec rake spout:images #{params_string}"
       end
 
       def generate_charts_and_tables(variables)

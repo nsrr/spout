@@ -5,19 +5,19 @@ require 'json'
 
 module Spout
   module Commands
-    class Graphs
+    class Images
 
-      def initialize(types, variable_ids, sizes)
-
+      def initialize(types, variable_ids, sizes, standard_version)
+        @standard_version = standard_version
         total_index_count = Dir.glob("variables/**/*.json").count
 
         last_completed = 0
 
-        options_folder = 'graphs'
+        options_folder = "images/#{@standard_version}"
         FileUtils.mkpath( options_folder )
         tmp_options_file = File.join( options_folder, 'options.json' )
 
-        Dir.glob("csvs/*.csv").each do |csv_file|
+        Dir.glob("csvs/#{standard_version}/*.csv").each do |csv_file|
           puts "Working on: #{csv_file}"
           t = Time.now
           csv_table = CSV.table(csv_file, encoding: 'iso-8859-1').by_col!
@@ -163,7 +163,7 @@ module Spout
       end
 
       def run_phantom_js(png_name, width, tmp_options_file)
-        graph_path = File.join(Dir.pwd, 'graphs', png_name)
+        graph_path = File.join(Dir.pwd, 'images', @standard_version, png_name)
         directory = File.join( File.dirname(__FILE__), '..', 'support', 'javascripts' )
 
         open_command = if RUBY_PLATFORM.match(/mingw/) != nil

@@ -13,7 +13,9 @@ require 'spout/helpers/chart_types'
 module Spout
   module Commands
     class JsonChartsAndTables
-      def initialize(variables)
+      def initialize(variables, standard_version)
+        @standard_version = standard_version
+
         spout_config = YAML.load_file('.spout.yml')
 
         _visit = ''
@@ -70,13 +72,11 @@ module Spout
         t = Time.now
 
 
-        version = standard_version
-
         subjects = []
 
-        FileUtils.mkpath "charts/#{version}"
+        FileUtils.mkpath "graphs/#{@standard_version}"
 
-        csv_files = Dir.glob("csvs/#{version}/*.csv")
+        csv_files = Dir.glob("csvs/#{@standard_version}/*.csv")
 
         csv_files.each_with_index do |csv_file, index|
           count = 0
@@ -163,7 +163,7 @@ module Spout
             end
           end
 
-          chart_json_file = File.join('charts', version, "#{json['id']}.json")
+          chart_json_file = File.join('graphs', @standard_version, "#{json['id']}.json")
           File.open(chart_json_file, 'w') { |file| file.write( JSON.pretty_generate(stats) + "\n" ) }
 
         end
@@ -178,12 +178,6 @@ module Spout
         @visits ||= begin
           Spout::Commands::JsonChartsAndTables::domain_array(@visit)
         end
-      end
-
-      # This is directly from Spout
-      def self.standard_version
-        version = File.open('VERSION', &:readline).strip rescue ''
-        version == '' ? '1.0.0' : version
       end
 
       def self.domain_array(variable_name)
