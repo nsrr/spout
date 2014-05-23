@@ -3,6 +3,7 @@
 ### Enhancements
 - **Gem Changes**
   - Updated to colorize 0.7.2
+- Use of Ruby 2.1.2 is now recommended
 
 ## 0.7.0 (April 16, 2014)
 
