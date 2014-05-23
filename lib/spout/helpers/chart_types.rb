@@ -188,7 +188,7 @@ module Spout
 
       def self.chart_arbitrary_choices(chart_type, subjects, json, method)
         return unless chart_variable_json = get_variable(chart_type)
-        return unless chart_variable_domain = Spout::Commands::JsonChartsAndTables::domain_array(chart_type)
+        return unless chart_variable_domain = Spout::Commands::Graphs::domain_array(chart_type)
         return unless domain_json = get_domain(json)
 
 
@@ -213,7 +213,7 @@ module Spout
 
       def self.chart_arbitrary(chart_type, subjects, json, method, visits)
         return unless chart_variable_json = get_variable(chart_type)
-        return unless chart_variable_domain = Spout::Commands::JsonChartsAndTables::domain_array(chart_type)
+        return unless chart_variable_domain = Spout::Commands::Graphs::domain_array(chart_type)
         return chart_arbitrary_by_quartile(chart_type, subjects, json, method, visits) if ['numeric', 'integer'].include?(chart_variable_json['type'])
 
         return chart_arbitrary_choices(chart_type, subjects, json, method) if json['type'] == 'choices'
@@ -248,7 +248,7 @@ module Spout
 
       def self.table_arbitrary(chart_type, subjects, json, method, subtitle = nil)
         return unless chart_variable_json = get_variable(chart_type)
-        return unless chart_variable_domain = Spout::Commands::JsonChartsAndTables::domain_array(chart_type)
+        return unless chart_variable_domain = Spout::Commands::Graphs::domain_array(chart_type)
         return table_arbitrary_by_quartile(chart_type, subjects, json, method, subtitle) if ['numeric', 'integer'].include?(chart_variable_json['type'])
         return table_arbitrary_choices(chart_type, subjects, json, method, subtitle) if json['type'] == 'choices'
 
@@ -284,7 +284,7 @@ module Spout
 
       def self.table_arbitrary_choices(chart_type, subjects, json, method, subtitle)
         return unless chart_variable_json = get_variable(chart_type)
-        return unless chart_variable_domain = Spout::Commands::JsonChartsAndTables::domain_array(chart_type)
+        return unless chart_variable_domain = Spout::Commands::Graphs::domain_array(chart_type)
         return unless domain_json = get_domain(json)
 
         headers = [
@@ -330,7 +330,7 @@ module Spout
       def self.chart_histogram_choices(chart_type, subjects, json, method)
         return unless domain_json = get_domain(json)
         return unless chart_variable_json = get_variable(chart_type)
-        return unless chart_variable_domain = Spout::Commands::JsonChartsAndTables::domain_array(chart_type)
+        return unless chart_variable_domain = Spout::Commands::Graphs::domain_array(chart_type)
 
 
         title = "#{json['display_name']}"
@@ -360,7 +360,7 @@ module Spout
       def self.chart_histogram(chart_type, subjects, json, method)
         return chart_histogram_choices(chart_type, subjects, json, method) if json['type'] == 'choices'
         return unless chart_variable_json = get_variable(chart_type)
-        return unless chart_variable_domain = Spout::Commands::JsonChartsAndTables::domain_array(chart_type)
+        return unless chart_variable_domain = Spout::Commands::Graphs::domain_array(chart_type)
 
         title = "#{json['display_name']}"
         subtitle = "By Visit"

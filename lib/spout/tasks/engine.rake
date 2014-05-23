@@ -133,9 +133,9 @@ namespace :spout do
 
   desc 'Generate JSON charts and tables'
   task :json do
-    require 'spout/commands/json_charts_and_tables'
+    require 'spout/commands/graphs'
     variables = ENV['variables'].to_s.split(',').collect{|s| s.to_s.downcase}
-    Spout::Commands::JsonChartsAndTables.new(variables, standard_version)
+    Spout::Commands::Graphs.new(variables, standard_version)
   end
 
 end
