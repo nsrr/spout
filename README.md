@@ -170,6 +170,33 @@ For specific variables the following can be used:
 
 Generated graphs are placed in: `./graphs/`
 
+
+### Generate charts and tables for data in your dataset
+
+```
+spout json
+```
+
+This command generates JSON charts and tables of each variable in a dataset
+
+Requires a Spout YAML configuration file, `.spout.yml`, in the root of the data dictionary that defines the variables used to create the charts:
+
+- `visit`: This variable is used to separate subject encounters in a histogram
+- `charts`: Array of choices, numeric, or integer variables for charts
+
+Example `.spout.yml` file:
+
+```yml
+visit: visitnumber
+charts:
+  - age
+  - gender
+  - race
+```
+
+This will generate charts and tables for each variable in the dataset plotted against the variables listed under `charts`.
+
+
 ### Export to the Hybrid Data Dictionary format from your JSON repository
 
 Exporting to a format compatible with [Hybrid](https://github.com/sleepepi/hybrid) is also available.

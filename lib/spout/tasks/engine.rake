@@ -131,6 +131,13 @@ namespace :spout do
     Spout::Commands::Graphs.new(types, variable_ids, sizes)
   end
 
+  desc 'Generate JSON charts and tables'
+  task :json do
+    require 'spout/commands/json_charts_and_tables'
+    variables = ENV['variables'].to_s.split(',').collect{|s| s.to_s.downcase}
+    Spout::Commands::JsonChartsAndTables.new(variables)
+  end
+
 end
 
 class SpoutCoverageResult

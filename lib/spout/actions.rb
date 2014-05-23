@@ -23,6 +23,8 @@ module Spout
         coverage_report(argv)
       when 'graphs', '-graphs', '--graphs', 'g', '-g'
         generate_graphs(argv.last(argv.size - 1))
+      when 'json', 'j'
+        generate_charts_and_tables(argv.last(argv.size - 1))
       else
         help
       end
@@ -138,6 +140,10 @@ EOT
         params_string = params.collect{|key, values| "#{key}=#{values.join(',')}"}.join(' ')
 
         system "bundle exec rake spout:graphs #{params_string}"
+      end
+
+      def generate_charts_and_tables(variables)
+        system "bundle exec rake spout:json variables=#{variables.join(',')}"
       end
 
     private

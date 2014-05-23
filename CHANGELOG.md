@@ -1,6 +1,10 @@
 ## 0.8.0
 
 ### Enhancements
+- Added `spout json` command that generates JSON charts and tables of each variable in a dataset
+  - This command requires a .spout.yml file to be specified to identify the following variables:
+    - `visit`: This variable is used to separate subject encounters in a histogram
+    - `charts`: Array of choices, numeric, or integer variables for charts
 - **Gem Changes**
   - Updated to colorize 0.7.2
 - Use of Ruby 2.1.2 is now recommended
