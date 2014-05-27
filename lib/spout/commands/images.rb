@@ -17,7 +17,7 @@ module Spout
 
         @valid_ids = variable_ids
 
-        @number_of_rows = 10
+        @number_of_rows = nil
 
         spout_config = YAML.load_file('.spout.yml')
 
