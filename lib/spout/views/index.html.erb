@@ -116,7 +116,7 @@ tfoot td {
               <td style="text-align:middle"><p class="lead">Coverage</p></td>
               <td style="text-align:middle"><p class="lead"><%= total_count = @matching_results.count %></p></td>
               <td style="text-align:center">
-                <% matched = @matching_results.count{|csv, column, scr| scr.file_name_test} %>
+                <% matched = @matching_results.count{|csv_files, column, scr| scr.file_name_test} %>
                 <% matched_percent = (total_count == 0 ? 0 : (matched * 100.0 / total_count).floor) %>
                 <% missing_percent = 100 - matched_percent %>
                 <%= number_with_delimiter( matched ) %> of <%= number_with_delimiter( total_count ) %>
@@ -126,7 +126,7 @@ tfoot td {
                 </div>
               </td>
               <td style="text-align:center">
-                <% matched = @matching_results.count{|csv, column, scr| scr.json_id_test} %>
+                <% matched = @matching_results.count{|csv_files, column, scr| scr.json_id_test} %>
                 <% matched_percent = (total_count == 0 ? 0 : (matched * 100.0 / total_count).floor) %>
                 <% missing_percent = 100 - matched_percent %>
                 <%= number_with_delimiter( matched ) %> of <%= number_with_delimiter( total_count ) %>
@@ -136,7 +136,7 @@ tfoot td {
                 </div>
               </td>
               <td style="text-align:center">
-                <% matched = @matching_results.count{|csv, column, scr| scr.variable_type_test} %>
+                <% matched = @matching_results.count{|csv_files, column, scr| scr.variable_type_test} %>
                 <% matched_percent = (total_count == 0 ? 0 : (matched * 100.0 / total_count).floor) %>
                 <% missing_percent = 100 - matched_percent %>
                 <%= number_with_delimiter( matched ) %> of <%= number_with_delimiter( total_count ) %>
@@ -146,8 +146,8 @@ tfoot td {
                 </div>
               </td>
               <td style="text-align:center">
-                <% matched = @matching_results.count{|csv, column, scr| scr.json['type'] == 'choices' and scr.domain_test} %>
-                <% total_count = @matching_results.count{|csv, column, scr| scr.json['type'] == 'choices'} %>
+                <% matched = @matching_results.count{|csv_files, column, scr| scr.json['type'] == 'choices' and scr.domain_test} %>
+                <% total_count = @matching_results.count{|csv_files, column, scr| scr.json['type'] == 'choices'} %>
                 <% matched_percent = (total_count == 0 ? 0 : (matched * 100.0 / total_count).floor) %>
                 <% missing_percent = 100 - matched_percent %>
                 <%= number_with_delimiter( matched ) %> of <%= number_with_delimiter( total_count ) %>
@@ -166,9 +166,13 @@ tfoot td {
             </tr>
           </tfoot>
           <tbody>
-            <% @matching_results.each do |csv, column, scr| %>
+            <% @matching_results.each do |csv_files, column, scr| %>
               <tr>
-                <td><code class="<%= 'success' if scr.number_of_errors == 0 %>"><%= csv %></code></td>
+                <td>
+                  <% csv_files.each do |csv_file| %>
+                    <code class="<%= 'success' if scr.number_of_errors == 0 %>"><%= csv_file %><code><br />
+                  <% end %>
+                </td>
                 <td><%= column %></td>
                 <td>
                   <% if scr.file_name_test %>

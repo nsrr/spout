@@ -5,6 +5,7 @@ module Spout
   module Helpers
     class SubjectLoader
       attr_accessor :subjects
+      attr_reader :all_methods
 
       def initialize(variable_files, valid_ids, standard_version, number_of_rows, visit)
         @subjects = []
@@ -13,6 +14,7 @@ module Spout
         @standard_version = standard_version
         @number_of_rows = number_of_rows
         @visit = visit
+        @all_methods = {}
       end
 
       def load_subjects_from_csvs!
@@ -39,6 +41,8 @@ module Spout
                 unless t.respond_to?(key)
                   t.class.send(:define_method, "#{key}") { instance_variable_get("@#{key}") }
                   t.class.send(:define_method, "#{key}=") { |value| instance_variable_set("@#{key}", value) }
+                  all_methods[key] ||= []
+                  all_methods[key] << csv_file
                 end
 
                 unless value == nil

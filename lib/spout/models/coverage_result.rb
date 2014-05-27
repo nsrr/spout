@@ -5,7 +5,7 @@ module Spout
     class CoverageResult
       attr_accessor :error, :error_message, :file_name_test, :json_id_test, :values_test, :valid_values, :csv_values, :variable_type_test, :json, :domain_test
 
-      def initialize(csv, column, csv_values)
+      def initialize(column, csv_values)
         load_json(column)
         load_valid_values
 
