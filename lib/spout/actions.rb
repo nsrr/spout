@@ -70,7 +70,7 @@ The most common spout commands are:
                     dictionary format
   [c]overage        Coverage report, requires dataset CSVs
                     in `<project_name>/csvs/`
-  [i]mages          Generates images for each variable in a
+  [p]ngs            Generates images for each variable in a
                     dataset and places them
                     in `<project_name>/images/<version>/`
   [g]raphs          Generates JSON graphs for each variable

@@ -5,6 +5,7 @@
   - This command requires a .spout.yml file to be specified to identify the following variables:
     - `visit`: This variable is used to separate subject encounters in a histogram
     - `charts`: Array of choices, numeric, or integer variables for charts
+- The `spout pngs` command now renders the histogram form for each variable
 - **Gem Changes**
   - Updated to colorize 0.7.2
 - Use of Ruby 2.1.2 is now recommended
