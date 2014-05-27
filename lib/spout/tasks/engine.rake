@@ -46,80 +46,8 @@ namespace :spout do
 
   desc 'Match CSV dataset with JSON repository'
   task :coverage do
-    require 'spout/tests/variable_type_validation'
-
-    choice_variables = []
-
-    Dir.glob("variables/**/*.json").each do |file|
-      if json = JSON.parse(File.read(file)) rescue false
-        choice_variables << json['id'] if json['type'] == 'choices'
-      end
-    end
-
-    all_column_headers = []
-    value_hash = {}
-    csv_names = []
-
-    Dir.glob("csvs/*.csv").each do |csv_file|
-      csv_name = csv_file.split('/').last.to_s
-      csv_names << csv_name
-      puts "\nParsing: #{csv_name}"
-
-      column_headers = []
-      row_count = 0
-
-      CSV.parse( File.open(csv_file, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true ) do |line|
-        row = line.to_hash
-        column_headers = row.collect{|key, val| [csv_name, key.to_s.downcase]} if row_count == 0
-
-        print "." if row_count % 100 == 0
-
-        choice_variables.each do |column_name|
-          value_hash[column_name] ||= []
-          value_hash[column_name] = value_hash[column_name] | [row[column_name]] if row[column_name]
-        end
-
-        row_count += 1
-      end
-
-      print "done\n"
-
-      all_column_headers += column_headers
-    end
-
-    @matching_results = []
-
-    all_column_headers.each do |csv, column|
-      scr = SpoutCoverageResult.new(csv, column, value_hash[column])
-      @matching_results << [ csv, column, scr ]
-    end
-
-    @matching_results.sort!{|a,b| [b[2].number_of_errors, a[0].to_s, a[1].to_s] <=> [a[2].number_of_errors, b[0].to_s, b[1].to_s]}
-
-    @coverage_results = []
-
-    csv_names.each do |csv_name|
-      total_column_count = @matching_results.select{|mr| mr[0] == csv_name}.count
-      mapped_column_count = @matching_results.select{|mr| mr[0] == csv_name and mr[2].number_of_errors == 0}.count
-      @coverage_results << [ csv_name, total_column_count, mapped_column_count ]
-    end
-
-    coverage_folder = File.join(Dir.pwd, 'coverage')
-    FileUtils.mkpath coverage_folder
-    coverage_file = File.join(coverage_folder, 'index.html')
-
-    print "\nGenerating: index.html\n\n"
-
-    File.open(coverage_file, 'w+') do |file|
-      erb_location = File.join( File.dirname(__FILE__), '../views/index.html.erb' )
-      file.puts ERB.new(File.read(erb_location)).result(binding)
-    end
-
-    open_command = 'open'  if RUBY_PLATFORM.match(/darwin/) != nil
-    open_command = 'start' if RUBY_PLATFORM.match(/mingw/) != nil
-
-    system "#{open_command} #{coverage_file}" if ['start', 'open'].include?(open_command)
-    puts "#{coverage_file}\n\n"
+    require 'spout/commands/coverage'
+    Spout::Commands::Coverage.new(standard_version)
   end
 
   desc 'Match CSV dataset with JSON repository'
@@ -138,66 +66,6 @@ namespace :spout do
     Spout::Commands::Graphs.new(variables, standard_version)
   end
 
-end
-
-class SpoutCoverageResult
-  attr_accessor :error, :error_message, :file_name_test, :json_id_test, :values_test, :valid_values, :csv_values, :variable_type_test, :json, :domain_test
-
-  def initialize(csv, column, csv_values)
-    load_json(column)
-    load_valid_values
-
-    @csv_values = csv_values
-    @values_test = check_values
-    @variable_type_test = check_variable_type
-    @domain_test = check_domain_specified
-  end
-
-  def load_json(column)
-    file = Dir.glob("variables/**/#{column}.json").first
-    @file_name_test = (file != nil)
-    @json = JSON.parse(File.read(file)) rescue @json = {}
-    @json_id_test = (@json['id'].to_s.downcase == column)
-  end
-
-  def load_valid_values
-    valid_values = []
-    if @json['type'] == 'choices'
-      file = Dir.glob("domains/**/#{@json['domain']}.json").first
-      if json = JSON.parse(File.read(file)) rescue false
-        valid_values = json.collect{|hash| hash['value']}
-      end
-    end
-    @valid_values = valid_values
-  end
-
-  def number_of_errors
-    @file_name_test && @json_id_test && @values_test && @variable_type_test && @domain_test ? 0 : 1
-  end
-
-  def check_values
-    @json['type'] != 'choices' || (@valid_values | @csv_values.compact).size == @valid_values.size
-  end
-
-  def check_variable_type
-    Spout::Tests::VariableTypeValidation::VALID_VARIABLE_TYPES.include?(@json['type'])
-  end
-
-  def check_domain_specified
-    if @json['type'] != 'choices'
-      true
-    else
-      domain_file = Dir.glob("domains/**/#{@json['domain']}.json").first
-      if domain_json = JSON.parse(File.read(domain_file)) rescue false
-        return domain_json.kind_of?(Array)
-      end
-      false
-    end
-  end
-
-  def errored?
-    error == true
-  end
 end
 
 def number_with_delimiter(number, delimiter = ",")

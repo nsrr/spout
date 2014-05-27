@@ -16,6 +16,11 @@ module Spout
       end
 
       def load_subjects_from_csvs!
+        load_subjects_from_csvs_part_one!
+        load_subjects_from_csvs_part_two!
+      end
+
+      def load_subjects_from_csvs_part_one!
         @subjects = []
 
         csv_files = Dir.glob("csvs/#{@standard_version}/*.csv")
@@ -46,7 +51,9 @@ module Spout
             break if @number_of_rows != nil and count >= @number_of_rows
           end
         end
+      end
 
+      def load_subjects_from_csvs_part_two!
         @variable_files.each do |variable_file|
           json = JSON.parse(File.read(variable_file)) rescue json = nil
           next unless json
