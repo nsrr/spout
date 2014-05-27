@@ -11,7 +11,7 @@ module Spout
 
         @variable_files = []
         @valid_ids = []
-        @number_of_rows = 100
+        @number_of_rows = nil
 
         spout_config = YAML.load_file('.spout.yml')
         @visit = (spout_config.kind_of?(Hash) ? spout_config['visit'].to_s.strip : '')
