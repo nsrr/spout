@@ -75,12 +75,21 @@ tfoot td {
             <tr>
               <th>CSV</th>
               <th>Coverage</th>
-              <th>Columns</th>
+              <th>Total</th>
               <th>Columns Defined</th>
               <th>Columns Missed</th>
             </tr>
           </thead>
           <tbody>
+            <% if @extra_variable_ids.size > 0 %>
+              <tr>
+                <td class="text-muted">Variables Not Found in Any CSV</td>
+                <td></td>
+                <td><code class="default"><%= number_with_delimiter( @extra_variable_ids.size ) %></code></td>
+                <td></td>
+                <td></td>
+              </tr>
+            <% end %>
             <% @coverage_results.each do |csv, total_column_count, mapped_column_count| %>
               <tr>
                 <td><%= csv %></td>
@@ -166,6 +175,14 @@ tfoot td {
             </tr>
           </tfoot>
           <tbody>
+            <% @extra_variable_ids.each do |variable_id| %>
+              <tr>
+                <td class="text-muted">Not in any CSV file</td>
+                <td><%= variable_id %></td>
+                <td><code class="default"><%= variable_id %>.json</code></td>
+                <td colspan="4" class="text-muted">Recommend to remove this variable from data dictionary as this variable does not exist in any CSV.</td>
+              </tr>
+            <% end %>
             <% @matching_results.each do |csv_files, column, scr| %>
               <tr>
                 <td>

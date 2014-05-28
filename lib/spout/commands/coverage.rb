@@ -24,14 +24,6 @@ module Spout
       end
 
       def run_coverage_report!
-        choice_variables = []
-
-        Dir.glob("variables/**/*.json").each do |file|
-          if json = JSON.parse(File.read(file)) rescue false
-            choice_variables << json['id'] if json['type'] == 'choices'
-          end
-        end
-
         @matching_results = []
 
         @subject_loader.all_methods.each do |method, csv_files|
@@ -39,6 +31,8 @@ module Spout
           @matching_results << [ csv_files, method, scr ]
         end
 
+        variable_ids = Dir.glob("variables/**/*.json").collect{ |file| file.gsub(/^(.*)\/|\.json$/, '').downcase }
+        @extra_variable_ids = variable_ids - @subject_loader.all_methods.keys
 
         @matching_results.sort!{|a,b| [b[2].number_of_errors, a[0].to_s, a[1].to_s] <=> [a[2].number_of_errors, b[0].to_s, b[1].to_s]}
 
