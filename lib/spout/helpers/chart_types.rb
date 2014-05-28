@@ -320,7 +320,7 @@ module Spout
           unknown_values = chart_variable_domain.collect do |display_name, value|
             { text: TableFormatting::format_number(filtered_subjects.select{ |s| s.send(chart_type) == value and s.send(method) == nil }.count, :count), class: 'text-muted' }
           end
-          rows << [{ text: 'Unknown', class: 'text-muted'}] + unknown_values + [ { text: filtered_subjects.select{|s| s.send(method) == nil}.count.to_s, style: 'font-weight:bold', class: 'text-muted' } ]
+          rows << [{ text: 'Unknown', class: 'text-muted'}] + unknown_values + [ { text: TableFormatting::format_number(filtered_subjects.select{|s| s.send(method) == nil}.count, :count), style: 'font-weight:bold', class: 'text-muted' } ]
         end
 
 
