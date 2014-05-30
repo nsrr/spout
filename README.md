@@ -6,7 +6,7 @@
 
 Turn your CSV data dictionary into a JSON repository. Collaborate with others to update the data dictionary in JSON format. Generate new Data Dictionary from the JSON repository. Test and validate your data dictionary using built-in tests, or add your own tests and validations.
 
-Spout has been used extensively to curate and clean sleep datasets avaible on the [National Sleep Research Resource](https://sleepdata.org).
+Spout has been used extensively to curate and clean datasets available on the [National Sleep Research Resource](https://sleepdata.org).
 
 ## Installation
 
