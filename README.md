@@ -219,7 +219,7 @@ spout g ahi bmi
 You can also specify a limit to the amount of rows to read in from the CSV files by specifying the `-rows` flag
 
 ```
-spout -rows=10 ahi
+spout g -rows=10 ahi
 ```
 
 This will generate a graph for ahi for the first 10 rows of each dataset CSV.
