@@ -54,6 +54,10 @@ code.warning {
   color: #333;
   background-color: #f0ad4e;
 }
+code.warning-pale {
+  background-color: #fcf8e3;
+  color: #8a6d3b;
+}
 tfoot td {
   vertical-align: middle !important;
   padding-bottom: 0px !important;
@@ -92,9 +96,14 @@ tfoot td {
             <% @overall_results.each do |csv_file, major_outliers, minor_outliers, total_outliers| %>
               <tr>
                 <td><%= csv_file %></td>
-                <td><%= major_outliers %></td>
-                <td><%= minor_outliers %></td>
-                <td><%= total_outliers %></td>
+                <td><code class="<%= major_outliers > 0 ? 'danger' : 'default' %>"><%= number_with_delimiter(major_outliers) %></code></td>
+                <td><code class="<%= minor_outliers > 0 ? 'warning' : 'default' %>"><%= number_with_delimiter(minor_outliers) %></code></td>
+                <td>
+                  <% css_class = 'success' %>
+                  <% css_class = 'warning' if minor_outliers > 0 %>
+                  <% css_class = 'danger' if major_outliers > 0 %>
+                  <code class="<%= css_class %>"><%= number_with_delimiter(total_outliers) %>
+                </td>
               </tr>
             <% end %>
           </tbody>
@@ -116,7 +125,9 @@ tfoot td {
               <tr>
                 <td>
                   <% outlier_result.csv_files.each do |csv_file| %>
-                    <code class="<%= 'success' if outlier_result.outliers.size == 0 %>"><%= csv_file %></code><br />
+                    <% css_class = 'success' if outlier_result.outliers.size == 0 %>
+                    <% css_class = 'warning-pale' if outlier_result.major_outliers.size == 0 and outlier_result.minor_outliers.size > 0 %>
+                    <code class="<%= css_class %>"><%= csv_file %></code><br />
                   <% end %></td>
                 <td><%= outlier_result.method %></td>
                 <td>
