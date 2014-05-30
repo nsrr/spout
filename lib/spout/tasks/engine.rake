@@ -50,6 +50,13 @@ namespace :spout do
     Spout::Commands::Coverage.new(standard_version)
   end
 
+  desc 'Identify Outliers in CSV dataset'
+  task :outliers do
+    require 'spout/commands/outliers'
+    outliers = Spout::Commands::Outliers.new(standard_version)
+    outliers.run_outliers_report!
+  end
+
   desc 'Match CSV dataset with JSON repository'
   task :images do
     require 'spout/commands/images'

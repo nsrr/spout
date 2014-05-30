@@ -132,6 +132,18 @@ This will generate an `index.html` file that can be opened and viewed in any bro
 
 Spout coverage validates that values stored in your dataset match up with variables and domains defined in your data dictionary.
 
+### Identify outliers in your dataset
+
+Spout lets you generate detect outliers in your underlying datasets. Place your dataset csvs into `./csvs/<version>/` and then run the following Spout command:
+
+```
+spout outliers
+```
+
+This will generate an `outliers.html` file that can be opened and viewed in any browser.
+
+Spout outliers computes the [inner and outer fences](http://www.wikihow.com/Calculate-Outliers) to identify minor and major outliers in the dataset.
+
 ### Create a CSV Data Dictionary from your JSON repository
 
 Provide an optional version parameter to name the folder the CSVs will be generated in, defaults to what is in `VERSION` file, or if that does not exist `1.0.0`.

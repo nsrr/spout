@@ -25,6 +25,8 @@ module Spout
         generate_images(argv.last(argv.size - 1))
       when 'graphs', '-graphs', '--graphs', 'g', '-g'
         generate_charts_and_tables(argv.last(argv.size - 1))
+      when 'outliers', '-outliers', '--outliers', 'o', '-o'
+        outliers_report(argv)
       else
         help
       end
@@ -69,7 +71,9 @@ The most common spout commands are:
  h[y]brid  [1.0.0]  Export the JSON dictionary in the Hybrid
                     dictionary format
   [c]overage        Coverage report, requires dataset CSVs
-                    in `<project_name>/csvs/`
+                    in `<project_name>/csvs/<version>`
+  [o]utliers        Outlier report, requires dataset CSVs
+                    in `<project_name>/csvs/<version>`
   [p]ngs            Generates images for each variable in a
                     dataset and places them
                     in `<project_name>/images/<version>/`
@@ -128,6 +132,10 @@ EOT
 
       def coverage_report(argv)
         system "bundle exec rake spout:coverage"
+      end
+
+      def outliers_report(argv)
+        system "bundle exec rake spout:outliers"
       end
 
       def flag_values(flags, param)

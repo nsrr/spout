@@ -80,6 +80,36 @@ class Array
     self.compact.max
   end
 
+  def outliers
+    array = self.compact.sort.select{|v| v.kind_of?(Numeric)}
+    q1 = (array.quartile_one + array.quartile_two).median
+    q3 = (array.quartile_three + array.quartile_four).median
+    return [] if q1 == nil or q3 == nil
+    iq_range = q3 - q1
+    inner_fence_lower = q1 - iq_range * 1.5
+    inner_fence_upper = q3 + iq_range * 1.5
+    outer_fence_lower = q1 - iq_range * 3
+    outer_fence_upper = q3 + iq_range * 3
+    array.select{ |v| v > inner_fence_upper or v < inner_fence_lower }
+  end
+
+  def major_outliers
+    array = self.compact.sort.select{|v| v.kind_of?(Numeric)}
+    q1 = (array.quartile_one + array.quartile_two).median
+    q3 = (array.quartile_three + array.quartile_four).median
+    return [] if q1 == nil or q3 == nil
+    iq_range = q3 - q1
+    inner_fence_lower = q1 - iq_range * 1.5
+    inner_fence_upper = q3 + iq_range * 1.5
+    outer_fence_lower = q1 - iq_range * 3
+    outer_fence_upper = q3 + iq_range * 3
+    array.select{ |v| v > outer_fence_upper or v < outer_fence_lower }
+  end
+
+  def minor_outliers
+    self.outliers - self.major_outliers
+  end
+
 end
 
 module Spout

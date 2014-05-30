@@ -1,0 +1,150 @@
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="data:image/vnd.microsoft.icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAIAAAAMIAAAAiAAAAAAAAAAAAAAAAAAAARAAAAEEAAAAcAAAAwQAAACEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAADCAAAAIgAAAAAAAAAAAAAAAAAAAEQAAABBAAAAHAAAAMEAAAAhAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAwwAAACIAAAAAAAAAAAAAAAAAAABEAAAAQQAAABwAAADBAAAAIQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAAAAKoAAAAeAAAAAAAAAAAAAAAAAAAARAAAAEEAAAAYAAAAqwAAAB4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAWAAAACAAAAB8AAAAfAAAAAAAAAEQAAABDAAAAAAAAABgAAAAIAAAAHQAAAB0AAAAEAAAAAAAAAAAAAAAAAAAAAAAAABkAAACuAAAArQAAABQAAABCAAAAQwAAAAAAAAAAAAAAGAAAAK0AAACrAAAAFgAAAAAAAAAAAAAAAAAAAAAAAAADAAAAGQAAABkAAAAAAAAARAAAAEMAAAAAAAAAAAAAAAMAAAAZAAAAGQAAAAMAAAAAAAAATAAAAEwAAABOAAAATAAAAEoAAABKAAAASQAAAHwAAAB7AAAASgAAAEwAAABMAAAASgAAAEoAAABMAAAATAAAAFAAAABnAAAA0AAAAGcAAABRAAAAUgAAAE8AAACAAAAAfgAAAE0AAABQAAAAUAAAAFAAAABSAAAAUgAAAFIAAAAAAAAAIAAAAL8AAAAfAAAAAAAAAAAAAAAAAAAARQAAAFkAAAAbAAAAHgAAAB8AAAAbAAAABAAAAAAAAAAAAAAAAAAAACAAAAC/AAAAHwAAAAIAAAAXAAAAAAAAAEgAAADPAAAAwwAAAMMAAADFAAAArAAAABgAAAAAAAAAAAAAAAAAAAAgAAAAvwAAAB4AAAAcAAAAqwAAABkAAABDAAAAWgAAAB0AAAAgAAAAHwAAABsAAAAEAAAAAAAAAAAAAAAAAAAAHAAAAKgAAAAaAAAAIAAAAMMAAAAdAAAAQgAAAEMAAAAAAAAABAAAABsAAAAfAAAAIAAAACEAAAAhAAAAAAAAAAQAAAAXAAAAAgAAACIAAADDAAAAHQAAAEIAAABDAAAAAAAAABkAAACrAAAAwwAAAMIAAADCAAAAwQAAAAAAAAAAAAAAAAAAAAAAAAAiAAAAwwAAAB0AAABCAAAAQwAAAAAAAAAEAAAAHQAAACEAAAAgAAAAIAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAIgAAAMMAAAAdAAAAQgAAAEMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAjg8AAI4PAACODwAAjg8AAIABAADgYQAA4mEAAAAAAAAAAAAAjgMAAIIDAACAAwAAgEAAAIBAAADwQAAA8H8AAA==">
+
+    <title>Spout Coverage</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <style type="text/css">
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  padding-top: 50px;
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+#footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+  padding: 0px 30px;
+}
+code.success {
+  color: #468847;
+  background-color: #dff0d8;
+}
+code.default {
+  color: #333;
+  background-color: #f5f5f5;
+}
+code.danger {
+  color: #FFF;
+  background-color: #d9534f;
+}
+code.warning {
+  color: #333;
+  background-color: #f0ad4e;
+}
+tfoot td {
+  vertical-align: middle !important;
+  padding-bottom: 0px !important;
+}
+    </style>
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="navbar-header" style="padding: 0px 30px">
+        <a class="navbar-brand" href="#">Spout Outliers</a>
+      </div>
+    </div>
+
+    <% if @subject_loader.all_methods.size == 0 %>
+      <div class="container" style="margin-top:30px">
+        <div class="jumbotron">
+          <h1>You made Spout cry... :'-(</h1>
+          <p>No CSVs found in <code><%= Dir.pwd %>/csvs/<%= @standard_version %>/</code></p>
+        </div>
+      </div>
+    <% else %>
+      <div style="padding: 30px 30px 10px 30px;">
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>CSV</th>
+              <th>Major Outliers</th>
+              <th>Minor Outliers</th>
+              <th>Total Outliers</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @overall_results.each do |csv_file, major_outliers, minor_outliers, total_outliers| %>
+              <tr>
+                <td><%= csv_file %></td>
+                <td><%= major_outliers %></td>
+                <td><%= minor_outliers %></td>
+                <td><%= total_outliers %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+
+
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>CSV</th>
+              <th>Column</th>
+              <th>Units</th>
+              <th>Major Outliers</th>
+              <th>Minor Outliers</th>
+              <th>Outliers</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @outlier_results.each do |outlier_result| %>
+              <tr>
+                <td>
+                  <% outlier_result.csv_files.each do |csv_file| %>
+                    <code class="<%= 'success' if outlier_result.outliers.size == 0 %>"><%= csv_file %><code><br />
+                  <% end %></td>
+                <td><%= outlier_result.method %></td>
+                <td><%= outlier_result.units %></td>
+                <td>
+                  <% outlier_result.major_outliers.collect{|v| v.round(2)}.uniq.each do |value| %>
+                    <code class="danger"><%= value %></code>
+                  <% end %>
+                </td>
+                <td>
+                  <% outlier_result.minor_outliers.collect{|v| v.round(2)}.uniq.each do |value| %>
+                    <code class="warning"><%= value %></code>
+                  <% end %>
+                </td>
+                <td>
+                  <% outlier_result.outliers.collect{|v| v.round(2)}.uniq.each do |value| %>
+                    <code class="default"><%= value %></code>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+
+    <div id="footer">
+      <p class="text-muted" style="margin: 20px 0;">Generated by <a href="https://github.com/sleepepi/spout">Spout</a> v<%= Spout::VERSION::STRING %></p>
+    </div>
+
+</body></html>
