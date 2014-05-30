@@ -226,18 +226,3 @@ This will generate a graph for ahi for the first 10 rows of each dataset CSV.
 
 
 This will generate charts and tables for each variable in the dataset plotted against the variables listed under `charts`.
-
-
-### Export to the Hybrid Data Dictionary format from your JSON repository
-
-Exporting to a format compatible with [Hybrid](https://github.com/sleepepi/hybrid) is also available.
-
-```
-spout hybrid
-```
-
-You can optionally provide a version string
-
-```
-spout hybrid [1.0.0]
-```

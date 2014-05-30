@@ -23,15 +23,7 @@ namespace :spout do
     puts "      create".colorize( :green ) + "  #{folder}"
     FileUtils.mkpath folder
 
-    export_name = nil
-    additional_keys = []
-
-    if ENV['TYPE'] == 'hybrid'
-      export_name = 'hybrid'
-      additional_keys = [['hybrid', 'design_name'], ['hybrid', 'design_file'], ['hybrid', 'sensitivity'], ['hybrid', 'commonly_used']]
-    end
-
-    expanded_export(folder, export_name, additional_keys)
+    expanded_export(folder)
   end
 
   desc 'Initialize JSON repository from a CSV file: CSV=datadictionary.csv'
@@ -84,20 +76,20 @@ def standard_version
   version == '' ? '1.0.0' : version
 end
 
-def expanded_export(folder, export_name = nil, additional_keys = [])
-  variables_export_file = "#{[export_name, 'variables'].compact.join('-')}.csv"
+def expanded_export(folder)
+  variables_export_file = "variables.csv"
   puts "      export".colorize( :blue ) + "  #{folder}/#{variables_export_file}"
   CSV.open("#{folder}/#{variables_export_file}", "wb") do |csv|
     keys = %w(id display_name description type units domain labels calculation)
-    csv << ['folder'] + keys + additional_keys.collect{|i| i[1]}
+    csv << ['folder'] + keys
     Dir.glob("variables/**/*.json").each do |file|
       if json = JSON.parse(File.read(file)) rescue false
         variable_folder = variable_folder_path(file)
-        csv << [variable_folder] + keys.collect{|key| json[key].kind_of?(Array) ? json[key].join(';') : json[key].to_s} + additional_keys.collect{|i| other_property(i[0], json, i[1])}
+        csv << [variable_folder] + keys.collect{|key| json[key].kind_of?(Array) ? json[key].join(';') : json[key].to_s}
       end
     end
   end
-  domains_export_file = "#{[export_name, 'domains'].compact.join('-')}.csv"
+  domains_export_file = "domains.csv"
   puts "      export".colorize( :blue ) + "  #{folder}/#{domains_export_file}"
   CSV.open("#{folder}/#{domains_export_file}", "wb") do |csv|
     keys = %w(value display_name description)
@@ -124,10 +116,6 @@ end
 
 def variable_folder_path(file)
   file.gsub(/variables\//, '').split('/')[0..-2].join('/')
-end
-
-def other_property(parent, json, property)
-  json[parent] ? json[parent][property] : ''
 end
 
 def import_variables

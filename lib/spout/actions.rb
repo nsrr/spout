@@ -17,8 +17,6 @@ module Spout
         import_from_csv(argv, 'domains')
       when 'export', 'e', 'ex', 'exp', '--export', '-e', '-ex', '-exp'
         new_data_dictionary_export(argv)
-      when 'hybrid', '-hybrid', '--hybrid', 'y', 'hy', '-y', '-hy'
-        new_data_dictionary_export(argv, 'hybrid')
       when 'coverage', '-coverage', '--coverage', 'c', '-c'
         coverage_report(argv)
       when 'pngs', '-pngs', '--pngs', 'p', '-p'
@@ -67,9 +65,7 @@ The most common spout commands are:
   [tv]              Run the tests and show passing and failing
                     tests
   [i]mport          Import a CSV file into the JSON dictionary
-  [e]xport [1.0.0]  Export the JSON dictionary to a CSV
- h[y]brid  [1.0.0]  Export the JSON dictionary in the Hybrid
-                    dictionary format
+  [e]xport [1.0.0]  Export the JSON dictionary to CSV format
   [c]overage        Coverage report, requires dataset CSVs
                     in `<project_name>/csvs/<version>`
   [o]utliers        Outlier report, requires dataset CSVs
@@ -89,11 +85,10 @@ EOT
         puts help_message
       end
 
-      def new_data_dictionary_export(argv, type = '')
+      def new_data_dictionary_export(argv)
         version = argv[1].to_s.gsub(/[^a-zA-Z0-9\.-]/, '_').strip
         version_string = (version == '' ? "" : "VERSION=#{version}")
-        type_string =  type.to_s == '' ? "" : "TYPE=#{type}"
-        system "bundle exec rake spout:create #{version_string} #{type_string}"
+        system "bundle exec rake spout:create #{version_string}"
       end
 
       def new_template_dictionary(argv)

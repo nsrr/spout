@@ -8,6 +8,7 @@
 - The `spout pngs` command now renders the histogram form for each variable
 - The `spout coverage` command now lists variables that are defined in the data dictionary and that do not exist in any CSV dataset
 - Added `spout outliers` command that returns a list of integer or numeric variables that contain major and minor outliers
+- Removed the deprecated `spout hybrid` command
 - **Gem Changes**
   - Updated to colorize 0.7.2
 - Use of Ruby 2.1.2 is now recommended
