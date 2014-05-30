@@ -187,7 +187,7 @@ tfoot td {
               <tr>
                 <td>
                   <% csv_files.each do |csv_file| %>
-                    <code class="<%= 'success' if scr.number_of_errors == 0 %>"><%= csv_file %><code><br />
+                    <code class="<%= 'success' if scr.number_of_errors == 0 %>"><%= csv_file %></code><br />
                   <% end %>
                 </td>
                 <td><%= column %></td>

@@ -116,7 +116,7 @@ tfoot td {
               <tr>
                 <td>
                   <% outlier_result.csv_files.each do |csv_file| %>
-                    <code class="<%= 'success' if outlier_result.outliers.size == 0 %>"><%= csv_file %><code><br />
+                    <code class="<%= 'success' if outlier_result.outliers.size == 0 %>"><%= csv_file %></code><br />
                   <% end %></td>
                 <td><%= outlier_result.method %></td>
                 <td>
