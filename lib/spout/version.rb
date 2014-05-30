@@ -3,7 +3,7 @@ module Spout
     MAJOR = 0
     MINOR = 8
     TINY = 0
-    BUILD = "beta8" # nil, "pre", "rc", "rc2"
+    BUILD = "beta9" # nil, "pre", "rc", "rc2"
 
     STRING = [MAJOR, MINOR, TINY, BUILD].compact.join('.')
   end
