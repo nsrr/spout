@@ -4,7 +4,7 @@ require 'spout/helpers/json_loader'
 module Spout
   module Models
     class OutlierResult
-      attr_reader :csv_files, :method, :major_outliers, :minor_outliers, :outliers, :weight, :units
+      attr_reader :csv_files, :method, :major_outliers, :minor_outliers, :outliers, :weight, :units, :median
 
       def initialize(subjects, method, csv_files)
         @values = subjects.collect(&method.to_sym)
@@ -23,6 +23,7 @@ module Spout
         end
         variable = Spout::Helpers::JsonLoader::get_variable(method)
         @units = (variable.kind_of?(Hash) ? variable['units'] : nil)
+        @median = @values.median
       end
 
       def calculate_outliers!

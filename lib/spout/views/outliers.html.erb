@@ -106,10 +106,9 @@ tfoot td {
             <tr>
               <th>CSV</th>
               <th>Column</th>
-              <th>Units</th>
+              <th>Median</th>
               <th>Major Outliers</th>
               <th>Minor Outliers</th>
-              <th>Outliers</th>
             </tr>
           </thead>
           <tbody>
@@ -120,21 +119,44 @@ tfoot td {
                     <code class="<%= 'success' if outlier_result.outliers.size == 0 %>"><%= csv_file %><code><br />
                   <% end %></td>
                 <td><%= outlier_result.method %></td>
-                <td><%= outlier_result.units %></td>
                 <td>
-                  <% outlier_result.major_outliers.collect{|v| v.round(2)}.uniq.each do |value| %>
-                    <code class="danger"><%= value %></code>
+                  <% if outlier_result.median.kind_of?(Numeric) %>
+                    <code class="default"><%= number_with_delimiter(outlier_result.median.round(2)) %></code>
+                  <% end %>
+                  <%= outlier_result.units %>
+                </td>
+                <td>
+                  <% outliers = outlier_result.major_outliers.collect{|v| v.round(2)}.uniq %>
+                  <% if outliers.size > 6 %>
+                    <% outliers.first(3).each do |value| %>
+                      <code class="danger"><%= number_with_delimiter(value) %></code>
+                    <% end %>
+                    <code class="default">...</code>
+                    <% outliers.last(3).each do |value| %>
+                      <code class="danger"><%= number_with_delimiter(value) %></code>
+                    <% end %>
+                  <% else %>
+                    <% outliers.each do |value| %>
+                      <code class="danger"><%= number_with_delimiter(value) %></code>
+                    <% end %>
                   <% end %>
                 </td>
                 <td>
-                  <% outlier_result.minor_outliers.collect{|v| v.round(2)}.uniq.each do |value| %>
-                    <code class="warning"><%= value %></code>
+                  <% outliers = outlier_result.minor_outliers.collect{|v| v.round(2)}.uniq %>
+                  <% if outliers.size > 6 %>
+                    <% outliers.first(3).each do |value| %>
+                      <code class="warning"><%= number_with_delimiter(value) %></code>
+                    <% end %>
+                    <code class="default">...</code>
+                    <% outliers.last(3).each do |value| %>
+                      <code class="warning"><%= number_with_delimiter(value) %></code>
+                    <% end %>
+                  <% else %>
+                    <% outliers.each do |value| %>
+                      <code class="warning"><%= number_with_delimiter(value) %></code>
+                    <% end %>
                   <% end %>
-                </td>
-                <td>
-                  <% outlier_result.outliers.collect{|v| v.round(2)}.uniq.each do |value| %>
-                    <code class="default"><%= value %></code>
-                  <% end %>
+
                 </td>
               </tr>
             <% end %>
