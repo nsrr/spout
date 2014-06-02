@@ -90,6 +90,15 @@ tfoot td {
                 <td></td>
               </tr>
             <% end %>
+            <% if @extra_domain_ids.size > 0 %>
+              <tr>
+                <td class="text-muted">Domains Not Referenced by Any Variable</td>
+                <td></td>
+                <td><code class="default"><%= number_with_delimiter( @extra_domain_ids.size ) %></code></td>
+                <td></td>
+                <td></td>
+              </tr>
+            <% end %>
             <% @coverage_results.each do |csv, total_column_count, mapped_column_count| %>
               <tr>
                 <td><%= csv %></td>
@@ -107,6 +116,29 @@ tfoot td {
             <% end %>
           </tbody>
         </table>
+
+        <% if @extra_domain_ids.size > 0 %>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Error</th>
+                <th>Domain</th>
+                <th>File</th>
+                <th>Solution</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @extra_domain_ids.each do |domain_id| %>
+                <tr>
+                  <td class="text-muted">Not referenced by any variable</td>
+                  <td><%= domain_id %></td>
+                  <td><code class="default"><%= domain_id %>.json</code></td>
+                  <td class="text-muted">Recommend to remove this domain from data dictionary as no existing variable references the domain.</td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% end %>
 
         <table class="table table-bordered table-hover">
           <thead>

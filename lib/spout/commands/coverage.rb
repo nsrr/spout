@@ -9,7 +9,7 @@ module Spout
       def initialize(standard_version)
         @standard_version = standard_version
 
-        @variable_files = []
+        @variable_files = Dir.glob("variables/**/*.json")
         @valid_ids = []
         @number_of_rows = nil
 
@@ -33,6 +33,10 @@ module Spout
 
         variable_ids = Dir.glob("variables/**/*.json").collect{ |file| file.gsub(/^(.*)\/|\.json$/, '').downcase }
         @extra_variable_ids = (variable_ids - @subject_loader.all_methods.keys).sort
+
+        @subject_loader.load_variable_domains!
+        domain_ids = Dir.glob("domains/**/*.json").collect{ |file| file.gsub(/^(.*)\/|\.json$/, '').downcase }
+        @extra_domain_ids = (domain_ids - @subject_loader.all_domains).sort
 
         @matching_results.sort!{|a,b| [b[2].number_of_errors, a[0].to_s, a[1].to_s] <=> [a[2].number_of_errors, b[0].to_s, b[1].to_s]}
 

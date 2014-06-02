@@ -7,6 +7,7 @@
     - `charts`: Array of choices, numeric, or integer variables for charts
 - The `spout pngs` command now renders the histogram form for each variable
 - The `spout coverage` command now lists variables that are defined in the data dictionary and that do not exist in any CSV dataset
+- The `spout coverage` command now lists domains that are defined in the data dictionary and not referenced by any variable
 - Added `spout outliers` command that returns a list of integer or numeric variables that contain major and minor outliers
 - Removed the deprecated `spout hybrid` command
 - **Gem Changes**
