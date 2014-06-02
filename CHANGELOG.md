@@ -14,6 +14,9 @@
   - Updated to colorize 0.7.2
 - Use of Ruby 2.1.2 is now recommended
 
+### Testing
+- Refactored Spout code and updated test coverage for all major spout commands
+
 ## 0.7.0 (April 16, 2014)
 
 ### Enhancements

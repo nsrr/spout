@@ -28,7 +28,7 @@ module Spout
         else
           puts "The YAML file needs to be in the following format:"
           puts "---\nvisit: visit_variable_name\ncharts:\n- chart: age_variable_name\n  title: Age\n- chart: gender_variable_name\n  title: Gender\n- chart: race_variable_name\n  title: Race\n"
-          exit
+          return self
         end
 
         if Spout::Helpers::ChartTypes::get_json(@visit, 'variable') == nil
@@ -37,12 +37,12 @@ module Spout
           else
             puts "Could not find the following visit variable: #{@visit}"
           end
-          exit
+          return self
         end
         missing_variables = chart_variables.select{|c| Spout::Helpers::ChartTypes::get_json(c['chart'], 'variable') == nil}
         if missing_variables.count > 0
           puts "Could not find the following chart variable#{'s' unless missing_variables.size == 1}: #{missing_variables.join(', ')}"
-          exit
+          return self
         end
 
         argv_string = variables.join(',')

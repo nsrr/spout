@@ -6,8 +6,9 @@ require 'spout/models/coverage_result'
 module Spout
   module Commands
     class Coverage
-      def initialize(standard_version)
+      def initialize(standard_version, argv)
         @standard_version = standard_version
+        @console = (argv.delete('--console') != nil)
 
         @variable_files = Dir.glob("variables/**/*.json")
         @valid_ids = []
@@ -60,10 +61,12 @@ module Spout
           file.puts ERB.new(File.read(erb_location)).result(binding)
         end
 
-        open_command = 'open'  if RUBY_PLATFORM.match(/darwin/) != nil
-        open_command = 'start' if RUBY_PLATFORM.match(/mingw/) != nil
+        unless @console
+          open_command = 'open'  if RUBY_PLATFORM.match(/darwin/) != nil
+          open_command = 'start' if RUBY_PLATFORM.match(/mingw/) != nil
 
-        system "#{open_command} #{coverage_file}" if ['start', 'open'].include?(open_command)
+          system "#{open_command} #{coverage_file}" if ['start', 'open'].include?(open_command)
+        end
         puts "#{coverage_file}\n\n"
       end
     end
