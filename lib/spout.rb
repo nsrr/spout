@@ -1,5 +1,5 @@
 require "spout/version"
-require "spout/actions"
+# require "spout/actions"
 require "spout/application"
 require 'spout/tasks'
 
