@@ -7,7 +7,7 @@ gemspec
 # Testing
 group :test do
   # Pretty printed test output
-  gem 'win32console',                             :platforms => [ :mswin, :mingw ]
-  gem 'turn',               '~> 0.9.6'
-  gem 'simplecov',          '~> 0.7.1',           :require => false
+  gem 'minitest'
+  gem 'minitest-reporters', '~> 1.0.4'
+  gem 'simplecov',          '~> 0.8.2',           require: false
 end

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class SpoutTest < Test::Unit::TestCase
+class SpoutTest < Minitest::Test
 
   def test_spout_application
     assert_kind_of Module, Spout

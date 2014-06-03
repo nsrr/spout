@@ -1,6 +1,7 @@
+require 'test_helper'
 require 'spout/helpers/table_formatting'
 
-class TableFormattingTest < MiniTest::Unit::TestCase
+class TableFormattingTest < Minitest::Test
   def setup
     # @table_formatting = Spout::Helpers::TableFormatting.new
   end

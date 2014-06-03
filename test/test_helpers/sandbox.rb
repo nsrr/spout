@@ -159,7 +159,7 @@ visit,age_at_visit,gender
 end
 
 require 'test_helper'
-class SandboxTest < Test::Unit::TestCase
+class SandboxTest < Minitest::Test
   include TestHelpers::Paths
   include TestHelpers::Generation
   include TestHelpers::Fixtures
