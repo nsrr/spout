@@ -2,12 +2,16 @@ require 'yaml'
 
 require 'spout/helpers/subject_loader'
 require 'spout/models/outlier_result'
+require 'spout/helpers/number_helper'
 
 module Spout
   module Commands
     class Outliers
-      def initialize(standard_version)
+      include Spout::Helpers::NumberHelper
+
+      def initialize(standard_version, argv)
         @standard_version = standard_version
+        @console = (argv.delete('--console') != nil)
 
         @variable_files = Dir.glob('variables/**/*.json')
         @valid_ids = []
@@ -19,6 +23,7 @@ module Spout
         @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, @valid_ids, @standard_version, @number_of_rows, @visit)
         @subject_loader.load_subjects_from_csvs!
         @subjects = @subject_loader.subjects
+        run_outliers_report!
       end
 
       def run_outliers_report!
@@ -47,13 +52,15 @@ module Spout
           file.puts ERB.new(File.read(erb_location)).result(binding)
         end
 
-        open_command = 'open'  if RUBY_PLATFORM.match(/darwin/) != nil
-        open_command = 'start' if RUBY_PLATFORM.match(/mingw/) != nil
+        unless @console
+          open_command = 'open'  if RUBY_PLATFORM.match(/darwin/) != nil
+          open_command = 'start' if RUBY_PLATFORM.match(/mingw/) != nil
 
-        system "#{open_command} #{html_file}" if ['start', 'open'].include?(open_command)
+          system "#{open_command} #{html_file}" if ['start', 'open'].include?(open_command)
+        end
         puts "#{html_file}\n\n"
+        return self
       end
-
     end
   end
 end

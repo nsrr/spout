@@ -207,9 +207,12 @@ Example `.spout.yml` file:
 ```yml
 visit: visitnumber
 charts:
-  - age
-  - gender
-  - race
+- chart: age
+  title: Age
+- chart: gender
+  title: Gender
+- chart: race
+  title: Race
 ```
 
 To only generate graphs for a few select variables, add the variable names after the `spout graphs` command.

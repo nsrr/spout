@@ -2,10 +2,13 @@ require 'yaml'
 
 require 'spout/helpers/subject_loader'
 require 'spout/models/coverage_result'
+require 'spout/helpers/number_helper'
 
 module Spout
   module Commands
     class Coverage
+      include Spout::Helpers::NumberHelper
+
       def initialize(standard_version, argv)
         @standard_version = standard_version
         @console = (argv.delete('--console') != nil)

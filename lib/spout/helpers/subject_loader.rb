@@ -1,5 +1,7 @@
-require 'spout/models/subject'
+require 'csv'
+require 'json'
 
+require 'spout/models/subject'
 
 module Spout
   module Helpers
@@ -31,7 +33,6 @@ module Spout
           count = 0
           puts "Parsing: #{csv_file}"
           CSV.parse( File.open(csv_file, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true, header_converters: lambda { |h| h.to_s.downcase } ) do |line|
-
             row = line.to_hash
             count += 1
             puts "Line: #{count}" if (count % 1000 == 0)
@@ -42,9 +43,10 @@ module Spout
                 unless t.respond_to?(key)
                   t.class.send(:define_method, "#{key}") { instance_variable_get("@#{key}") }
                   t.class.send(:define_method, "#{key}=") { |value| instance_variable_set("@#{key}", value) }
-                  all_methods[key] ||= []
-                  all_methods[key] << csv_file
                 end
+
+                @all_methods[key] ||= []
+                @all_methods[key] = @all_methods[key] | [csv_file]
 
                 unless value == nil
                   t.send("#{key}=", value)

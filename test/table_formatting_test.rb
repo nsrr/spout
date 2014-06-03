@@ -1,4 +1,3 @@
-# require './table_formatting'
 require 'spout/helpers/table_formatting'
 
 class TableFormattingTest < MiniTest::Unit::TestCase

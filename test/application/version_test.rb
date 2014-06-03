@@ -1,22 +1,25 @@
-require 'temp_app_loader'
+require 'test_helpers/sandbox'
+require 'test_helpers/capture'
 
 module ApplicationTests
-  class VersionTest < SpoutAppTestCase
+  class VersionTest < SandboxTest
+
+    include TestHelpers::Capture
 
     def setup
       build_app
-      @original_stdout = $stdout
-      $stdout = StringIO.new
     end
 
     def teardown
-      $stdout = @original_stdout
-      @original_stdout = nil
       teardown_app
     end
 
     def test_version
-      assert_equal "Spout #{Spout::VERSION::STRING}", Dir.chdir(app_path) { Spout.launch ['version'] }
+      output, error = util_capture do
+        Dir.chdir(app_path) { Spout.launch ['version'] }
+      end
+
+      assert_equal "Spout #{Spout::VERSION::STRING}\n", output
     end
 
   end

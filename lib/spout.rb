@@ -3,30 +3,21 @@ require "spout/actions"
 require "spout/application"
 require 'spout/tasks'
 
+Spout::COMMANDS = {
+  'n' => :new_project,
+  'v' => :version,
+  't' => :test,
+  'i' => :importer,
+  'e' => :exporter,
+  'c' => :coverage_report,
+  'p' => :generate_images,
+  'g' => :generate_charts_and_tables,
+  'o' => :outliers_report
+}
+
 module Spout
   def self.launch(argv)
-    case argv.first.to_s.scan(/\w/).first
-    when 'new', 'n', 'ne', '-new', '-n', '-ne'
-      new_project(argv)
-    when 'v' # Version
-      version
-    when 't' # Test
-      test(argv)
-    when 'i' # Import and Import Domains (--domains)
-      importer(argv)
-    when 'e' # Export
-      exporter(argv)
-    when 'c' # Coverage
-      coverage_report(argv)
-    when 'p' # Create PNGs
-      generate_images(argv.last(argv.size - 1))
-    when 'g' # Create JSON Graphs
-      generate_charts_and_tables(argv.last(argv.size - 1))
-    when 'o' # Outliers
-      outliers_report(argv)
-    else
-      help
-    end
+    self.send((Spout::COMMANDS[argv.first.to_s.scan(/\w/).first] || :help), argv)
   end
 
   def self.new_project(argv)
@@ -45,21 +36,23 @@ module Spout
   end
 
   def self.generate_charts_and_tables(argv)
+    argv = argv.last(argv.size - 1)
     require 'spout/commands/graphs'
     variables = argv.collect{|s| s.to_s.downcase}
     Spout::Commands::Graphs.new(variables, standard_version)
   end
 
   def self.generate_images(argv)
+    argv = argv.last(argv.size - 1)
     require 'spout/commands/images'
     types         = flag_values(argv, 'type')
     variable_ids  = flag_values(argv, 'id')
     sizes         = flag_values(argv, 'size')
-    Spout::Commands::Images.new(types, variable_ids, sizes, standard_version)
+    Spout::Commands::Images.new(types, variable_ids, sizes, standard_version, argv)
   end
 
-  def self.help
-    help_message = <<-EOT
+  def self.help(argv)
+    puts <<-EOT
 
 Usage: spout COMMAND [ARGS]
 
@@ -88,8 +81,6 @@ Commands can be referenced by the first letter:
   Ex: `spout t`, for test
 
 EOT
-    puts help_message
-    help_message
   end
 
   def self.importer(argv)
@@ -99,8 +90,7 @@ EOT
 
   def self.outliers_report(argv)
     require 'spout/commands/outliers'
-    outliers = Spout::Commands::Outliers.new(standard_version)
-    outliers.run_outliers_report!
+    Spout::Commands::Outliers.new(standard_version, argv)
   end
 
   def self.test(argv)
@@ -108,12 +98,14 @@ EOT
     system "bundle exec rake#{' HIDE_PASSING_TESTS=true' if hide_passing_tests}"
   end
 
-  def self.version
-    app_name_and_version = "Spout #{Spout::VERSION::STRING}"
-    puts app_name_and_version
-    app_name_and_version
+  def self.version(argv)
+    puts "Spout #{Spout::VERSION::STRING}"
   end
 
+  def self.standard_version
+    version = File.open('VERSION', &:readline).strip rescue ''
+    version == '' ? '1.0.0' : version
+  end
 
   private
 

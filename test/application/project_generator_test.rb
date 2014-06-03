@@ -1,7 +1,7 @@
-require 'temp_app_loader'
+require 'test_helpers/sandbox'
 
 module ApplicationTests
-  class ProjectGeneratorTest < SpoutAppTestCase
+  class ProjectGeneratorTest < SandboxTest
 
     def setup
       build_app

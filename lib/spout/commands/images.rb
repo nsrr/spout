@@ -11,9 +11,11 @@ module Spout
   module Commands
     class Images
 
-      def initialize(types, variable_ids, sizes, standard_version)
+      def initialize(types, variable_ids, sizes, standard_version, argv)
         @variable_files = Dir.glob('variables/**/*.json')
         @standard_version = standard_version
+        @pretend = (argv.delete('--pretend') != nil)
+
 
         @valid_ids = variable_ids
 
@@ -60,42 +62,44 @@ module Spout
 
           filtered_subjects = @subjects.select{ |s| s.send(@visit) != nil }
 
-          File.open(tmp_options_file, "w") do |outfile|
-            chart_json = Spout::Helpers::ChartTypes::chart_histogram(@visit, filtered_subjects, json, variable_name)
-            outfile.puts <<-eos
-              {
-                "credits": {
-                  "enabled": false
-                },
-                "chart": {
-                  "type": "column"
-                },
-                "title": {
-                  "text": ""
-                },
-                "xAxis": {
-                  "categories": #{chart_json[:categories].to_json}
-                },
-                "yAxis": {
+          chart_json = Spout::Helpers::ChartTypes::chart_histogram(@visit, filtered_subjects, json, variable_name)
+
+          if chart_json
+            File.open(tmp_options_file, "w") do |outfile|
+              outfile.puts <<-eos
+                {
+                  "credits": {
+                    "enabled": false
+                  },
+                  "chart": {
+                    "type": "column"
+                  },
                   "title": {
-                    "text": #{chart_json[:units].to_json}
-                  }
-                },
-                "plotOptions": {
-                  "column": {
-                    "pointPadding": 0.2,
-                    "borderWidth": 0,
-                    "stacking": #{chart_json[:stacking].to_json}
-                  }
-                },
-                "series": #{chart_json[:series].to_json}
-              }
-            eos
+                    "text": ""
+                  },
+                  "xAxis": {
+                    "categories": #{chart_json[:categories].to_json}
+                  },
+                  "yAxis": {
+                    "title": {
+                      "text": #{chart_json[:units].to_json}
+                    }
+                  },
+                  "plotOptions": {
+                    "column": {
+                      "pointPadding": 0.2,
+                      "borderWidth": 0,
+                      "stacking": #{chart_json[:stacking].to_json}
+                    }
+                  },
+                  "series": #{chart_json[:series].to_json}
+                }
+              eos
+            end
+            run_phantom_js("#{json['id']}-lg.png", 600, tmp_options_file) if sizes.size == 0 or sizes.include?('lg')
+            run_phantom_js("#{json['id']}.png",     75, tmp_options_file) if sizes.size == 0 or sizes.include?('sm')
           end
 
-
-          run_phantom_js("#{json['id']}-lg.png", 600, tmp_options_file) if sizes.size == 0 or sizes.include?('lg')
-          run_phantom_js("#{json['id']}.png",     75, tmp_options_file) if sizes.size == 0 or sizes.include?('sm')
         end
         File.delete(tmp_options_file) if File.exists?(tmp_options_file)
       end
@@ -267,8 +271,13 @@ module Spout
         end
 
         phantomjs_command = "#{open_command} #{directory}/highcharts-convert.js -infile #{tmp_options_file} -outfile #{graph_path} -scale 2.5 -width #{width} -constr Chart"
-        # puts phantomjs_command
-        `#{phantomjs_command}`
+
+        if @pretend
+          puts phantomjs_command
+        else
+          `#{phantomjs_command}`
+        end
+
       end
 
     end
