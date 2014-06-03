@@ -1,3 +1,4 @@
+require 'csv'
 
 module Spout
   module Commands
@@ -7,6 +8,11 @@ module Spout
 
         @csv_file = argv[1].to_s
 
+        unless File.exists?(@csv_file)
+          puts csv_usage
+          return self
+        end
+
         if use_domains
           import_domains
         else
@@ -15,15 +21,16 @@ module Spout
 
       end
 
-      # def import_from_csv(argv, type = "")
-      #   csv_file = File.join(argv[1].to_s.strip)
-      #   if File.exists?(csv_file)
-      #     system "bundle exec rake spout:import CSV=#{csv_file} #{'TYPE='+type if type.to_s != ''}"
-      #   else
-      #     puts csv_usage
-      #   end
-      # end
+      def csv_usage
+        usage = <<-EOT
 
+Usage: spout import CSVFILE
+
+The CSVFILE must be the location of a valid CSV file.
+
+EOT
+        usage
+      end
 
       def import_variables
         CSV.parse( File.open(@csv_file, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true ) do |line|

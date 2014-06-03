@@ -1,4 +1,5 @@
 require 'yaml'
+require 'erb'
 
 require 'spout/helpers/subject_loader'
 require 'spout/models/outlier_result'

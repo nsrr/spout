@@ -1,3 +1,5 @@
+require 'csv'
+
 module Spout
   module Commands
     class Exporter

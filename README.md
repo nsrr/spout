@@ -71,7 +71,7 @@ All other columns get grouped into a hash labeled `other`.
 #### Importing domains from an existing CSV file
 
 ```
-spout import_domains data_dictionary_domains.csv
+spout import data_dictionary_domains.csv --domains
 ```
 
 The CSV should contain at minimal three column headers:

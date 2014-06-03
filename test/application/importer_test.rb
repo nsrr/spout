@@ -23,6 +23,15 @@ folder,domain_id,display_name,description,value
       teardown_app
     end
 
+    def test_import_with_missing_csv
+      output, error = util_capture do
+        Dir.chdir(app_path) { Spout.launch ['import'] }
+      end
+
+      assert_match /Usage: spout import CSVFILE/, output
+      assert_match /The CSVFILE must be the location of a valid CSV file\./, output
+    end
+
     def test_variable_imports
       output, error = util_capture do
         Dir.chdir(app_path) { Spout.launch ['import', 'variables-import.csv'] }
