@@ -67,7 +67,7 @@ module ApplicationTests
 
       assert_match /Parsing: csvs\/1\.0\.0\/dataset\.csv/, output
 
-      assert_equal [".", "..", "dataset.csv"], Dir.entries(File.join(app_path, 'csvs', '1.0.0'))
+      assert_equal [".", "..", "dataset.csv"].sort, Dir.entries(File.join(app_path, 'csvs', '1.0.0')).sort
 
       index_file = File.read(File.join(app_path, 'coverage', 'index.html')) rescue nil
       assert_not_nil index_file
