@@ -29,6 +29,8 @@ module Spout
       end
 
       def run_coverage_report!
+        puts "Generating: index.html\n\n"
+
         @matching_results = []
 
         @subject_loader.all_methods.each do |method, csv_files|
@@ -57,8 +59,6 @@ module Spout
         coverage_folder = File.join(Dir.pwd, 'coverage')
         FileUtils.mkpath coverage_folder
         coverage_file = File.join(coverage_folder, 'index.html')
-
-        print "\nGenerating: index.html\n\n"
 
         File.open(coverage_file, 'w+') do |file|
           erb_location = File.join( File.dirname(__FILE__), '../views/index.html.erb' )

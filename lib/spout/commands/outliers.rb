@@ -28,6 +28,8 @@ module Spout
       end
 
       def run_outliers_report!
+        puts "Generating: outliers.html\n\n"
+
         @outlier_results = @subject_loader.all_methods.collect do |method, csv_files|
           Spout::Models::OutlierResult.new(@subjects, method, csv_files)
         end
@@ -45,8 +47,6 @@ module Spout
         coverage_folder = File.join(Dir.pwd, 'coverage')
         FileUtils.mkpath coverage_folder
         html_file = File.join(coverage_folder, 'outliers.html')
-
-        print "\nGenerating: outliers.html\n\n"
 
         File.open(html_file, 'w+') do |file|
           erb_location = File.join( File.dirname(__FILE__), '../views/outliers.html.erb' )

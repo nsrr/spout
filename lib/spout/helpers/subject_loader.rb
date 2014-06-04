@@ -35,7 +35,7 @@ module Spout
           CSV.parse( File.open(csv_file, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true, header_converters: lambda { |h| h.to_s.downcase } ) do |line|
             row = line.to_hash
             count += 1
-            puts "Line: #{count}" if (count % 1000 == 0)
+            print '.' if (count % 10 == 0)
             @subjects << Spout::Models::Subject.create do |t|
               t._visit = row[@visit]
 
@@ -56,6 +56,7 @@ module Spout
             # puts "Memory Used: " + (`ps -o rss -p #{$$}`.strip.split.last.to_i / 1024).to_s + " MB" if count % 1000 == 0
             break if @number_of_rows != nil and count >= @number_of_rows
           end
+          puts "\n\n"
         end
       end
 
