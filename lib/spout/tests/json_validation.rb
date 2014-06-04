@@ -27,6 +27,12 @@ module Spout
         end
       end
 
+      Dir.glob("forms/**/*.json").each do |file|
+        define_method("test_json: "+file) do
+          assert_valid_json file
+        end
+      end
+
     end
   end
 end

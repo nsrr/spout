@@ -1,6 +1,10 @@
 ## 0.8.0
 
 ### Enhancements
+- Tests now include check for variables that reference one or more forms
+  - `include Spout::Tests::FormExistenceValidation`
+  - `include Spout::Tests::FormNameUniqueness`
+  - `include Spout::Tests::FormNameMatch`
 - Added `spout graphs` command that generates JSON charts and tables of each variable in a dataset
   - This command requires a .spout.yml file to be specified to identify the following variables:
     - `visit`: This variable is used to separate subject encounters in a histogram

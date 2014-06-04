@@ -120,6 +120,9 @@ class DictionaryTest < Test::Unit::TestCase
   include Spout::Tests::DomainExistenceValidation
   include Spout::Tests::DomainFormat
   include Spout::Tests::DomainNameUniqueness
+  include Spout::Tests::FormExistenceValidation
+  include Spout::Tests::FormNameUniqueness
+  include Spout::Tests::FormNameMatch
 end
 ```
 
@@ -233,3 +236,49 @@ This will generate a graph for ahi for the first 10 rows of each dataset CSV.
 
 
 This will generate charts and tables for each variable in the dataset plotted against the variables listed under `charts`.
+
+### Example Variable that references a Domain and a Form
+
+`variables\Demographics\gender.json`
+```json
+{
+  "id": "gender",
+  "display_name": "Gender",
+  "description": "Gender as reported by subject",
+  "type": "choices",
+  "domain": "gender12",
+  "labels": [
+    "gender"
+  ],
+  "commonly_used": true,
+  "forms": [
+    "intake_questionnaire"
+  ]
+}
+```
+
+`domains\gender12.json`
+```json
+[
+  {
+    "value": "1",
+    "display_name": "Male",
+    "description": ""
+  },
+  {
+    "value": "2",
+    "display_name": "Female",
+    "description": ""
+  }
+]
+```
+
+`forms\Baseline Visit\intake_questionnaire.json`
+```json
+{
+  "id": "intake_questionnaire",
+  "display_name": "Intake Questionnaire at Baseline Visit",
+  "code_book": "Baseline-Visit-Intake-Questionnaire.pdf"
+}
+```
+

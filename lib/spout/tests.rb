@@ -11,6 +11,9 @@ require 'spout/tests/domain_existence_validation'
 require 'spout/tests/domain_format'
 require 'spout/tests/domain_name_uniqueness'
 require 'spout/tests/domain_specified'
+require 'spout/tests/form_existence_validation'
+require 'spout/tests/form_name_uniqueness'
+require 'spout/tests/form_name_match'
 
 module Spout
   module Tests
@@ -22,6 +25,9 @@ module Spout
     include Spout::Tests::DomainFormat
     include Spout::Tests::DomainNameUniqueness
     include Spout::Tests::DomainSpecified
+    include Spout::Tests::FormExistenceValidation
+    include Spout::Tests::FormNameUniqueness
+    include Spout::Tests::FormNameMatch
 
     Turn.config.trace = 1
   end
