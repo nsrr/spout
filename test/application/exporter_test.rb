@@ -16,6 +16,7 @@ module ApplicationTests
     end
 
     def teardown
+      remove_basic_info
       teardown_app
     end
 
