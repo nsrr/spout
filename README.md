@@ -239,7 +239,7 @@ This will generate charts and tables for each variable in the dataset plotted ag
 
 ### Example Variable that references a Domain and a Form
 
-`variables\Demographics\gender.json`
+`variables/Demographics/gender.json`
 ```json
 {
   "id": "gender",
@@ -257,7 +257,7 @@ This will generate charts and tables for each variable in the dataset plotted ag
 }
 ```
 
-`domains\gender12.json`
+`domains/gender12.json`
 ```json
 [
   {
@@ -273,7 +273,7 @@ This will generate charts and tables for each variable in the dataset plotted ag
 ]
 ```
 
-`forms\Baseline Visit\intake_questionnaire.json`
+`forms/Baseline Visit/intake_questionnaire.json`
 ```json
 {
   "id": "intake_questionnaire",
