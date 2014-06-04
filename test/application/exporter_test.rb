@@ -38,6 +38,7 @@ folder,domain_id,value,display_name,description
       end
 
       assert File.directory?(File.join(app_path, 'dd'))
+      assert_equal ["age_at_visit", "gender"].sort, Dir.glob(File.join(app_path, 'variables', '**', '*.json')).collect{|s| s.gsub(/^(.*)\/|\.json$/, '')}.sort
       assert_equal variable_csv, File.read(File.join(app_path, 'dd', '1.0.0', 'variables.csv'))
       assert_equal domain_csv, File.read(File.join(app_path, 'dd', '1.0.0', 'domains.csv'))
       assert_match "dd/1.0.0/variables.csv", output
