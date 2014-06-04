@@ -1,5 +1,6 @@
 require 'csv'
 require 'json'
+require 'fileutils'
 
 module Spout
   module Commands
