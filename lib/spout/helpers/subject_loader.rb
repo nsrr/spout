@@ -40,16 +40,18 @@ module Spout
               t._visit = row[@visit]
 
               row.each do |key,value|
-                unless t.respond_to?(key)
-                  t.class.send(:define_method, "#{key}") { instance_variable_get("@#{key}") }
-                  t.class.send(:define_method, "#{key}=") { |value| instance_variable_set("@#{key}", value) }
+                method = key.to_s.downcase
+
+                unless t.respond_to?(method)
+                  t.class.send(:define_method, "#{method}") { instance_variable_get("@#{method}") }
+                  t.class.send(:define_method, "#{method}=") { |value| instance_variable_set("@#{method}", value) }
                 end
 
-                @all_methods[key] ||= []
-                @all_methods[key] = @all_methods[key] | [csv_file]
+                @all_methods[method] ||= []
+                @all_methods[method] = @all_methods[method] | [csv_file]
 
                 unless value == nil
-                  t.send("#{key}=", value)
+                  t.send("#{method}=", value)
                 end
               end
             end

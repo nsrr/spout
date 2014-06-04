@@ -16,7 +16,7 @@ module Spout
       end
 
       def load_json(column)
-        file = Dir.glob("variables/**/#{column}.json").first
+        file = Dir.glob("variables/**/#{column.to_s.downcase}.json", File::FNM_CASEFOLD).first
         @file_name_test = (file != nil)
         @json = JSON.parse(File.read(file)) rescue @json = {}
         @json_id_test = (@json['id'].to_s.downcase == column)
@@ -25,7 +25,7 @@ module Spout
       def load_valid_values
         valid_values = []
         if @json['type'] == 'choices'
-          file = Dir.glob("domains/**/#{@json['domain']}.json").first
+          file = Dir.glob("domains/**/#{@json['domain'].to_s.downcase}.json", File::FNM_CASEFOLD).first
           if json = JSON.parse(File.read(file)) rescue false
             valid_values = json.collect{|hash| hash['value']}
           end
@@ -49,7 +49,7 @@ module Spout
         if @json['type'] != 'choices'
           true
         else
-          domain_file = Dir.glob("domains/**/#{@json['domain']}.json").first
+          domain_file = Dir.glob("domains/**/#{@json['domain'].to_s.downcase}.json", File::FNM_CASEFOLD).first
           if domain_json = JSON.parse(File.read(domain_file)) rescue false
             return domain_json.kind_of?(Array)
           end

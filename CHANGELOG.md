@@ -14,6 +14,9 @@
   - Updated to colorize 0.7.2
 - Use of Ruby 2.1.2 is now recommended
 
+### Bug Fix
+- Spout commands are now more consistently case insensitive for file and column names across platforms
+
 ### Testing
 - Refactored Spout code and updated test coverage for all major spout commands
 
