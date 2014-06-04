@@ -24,7 +24,7 @@ module Spout
           keys = %w(id display_name description type units domain labels calculation)
           csv << ['folder'] + keys
           Dir.glob("variables/**/*.json").each do |file|
-            if json = JSON.parse(File.read(file)) rescue false
+            if json = JSON.parse(File.read(file)) # rescue false
               variable_folder = variable_folder_path(file)
               csv << [variable_folder] + keys.collect{|key| json[key].kind_of?(Array) ? json[key].join(';') : json[key].to_s}
             end
