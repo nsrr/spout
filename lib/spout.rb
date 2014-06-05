@@ -60,8 +60,6 @@ The most common spout commands are:
                     `spout new <project_name>` creates a new
                     data dictionary in `./<project_name>`
   [t]est            Run tests and show failing tests
-  [t] --verbose     Run the tests and show passing and failing
-                    tests
   [i]mport          Import a CSV file into the JSON dictionary
   [e]xport [1.0.0]  Export the JSON dictionary to CSV format
   [c]overage        Coverage report, requires dataset CSVs
@@ -93,8 +91,7 @@ EOT
   end
 
   def self.test(argv)
-    hide_passing_tests = (argv.delete('--verbose') == nil)
-    system "bundle exec rake#{' HIDE_PASSING_TESTS=true' if hide_passing_tests}"
+    system "bundle exec rake"
     # require 'spout/commands/test_runner'
     # Spout::Commands::TestRunner.new(argv)
   end
