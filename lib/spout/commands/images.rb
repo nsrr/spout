@@ -15,7 +15,8 @@ module Spout
         @variable_files = Dir.glob('variables/**/*.json')
         @standard_version = standard_version
         @pretend = (argv.delete('--pretend') != nil)
-
+        @sizes = sizes
+        @types = types
 
         @valid_ids = variable_ids
 
@@ -47,13 +48,12 @@ module Spout
         FileUtils.mkpath( options_folder )
         tmp_options_file = File.join( options_folder, 'options.json' )
 
-        sizes = []
-
         variable_files_count = @variable_files.count
         @variable_files.each_with_index do |variable_file, file_index|
           json = JSON.parse(File.read(variable_file)) rescue json = nil
           next unless json
           next unless @valid_ids.include?(json["id"].to_s.downcase) or @valid_ids.size == 0
+          next unless @types.include?(json["type"]) or @types.size == 0
           next unless ["numeric", "integer", "choices"].include?(json["type"])
           variable_name  = json['id'].to_s.downcase
           next unless Spout::Models::Subject.method_defined?(variable_name)
@@ -96,8 +96,8 @@ module Spout
                 }
               eos
             end
-            run_phantom_js("#{json['id']}-lg.png", 600, tmp_options_file) if sizes.size == 0 or sizes.include?('lg')
-            run_phantom_js("#{json['id']}.png",     75, tmp_options_file) if sizes.size == 0 or sizes.include?('sm')
+            run_phantom_js("#{json['id']}-lg.png", 600, tmp_options_file) if @sizes.size == 0 or @sizes.include?('lg')
+            run_phantom_js("#{json['id']}.png",     75, tmp_options_file) if @sizes.size == 0 or @sizes.include?('sm')
           end
 
         end

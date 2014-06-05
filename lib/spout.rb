@@ -108,7 +108,7 @@ EOT
   private
 
   def self.flag_values(flags, param)
-    flags.select{|f| f[0..((param.size + 3) - 1)] == "--#{param}-" and f.length > param.size + 3}.collect{|f| f[(param.size + 3)..-1]}
+    flags.select{|f| f =~ /^--#{param}-/}.collect{|f| f[(param.size + 3)..-1]}
   end
 
 end
