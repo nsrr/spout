@@ -1,6 +1,4 @@
 require "spout/version"
-require "spout/application"
-require 'spout/tasks'
 
 Spout::COMMANDS = {
   'n' => :new_project,

@@ -1,3 +1,5 @@
+require 'colorize'
+
 TEMPLATES_DIRECTORY = File.expand_path('../../templates', __FILE__)
 
 module Spout

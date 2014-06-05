@@ -1,2 +1,1 @@
-require 'spout'
-Spout::Application.new.load_tasks
+require 'spout/tasks'

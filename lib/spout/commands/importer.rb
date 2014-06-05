@@ -1,6 +1,7 @@
 require 'csv'
 require 'json'
 require 'fileutils'
+require 'colorize'
 
 module Spout
   module Commands
