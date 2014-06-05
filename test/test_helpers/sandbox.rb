@@ -50,44 +50,44 @@ charts:
     title: Gender
       YML
       app_file 'variables/age_at_visit.json', <<-JSON
-{
-  "id": "age_at_visit",
-  "display_name": "Age at Visit",
-  "description": "Age at time of visit.",
-  "type": "numeric",
-  "units": "years",
-  "labels": [
-    "age_at_visit"
-  ],
-  "commonly_used": true
-}
+        {
+          "id": "age_at_visit",
+          "display_name": "Age at Visit",
+          "description": "Age at time of visit.",
+          "type": "numeric",
+          "units": "years",
+          "labels": [
+            "age_at_visit"
+          ],
+          "commonly_used": true
+        }
       JSON
       app_file 'variables/gender.json', <<-JSON
-{
-  "id": "gender",
-  "display_name": "Gender",
-  "description": "Gender as reported by Parent Cohort",
-  "type": "choices",
-  "domain": "gdomain",
-  "labels": [
-    "gender"
-  ],
-  "commonly_used": true
-}
+        {
+          "id": "gender",
+          "display_name": "Gender",
+          "description": "Gender as reported by Parent Cohort",
+          "type": "choices",
+          "domain": "gdomain",
+          "labels": [
+            "gender"
+          ],
+          "commonly_used": true
+        }
       JSON
       app_file 'domains/gdomain.json', <<-JSON
-[
-  {
-    "value": "m",
-    "display_name": "Male",
-    "description": ""
-  },
-  {
-    "value": "f",
-    "display_name": "Female",
-    "description": ""
-  }
-]
+        [
+          {
+            "value": "m",
+            "display_name": "Male",
+            "description": ""
+          },
+          {
+            "value": "f",
+            "display_name": "Female",
+            "description": ""
+          }
+        ]
       JSON
       app_file 'csvs/1.0.0/dataset.csv', <<-CSV
 visit,age_at_visit,gender
@@ -122,32 +122,32 @@ visit,age_at_visit,gender
 
     def create_visit_variable_and_domain
       app_file 'variables/visit.json', <<-JSON
-{
-  "id": "visit",
-  "display_name": "Visit",
-  "description": "Visit Number",
-  "type": "choices",
-  "domain": "vdomain",
-  "labels": [
-    "visit"
-  ],
-  "commonly_used": true
-}
+        {
+          "id": "visit",
+          "display_name": "Visit",
+          "description": "Visit Number",
+          "type": "choices",
+          "domain": "vdomain",
+          "labels": [
+            "visit"
+          ],
+          "commonly_used": true
+        }
       JSON
       app_file 'domains/vdomain.json', <<-JSON
-[
-  {
-    "value": "1",
-    "display_name": "Visit One",
-    "description": ""
-  },
-  {
-    "value": "2",
-    "display_name": "Visit Two",
-    "description": ""
-  }
-]
-    JSON
+        [
+          {
+            "value": "1",
+            "display_name": "Visit One",
+            "description": ""
+          },
+          {
+            "value": "2",
+            "display_name": "Visit Two",
+            "description": ""
+          }
+        ]
+      JSON
     end
 
     def remove_visit_variable_and_domain
