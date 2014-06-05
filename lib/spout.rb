@@ -1,7 +1,3 @@
-require 'csv'
-require 'json'
-require 'fileutils'
-
 require "spout/version"
 require "spout/application"
 require 'spout/tasks'

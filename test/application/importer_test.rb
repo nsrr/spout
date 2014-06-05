@@ -1,5 +1,3 @@
-require 'json'
-
 require 'test_helpers/sandbox'
 require 'test_helpers/capture'
 
