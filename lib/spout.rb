@@ -1,5 +1,7 @@
 require "spout/version"
 
+require 'spout/models/dictionary'
+
 Spout::COMMANDS = {
   'n' => :new_project,
   'v' => :version,

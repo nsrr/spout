@@ -72,7 +72,10 @@ charts:
           "labels": [
             "gender"
           ],
-          "commonly_used": true
+          "commonly_used": true,
+          "forms": [
+            "intake_questionnaire"
+          ]
         }
       JSON
       app_file 'domains/gdomain.json', <<-JSON
@@ -88,6 +91,13 @@ charts:
             "description": ""
           }
         ]
+      JSON
+      app_file 'forms/intake_questionnaire.json', <<-JSON
+        {
+          "id": "intake_questionnaire",
+          "display_name": "Intake Questionnaire at Baseline Visit",
+          "code_book": "Baseline-Visit-Intake-Questionnaire.pdf"
+        }
       JSON
       app_file 'csvs/1.0.0/dataset.csv', <<-CSV
 visit,age_at_visit,gender

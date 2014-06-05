@@ -15,6 +15,12 @@
 - Added `spout outliers` command that returns a list of integer or numeric variables that contain major and minor outliers
 - Removed the deprecated `spout hybrid` command
 - Spout tests are now run using minitest in favor of test unit
+- Spout dictionary can now be loaded using the following command in irb:
+  - `require 'spout'; dictionary = Spout::Models::Dictionary.new(Dir.pwd)`
+  - `dictionary.load_all!`
+  - `dictionary.variables.count`
+  - `dictionary.domains.count`
+  - `dictionary.forms.count`
 - **Gem Changes**
   - Updated to colorize 0.7.2
   - Updated to minitest

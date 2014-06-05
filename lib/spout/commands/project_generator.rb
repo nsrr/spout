@@ -37,6 +37,8 @@ EOT
         copy_file 'keep', 'domains/.keep'
         directory 'variables'
         copy_file 'keep', 'variables/.keep'
+        directory 'forms'
+        copy_file 'keep', 'forms/.keep'
         directory 'test'
         copy_file 'test/dictionary_test.rb'
         copy_file 'test/test_helper.rb'

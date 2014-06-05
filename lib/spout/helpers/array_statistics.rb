@@ -1,5 +1,3 @@
-# array_statistics.rb
-
 class Array
   def n
     self.compact.count

@@ -1,3 +1,5 @@
+require 'json'
+
 module Spout
   module Helpers
     class JsonLoader
