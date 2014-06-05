@@ -1,3 +1,7 @@
+require 'csv'
+require 'json'
+require 'fileutils'
+
 require "spout/version"
 require "spout/application"
 require 'spout/tasks'
@@ -95,6 +99,8 @@ EOT
   def self.test(argv)
     hide_passing_tests = (argv.delete('--verbose') == nil)
     system "bundle exec rake#{' HIDE_PASSING_TESTS=true' if hide_passing_tests}"
+    # require 'spout/commands/test_runner'
+    # Spout::Commands::TestRunner.new(argv)
   end
 
   def self.version(argv)

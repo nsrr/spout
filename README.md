@@ -104,7 +104,7 @@ If not, you can add the following to your `test` directory to include all Spout 
 ```
 require 'spout/tests'
 
-class DictionaryTest < Test::Unit::TestCase
+class DictionaryTest < Minitest::Test
   include Spout::Tests
 end
 ```
@@ -112,7 +112,7 @@ end
 ```
 require 'spout/tests'
 
-class DictionaryTest < Test::Unit::TestCase
+class DictionaryTest < Minitest::Test
   # Or only include certain tests
   include Spout::Tests::JsonValidation
   include Spout::Tests::VariableTypeValidation

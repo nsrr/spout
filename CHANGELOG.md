@@ -14,8 +14,10 @@
 - The `spout coverage` command now lists domains that are defined in the data dictionary and not referenced by any variable
 - Added `spout outliers` command that returns a list of integer or numeric variables that contain major and minor outliers
 - Removed the deprecated `spout hybrid` command
+- Spout tests are now run using minitest in favor of test unit
 - **Gem Changes**
   - Updated to colorize 0.7.2
+  - Updated to minitest
 - Use of Ruby 2.1.2 is now recommended
 
 ### Bug Fix

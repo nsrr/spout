@@ -27,7 +27,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "rake"
-  spec.add_dependency "turn"
+  spec.add_dependency "minitest"
+  spec.add_dependency "minitest-reporters"
   spec.add_dependency "json"
   spec.add_dependency "colorize", "~> 0.7.2"
 

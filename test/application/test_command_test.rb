@@ -19,7 +19,7 @@ module ApplicationTests
       output, error = util_capture do
         Dir.chdir(app_path) { Spout.launch ['test'] }
       end
-      assert_match /Loaded Suite test\n\n/, output
+      assert_match /Loaded Suite test/, output
       assert_match /DictionaryTest/, output
       refute_match /PASS (.*?) test_domain_name_uniqueness/, output
       refute_match /PASS (.*?) test_variable_name_uniqueness/, output
@@ -32,7 +32,7 @@ module ApplicationTests
         Dir.chdir(app_path) { Spout.launch ['test', '--verbose'] }
       end
 
-      assert_match /Loaded Suite test\n\n/, output
+      assert_match /Loaded Suite test/, output
       assert_match /DictionaryTest/, output
       assert_match /PASS (.*?) test_domain_name_uniqueness/, output
       assert_match /PASS (.*?) test_variable_name_uniqueness/, output

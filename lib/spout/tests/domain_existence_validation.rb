@@ -2,7 +2,7 @@ module Spout
   module Tests
     module DomainExistenceValidation
 
-      def assert_domain_existence(item, msg = nil)
+      def assert_domain_existence(item)
         domain_names = Dir.glob("domains/**/*.json").collect{|file| file.split('/').last.to_s.downcase.split('.json').first}
 
         result = begin
@@ -13,10 +13,9 @@ module Spout
           false
         end
 
-        full_message = build_message(msg, "The domain #{domain_name} referenced by ? does not exist.", item)
-        assert_block(full_message) do
-          result
-        end
+        message = "The domain #{domain_name} referenced by #{item} does not exist."
+
+        assert result, message
       end
 
       Dir.glob("variables/**/*.json").each do |file|

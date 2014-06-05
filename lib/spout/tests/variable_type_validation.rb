@@ -3,11 +3,9 @@ module Spout
     module VariableTypeValidation
       VALID_VARIABLE_TYPES = ['identifier', 'choices', 'integer', 'numeric', 'string', 'text', 'date', 'time', 'file', 'datetime'].sort
 
-      def assert_variable_type(item, msg = nil)
-        full_message = build_message(msg, "? invalid variable type. Valid types: #{VALID_VARIABLE_TYPES.join(', ')}", item)
-        assert_block(full_message) do
-          VALID_VARIABLE_TYPES.include?(item)
-        end
+      def assert_variable_type(item)
+        message = "#{item} invalid variable type. Valid types: #{VALID_VARIABLE_TYPES.join(', ')}"
+        assert VALID_VARIABLE_TYPES.include?(item), message
       end
 
       Dir.glob("variables/**/*.json").each do |file|

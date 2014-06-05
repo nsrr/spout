@@ -1,7 +1,3 @@
-require 'csv'
-require 'json'
-require 'fileutils'
-
 require 'test_helpers/sandbox'
 require 'test_helpers/capture'
 

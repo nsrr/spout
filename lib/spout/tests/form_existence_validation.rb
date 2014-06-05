@@ -2,7 +2,7 @@ module Spout
   module Tests
     module FormExistenceValidation
 
-      def assert_form_existence(item, msg = nil)
+      def assert_form_existence(item)
         form_names = Dir.glob("forms/**/*.json").collect{|file| file.split('/').last.to_s.downcase.split('.json').first}
 
         result = begin
@@ -11,10 +11,9 @@ module Spout
           false
         end
 
-        full_message = build_message(msg, "One or more forms referenced by ? does not exist.", item)
-        assert_block(full_message) do
-          result
-        end
+        message = "One or more forms referenced by #{item} does not exist."
+
+        assert result, message
       end
 
       Dir.glob("variables/**/*.json").each do |file|

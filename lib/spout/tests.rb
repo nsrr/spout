@@ -1,7 +1,67 @@
-require 'turn/autorun'
-require 'test/unit'
 require 'rubygems'
 require 'json'
+
+require 'minitest/autorun'
+require 'minitest/reporters'
+require 'ansi/code'
+
+module Minitest
+  module Reporters
+    class SpoutReporter < BaseReporter
+      include ANSI::Code
+      include RelativePosition
+
+      def start
+        super
+        print(white { 'Loaded Suite test' })
+        puts
+        puts
+        puts 'Started'
+        puts
+      end
+
+      def report
+        super
+        puts 'Finished in %.5f seconds.' % total_time
+        puts
+        print(white { '%d tests' } % count)
+        print(', %d assertions, ' % assertions)
+        color = failures.zero? && errors.zero? ? :green : :red
+        print(send(color) { '%d failures, %d errors, ' } % [failures, errors])
+        print(yellow { '%d skips' } % skips)
+        puts
+        puts
+      end
+
+      def record(test)
+        super
+        if !test.skipped? && test.failure
+          print "    "
+          print_colored_status(test)
+          print "    #{test.name}"
+          puts
+          print "             "
+          print test.failure
+          puts
+          puts
+        end
+      end
+
+      protected
+
+      def before_suite(suite)
+        puts suite
+      end
+
+      def after_suite(suite)
+        puts
+      end
+    end
+  end
+end
+
+Minitest::Reporters.use! Minitest::Reporters::SpoutReporter.new
+
 
 require 'spout/tests/json_validation'
 require 'spout/tests/variable_type_validation'
@@ -28,17 +88,5 @@ module Spout
     include Spout::Tests::FormExistenceValidation
     include Spout::Tests::FormNameUniqueness
     include Spout::Tests::FormNameMatch
-
-    Turn.config.trace = 1
-  end
-end
-
-require 'spout/hidden_reporter'
-
-module Turn
-  class Configuration
-    def reporter
-      @reporter ||= Spout::HiddenReporter.new(ENV['HIDE_PASSING_TESTS'] == 'true')
-    end
   end
 end

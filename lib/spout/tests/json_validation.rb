@@ -9,10 +9,9 @@ module Spout
           error = e
           false
         end
-        full_message = build_message(msg, "?", error)
-        assert_block(full_message) do
-          result
-        end
+
+        message = error.to_s
+        assert result, message
       end
 
       Dir.glob("variables/**/*.json").each do |file|

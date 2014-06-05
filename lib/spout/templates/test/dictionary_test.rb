@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class DictionaryTest < Test::Unit::TestCase
+class DictionaryTest < Minitest::Test
   include Spout::Tests
 
   # You may add additional tests here
