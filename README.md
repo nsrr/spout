@@ -176,7 +176,7 @@ end
 
 ### Test your data dictionary coverage of your dataset
 
-Spout lets you generate a nice visual coverage report that displays how well the data dictionary covers your dataset. Place your dataset csvs into `./csvs/` and then run the following Spout command:
+Spout lets you generate a nice visual coverage report that displays how well the data dictionary covers your dataset. Place your dataset csvs into `./csvs/<version>/` and then run the following Spout command:
 
 ```
 spout coverage
