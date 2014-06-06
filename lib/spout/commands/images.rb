@@ -101,7 +101,7 @@ module Spout
           end
 
         end
-        File.delete(tmp_options_file) if File.exists?(tmp_options_file)
+        File.delete(tmp_options_file) if File.exist?(tmp_options_file)
       end
 
       def run_phantom_js(png_name, width, tmp_options_file)

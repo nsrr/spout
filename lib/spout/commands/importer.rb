@@ -11,7 +11,7 @@ module Spout
 
         @csv_file = argv[1].to_s
 
-        unless File.exists?(@csv_file)
+        unless File.exist?(@csv_file)
           puts csv_usage
           return self
         end

@@ -17,7 +17,7 @@ module Spout
         @options = []
 
         json = begin
-          if File.exists?(file_name)
+          if File.exist?(file_name)
             JSON.parse(File.read(file_name))
           else
             @errors << "No corresponding #{@id}.json file found."
