@@ -135,7 +135,7 @@ You can also use Spout iterators to create custom tests for variables, forms, an
 
 ```ruby
 class DictionaryTest < Minitest::Test
-  # This line includes all default Spout Dictionary tests that a
+  # This line includes all default Spout Dictionary tests
   include Spout::Tests
 
   # This line provides access to @variables, @forms, and @domains iterators
@@ -158,7 +158,7 @@ end
 
 ```ruby
 class DictionaryTest < Minitest::Test
-  # This line includes all default Spout Dictionary tests that a
+  # This line includes all default Spout Dictionary tests
   include Spout::Tests
 
   # This line provides access to @variables, @forms, and @domains
