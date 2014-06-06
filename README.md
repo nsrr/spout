@@ -101,19 +101,20 @@ If not, you can add the following to your `test` directory to include all Spout 
 
 `test/dictionary_test.rb`
 
-```
+```ruby
 require 'spout/tests'
 
 class DictionaryTest < Minitest::Test
+  # This line includes all default Spout Dictionary tests
   include Spout::Tests
 end
 ```
 
-```
+```ruby
 require 'spout/tests'
 
 class DictionaryTest < Minitest::Test
-  # Or only include certain tests
+  # You can include only certain Spout tests by including them individually
   include Spout::Tests::JsonValidation
   include Spout::Tests::VariableTypeValidation
   include Spout::Tests::VariableNameUniqueness
@@ -130,7 +131,7 @@ Then run either `spout test` or `bundle exec rake` to run your tests.
 
 You can also use Spout iterators to create custom tests for variables, forms, and domains in your data dictionary.
 
-Example Custom Test 1: Test that `integer` and `numeric` variables have a valid unit type
+**Example Custom Test 1:** Test that `integer` and `numeric` variables have a valid unit type
 
 ```ruby
 class DictionaryTest < Minitest::Test
@@ -153,7 +154,7 @@ class DictionaryTest < Minitest::Test
 end
 ```
 
-Example Custom Test 2: Create custom tests to show that variables have 2 or more labels.
+**Example Custom Test 2:** Create custom tests to show that variables have 2 or more labels.
 
 ```ruby
 class DictionaryTest < Minitest::Test

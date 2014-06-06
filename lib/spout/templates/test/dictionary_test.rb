@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class DictionaryTest < Minitest::Test
-  # This line includes all default Spout Dictionary tests that a
+  # This line includes all default Spout Dictionary tests
   include Spout::Tests
 
   # This line provides access to @variables, @forms, and @domains iterators
