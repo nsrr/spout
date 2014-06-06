@@ -5,6 +5,9 @@
   - `include Spout::Tests::FormExistenceValidation`
   - `include Spout::Tests::FormNameUniqueness`
   - `include Spout::Tests::FormNameMatch`
+- Test iterators have been added to provide access to `@variables`, `@forms`, and `@domains` to build custom tests in `dictionary_test.rb`
+  - Add the line `include Spout::Helpers::Iterators` to `dictionary_test.rb` to access the iterators
+  - See [README.md](https://github.com/sleepepi/spout/blob/master/README.md) for examples
 - Added `spout graphs` command that generates JSON charts and tables of each variable in a dataset
   - This command requires a .spout.yml file to be specified to identify the following variables:
     - `visit`: This variable is used to separate subject encounters in a histogram

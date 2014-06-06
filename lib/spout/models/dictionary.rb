@@ -26,6 +26,7 @@ module Spout
         load_variables!
         load_domains!
         load_forms!
+        self
       end
 
       def load_variables!

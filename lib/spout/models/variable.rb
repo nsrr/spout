@@ -43,12 +43,6 @@ module Spout
         @errors = (@errors + [error]).compact
       end
 
-      def print
-        %w( id folder display_name description type units commonly_used domain_name form_names errors ).each do |method|
-          puts "#{"%13s" % method}: #{self.send(method).inspect}"
-        end
-      end
-
       def path
         File.join(@folder, "#{@id}.json")
       end

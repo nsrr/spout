@@ -75,6 +75,8 @@ require 'spout/tests/form_existence_validation'
 require 'spout/tests/form_name_uniqueness'
 require 'spout/tests/form_name_match'
 
+require 'spout/helpers/iterators'
+
 module Spout
   module Tests
     include Spout::Tests::JsonValidation

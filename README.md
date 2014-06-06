@@ -128,6 +128,50 @@ end
 
 Then run either `spout test` or `bundle exec rake` to run your tests.
 
+You can also use Spout iterators to create custom tests for variables, forms, and domains in your data dictionary.
+
+Example Custom Test 1: Test that `integer` and `numeric` variables have a valid unit type
+
+```ruby
+class DictionaryTest < Minitest::Test
+  # This line includes all default Spout Dictionary tests that a
+  include Spout::Tests
+
+  # This line provides access to @variables, @forms, and @domains iterators
+  # iterators that can be used to write custom tests
+  include Spout::Helpers::Iterators
+
+  VALID_UNITS = ['minutes', 'hours']
+
+  @variables.select{|v| v.type == 'numeric' or v.type == 'integer'}.each do |variable|
+    define_method("test_valid_units: "+variable.path) do
+      puts variable.class
+      # => Spout::Models::Variable
+      assert VALID_UNITS.include?(variable.units)
+    end
+  end
+end
+```
+
+Example Custom Test 2: Create custom tests to show that variables have 2 or more labels.
+
+```ruby
+class DictionaryTest < Minitest::Test
+  # This line includes all default Spout Dictionary tests that a
+  include Spout::Tests
+
+  # This line provides access to @variables, @forms, and @domains
+  # iterators that can be used to write custom tests
+  include Spout::Helpers::Iterators
+
+  @variables.select{|v| ['numeric','integer'].include?(v.type)}.each do |variable|
+    define_method("test_at_least_two_labels: "+variable.path) do
+      assert_operator 2, :<=, variable.labels.size
+    end
+  end
+end
+```
+
 
 ### Test your data dictionary coverage of your dataset
 

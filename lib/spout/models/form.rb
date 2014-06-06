@@ -37,12 +37,6 @@ module Spout
 
       end
 
-      def print
-        %w( id display_name code_book ).each do |method|
-          puts "#{"%13s" % method}: #{self.send(method).inspect}"
-        end
-      end
-
     end
   end
 end
