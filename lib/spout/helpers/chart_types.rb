@@ -12,6 +12,7 @@ module Spout
       end
 
       def self.continuous_buckets(values)
+        values.select!{|v| v.kind_of? Numeric}
         return [] if values.count == 0
         minimum_bucket = values.min
         maximum_bucket = values.max
@@ -337,63 +338,28 @@ module Spout
         { title: "#{json['display_name']} vs #{chart_variable_json['display_name']}", subtitle: subtitle, headers: headers, footers: footers, rows: rows }
       end
 
-
-      def self.chart_histogram_choices(chart_type, subjects, json, method)
-        return unless domain_json = get_domain(json)
-        return unless chart_variable_json = get_variable(chart_type)
-        return unless chart_variable_domain = domain_array(chart_type)
-
-
-        title = "#{json['display_name']}"
-        subtitle = "By Visit"
-
-        categories = domain_json.collect{|option_hash| option_hash['display_name']}
-
-        units = "Subjects"
-        series = []
-
-        chart_variable_domain.each do |display_name, value|
-          visit_subjects = subjects.select{ |s| s.send(chart_type) == value and s.send(method) != nil }.collect(&method.to_sym)
-          next unless visit_subjects.size > 0
-
-          data = []
-
-          domain_json.each do |option_hash|
-            data << visit_subjects.select{ |v| v == option_hash['value'] }.count
-          end
-
-          series << { name: display_name, data: data }
-        end
-
-        { title: title, subtitle: subtitle, categories: categories, units: units, series: series }
-      end
-
       def self.chart_histogram(chart_type, subjects, json, method)
-        return chart_histogram_choices(chart_type, subjects, json, method) if json['type'] == 'choices'
+        domain_json = get_domain(json)
+        return if json['type'] == 'choices' and not domain_json
         return unless chart_variable_json = get_variable(chart_type)
         return unless chart_variable_domain = domain_array(chart_type)
 
         title = "#{json['display_name']}"
         subtitle = "By Visit"
-        categories = []
         units = "Subjects"
         series = []
 
         all_subject_values = subjects.collect(&method.to_sym).compact.sort
         return nil if all_subject_values.count == 0
-        buckets = continuous_buckets(all_subject_values)
+        categories = pull_categories(json, method, all_subject_values, domain_json)
 
-        categories = buckets.collect{|b| "#{b[0].round(1)} to #{b[1].round(1)}"}
+        buckets = continuous_buckets(all_subject_values)
 
         chart_variable_domain.each do |display_name, value|
           visit_subjects = subjects.select{ |s| s.send(chart_type) == value and s.send(method) != nil }.collect(&method.to_sym).sort
           next unless visit_subjects.size > 0
 
-          data = []
-
-          visit_subjects.group_by{|v| get_bucket(buckets, v) }.each do |key, values|
-            data[categories.index(key)] = values.count if categories.index(key)
-          end
+          data = pull_data(json, visit_subjects, buckets, categories, domain_json)
 
           series << { name: display_name, data: data }
         end
@@ -401,6 +367,30 @@ module Spout
         { title: title, subtitle: subtitle, categories: categories, units: units, series: series }
       end
 
+      def self.pull_categories(json, method, all_subject_values, domain_json)
+        categories = []
+        if json['type'] == 'choices'
+          categories = domain_json.collect{|option_hash| option_hash['display_name']}
+        else
+          buckets = continuous_buckets(all_subject_values)
+          categories = buckets.collect{|b| "#{b[0].round(1)} to #{b[1].round(1)}"}
+        end
+        categories
+      end
+
+      def self.pull_data(json, visit_subjects, buckets, categories, domain_json)
+        data = []
+        if json['type'] == 'choices'
+          domain_json.each do |option_hash|
+            data << visit_subjects.select{ |v| v == option_hash['value'] }.count
+          end
+        else
+          visit_subjects.group_by{|v| get_bucket(buckets, v) }.each do |key, values|
+            data[categories.index(key)] = values.count if categories.index(key)
+          end
+        end
+        data
+      end
     end
   end
 end
