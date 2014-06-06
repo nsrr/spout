@@ -154,7 +154,7 @@ class DictionaryTest < Minitest::Test
 end
 ```
 
-**Example Custom Test 2:** Create custom tests to show that variables have 2 or more labels.
+**Example Custom Test 2:** Tests that variables have at least 2 or more labels.
 
 ```ruby
 class DictionaryTest < Minitest::Test
