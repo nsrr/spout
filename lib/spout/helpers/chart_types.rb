@@ -5,10 +5,11 @@ module Spout
   module Helpers
     class ChartTypes
       def self.get_bucket(buckets, value)
+        return nil if buckets.size == 0
         buckets.each do |b|
-          return "#{b[0].round(1)} to #{b[1].round(1)}" if value >= b[0] and value <= b[1]
+          return "#{b[0]} to #{b[1]}" if value >= b[0] and value <= b[1]
         end
-        nil
+        "#{buckets.last[0]} to #{buckets.last[1]}"
       end
 
       def self.continuous_buckets(values)
@@ -16,14 +17,15 @@ module Spout
         return [] if values.count == 0
         minimum_bucket = values.min
         maximum_bucket = values.max
+        max_buckets = 12
+        bucket_size = ((maximum_bucket - minimum_bucket) / max_buckets.to_f)
+        precision = [-Math.log10(bucket_size).floor, 0].max
 
-        max_buckets = [(maximum_bucket - minimum_bucket), 12].min
-        bucket_size = (maximum_bucket - minimum_bucket) / max_buckets
         buckets = []
         (0..(max_buckets-1)).to_a.each do |index|
-          start = minimum_bucket + index * bucket_size
-          stop = start + bucket_size
-          buckets << [start,stop]
+          start = (minimum_bucket + index * bucket_size)
+          stop = (start + bucket_size)
+          buckets << [start.round(precision),stop.round(precision)]
         end
         buckets
       end
@@ -373,7 +375,7 @@ module Spout
           categories = domain_json.collect{|option_hash| option_hash['display_name']}
         else
           buckets = continuous_buckets(all_subject_values)
-          categories = buckets.collect{|b| "#{b[0].round(1)} to #{b[1].round(1)}"}
+          categories = buckets.collect{|b| "#{b[0]} to #{b[1]}"}
         end
         categories
       end
