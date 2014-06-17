@@ -1,5 +1,6 @@
 require 'yaml'
 require 'erb'
+require 'fileutils'
 
 require 'spout/helpers/subject_loader'
 require 'spout/models/coverage_result'

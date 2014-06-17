@@ -1,4 +1,5 @@
 require 'colorize'
+require 'fileutils'
 
 TEMPLATES_DIRECTORY = File.expand_path('../../templates', __FILE__)
 

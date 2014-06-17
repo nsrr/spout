@@ -169,6 +169,7 @@ visit,age_at_visit,gender
 end
 
 require 'test_helper'
+require 'fileutils'
 class SandboxTest < Minitest::Test
   include TestHelpers::Paths
   include TestHelpers::Generation
