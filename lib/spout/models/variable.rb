@@ -5,7 +5,7 @@ module Spout
     class Variable
       # VARIABLE_TYPES = ['choices', 'numeric', 'integer']
 
-      attr_accessor :id, :folder, :display_name, :description, :type, :units, :labels, :commonly_used
+      attr_accessor :id, :folder, :display_name, :description, :type, :units, :labels, :commonly_used, :calculation
       attr_accessor :domain_name, :form_names
       attr_accessor :domain, :forms
       attr_reader :errors
@@ -25,7 +25,7 @@ module Spout
 
         if json and json.kind_of? Hash
 
-          %w( display_name description type units commonly_used ).each do |method|
+          %w( display_name description type units commonly_used calculation ).each do |method|
             instance_variable_set("@#{method}", json[method])
           end
 

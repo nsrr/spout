@@ -40,6 +40,38 @@ module ApplicationTests
       assert_equal true,                variable.commonly_used
     end
 
+    def test_numeric_variable_with_calculation
+      app_file 'variables/bmi.json', <<-JSON
+        {
+          "id": "bmi",
+          "display_name": "Body Mass Index",
+          "description": "Calculation of ye ol' quetelet index.",
+          "type": "numeric",
+          "units": "kilogram per square meter",
+          "calculation": "weight / ( height * height )",
+          "labels": [
+            "bmi",
+            "quetelet"
+          ],
+          "commonly_used": true
+        }
+      JSON
+
+      variable = Spout::Models::Variable.new(File.join(app_path, 'variables', 'bmi.json'), app_path)
+
+      assert_equal 0, variable.errors.size
+      assert_equal "bmi",                 variable.id
+      assert_equal "Body Mass Index",      variable.display_name
+      assert_equal "Calculation of ye ol' quetelet index.", variable.description
+      assert_equal "numeric",               variable.type
+      assert_equal "kilogram per square meter",             variable.units
+      assert_equal [ "bmi","quetelet" ].sort,  variable.labels.sort
+      assert_equal true,                variable.commonly_used
+      assert_equal "weight / ( height * height )", variable.calculation
+
+    end
+
+
     def test_missing_domain_for_choices_variable
       skip
       app_file 'variables/nodomain.json', <<-JSON
