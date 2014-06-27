@@ -28,11 +28,13 @@
   - The `spout export` command now includes a `forms.csv` file that exports form information referenced by variables
 - **General Changes**
   - Spout dictionary can now be loaded using the following command in `irb`:
-    - `require 'spout'; dictionary = Spout::Models::Dictionary.new(Dir.pwd)`
-    - `dictionary.load_all!`
-    - `dictionary.variables.count`
-    - `dictionary.domains.count`
-    - `dictionary.forms.count`
+    ```ruby
+      `require 'spout'; dictionary = Spout::Models::Dictionary.new(Dir.pwd)`
+      `dictionary.load_all!`
+      `dictionary.variables.count`
+      `dictionary.domains.count`
+      `dictionary.forms.count`
+    ```
   - Removed the deprecated `spout hybrid` command
 - **Gem Changes**
   - Use of Ruby 2.1.2 is now recommended
