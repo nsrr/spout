@@ -31,6 +31,7 @@
 
 ### Bug Fix
 - Spout commands are now more consistently case insensitive for file and column names across platforms
+- The `spout import` command now correctly makes variable ids and domain ids consistently lowercase
 
 ### Testing
 - Refactored Spout code and updated test coverage for all major spout commands

@@ -46,12 +46,12 @@ EOT
           folder = File.join('variables', row.delete('folder').to_s)
           FileUtils.mkpath folder
           hash = {}
-          id = row.delete('id')
+          id = row.delete('id').to_s.downcase
           hash['id'] = id
           hash['display_name'] = row.delete('display_name')
           hash['description'] = row.delete('description').to_s
           hash['type'] = row.delete('type')
-          domain = row.delete('domain').to_s
+          domain = row.delete('domain').to_s.downcase
           hash['domain'] = domain if domain != ''
           units = row.delete('units').to_s
           hash['units'] = units if units != ''
@@ -61,7 +61,7 @@ EOT
           hash['labels'] = labels if labels.size > 0
           hash['other'] = row unless row.empty?
 
-          file_name = File.join(folder, id.to_s.downcase + '.json')
+          file_name = File.join(folder, id + '.json')
           File.open(file_name, 'w') do |file|
             file.write(JSON.pretty_generate(hash) + "\n")
           end
@@ -89,7 +89,7 @@ EOT
 
           next if row['domain_id'].to_s == '' or row['value'].to_s == '' or row['display_name'].to_s == ''
           folder = File.join('domains', row['folder'].to_s).gsub(/[^a-zA-Z0-9_\/\.-]/, '_')
-          domain_name = row['domain_id'].to_s.gsub(/[^a-zA-Z0-9_\/\.-]/, '_')
+          domain_name = row['domain_id'].to_s.gsub(/[^a-zA-Z0-9_\/\.-]/, '_').downcase
           domains[domain_name] ||= {}
           domains[domain_name]["folder"] = folder
           domains[domain_name]["options"] ||= []
@@ -106,7 +106,7 @@ EOT
           folder = domain_hash["folder"]
           FileUtils.mkpath folder
 
-          file_name = File.join(folder, domain_name.to_s.downcase + '.json')
+          file_name = File.join(folder, domain_name + '.json')
 
           File.open(file_name, 'w') do |file|
             file.write(JSON.pretty_generate(domain_hash["options"]) + "\n")

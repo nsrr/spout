@@ -79,5 +79,38 @@ folder,domain_id,display_name,description,value
       assert_match /create(.*)domains\/gdomain\.json/, output
       assert_equal domain_json, File.read(File.join(app_path, 'domains', 'gdomain.json'))
     end
+
+    def test_import_converts_ids_to_lowercase
+      app_file 'variables-import-uppercase-ids.csv', <<-CSV
+folder,id,display_name,description,type,domain,units,calculation,labels
+Demographics,BMI,Body Mass Index,Body Mass Index Description,numeric,,,,bmi
+Measurements,RdI3P,Respiratory Index,RDI Description,numeric,,,,ahi
+      CSV
+
+      output, error = util_capture do
+        Dir.chdir(app_path) { Spout.launch ['import', 'variables-import-uppercase-ids.csv'] }
+      end
+
+      bmi_json = JSON.parse(File.read(File.join(app_path, 'variables', 'Demographics', 'bmi.json')))
+      assert_equal 'bmi', bmi_json['id']
+
+      rdi3p_json = JSON.parse(File.read(File.join(app_path, 'variables', 'Measurements', 'rdi3p.json')))
+      assert_equal 'rdi3p', rdi3p_json['id']
+    end
+
+    def test_import_converts_domain_ids_to_lowercase
+      app_file 'variables-import-uppercase-domains-ids.csv', <<-CSV
+folder,id,display_name,description,type,domain,units,calculation,labels
+Demographics,gender,Gender,Gender Description,choices,GDomain,,,gender
+      CSV
+
+      output, error = util_capture do
+        Dir.chdir(app_path) { Spout.launch ['import', 'variables-import-uppercase-domains-ids.csv'] }
+      end
+
+      gender_json = JSON.parse(File.read(File.join(app_path, 'variables', 'Demographics', 'gender.json')))
+      assert_equal 'gdomain', gender_json['domain']
+    end
+
   end
 end
