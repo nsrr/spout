@@ -101,7 +101,7 @@ module Spout
               end
             else
               filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil } # and s.send(variable_name) != nil
-              if filtered_subjects.count > 0
+              if filtered_subjects.collect(&variable_name.to_sym).compact.count > 0
                 stats[:charts][chart_title] = Spout::Helpers::ChartTypes::chart_arbitrary(chart_type, filtered_subjects, json, variable_name, visits)
                 stats[:tables][chart_title] = visits.collect do |visit_display_name, visit_value|
                   visit_subjects = filtered_subjects.select{ |s| s._visit == visit_value }
