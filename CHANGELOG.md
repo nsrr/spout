@@ -1,36 +1,43 @@
 ## 0.8.0
 
 ### Enhancements
-- Tests now include check for variables that reference one or more forms
-  - `include Spout::Tests::FormExistenceValidation`
-  - `include Spout::Tests::FormNameUniqueness`
-  - `include Spout::Tests::FormNameMatch`
-- Test iterators have been added to provide access to `@variables`, `@forms`, and `@domains` to build custom tests in `dictionary_test.rb`
-  - Add the line `include Spout::Helpers::Iterators` to `dictionary_test.rb` to access the iterators
-  - See [README.md](https://github.com/sleepepi/spout/blob/master/README.md) for examples
-- Added `spout graphs` command that generates JSON charts and tables of each variable in a dataset
-  - This command requires a .spout.yml file to be specified to identify the following variables:
-    - `visit`: This variable is used to separate subject encounters in a histogram
-    - `charts`: Array of choices, numeric, or integer variables for charts
-- The `spout pngs` command now renders the histogram form for each variable
-- The `spout coverage` command now lists variables that are defined in the data dictionary and that do not exist in any CSV dataset
-- The `spout coverage` command now lists domains that are defined in the data dictionary and not referenced by any variable
-- Added `spout outliers` command that returns a list of integer or numeric variables that contain major and minor outliers
-- Removed the deprecated `spout hybrid` command
-- Spout tests are now run using minitest in favor of test unit
-- Spout dictionary can now be loaded using the following command in irb:
-  - `require 'spout'; dictionary = Spout::Models::Dictionary.new(Dir.pwd)`
-  - `dictionary.load_all!`
-  - `dictionary.variables.count`
-  - `dictionary.domains.count`
-  - `dictionary.forms.count`
-- The `spout export` command now includes a `forms.csv` file that exports form information referenced by variables
-- Graphs for histograms now specify units on the x-axis
-- The `spout graphs` command does not generate graphs when no underlying values exists for the variable
+- **Testing Changes**
+  - Tests now include check for variables that reference one or more forms
+    - `include Spout::Tests::FormExistenceValidation`
+    - `include Spout::Tests::FormNameUniqueness`
+    - `include Spout::Tests::FormNameMatch`
+  - Test iterators have been added to provide access to `@variables`, `@forms`, and `@domains` to build custom tests in `dictionary_test.rb`
+    - Add the line `include Spout::Helpers::Iterators` to `dictionary_test.rb` to access the iterators
+    - See [README.md](https://github.com/sleepepi/spout/blob/master/README.md) for examples
+  - Spout tests are now run using `Minitest` in favor of `Test::Unit`
+- **Graph Generation Changes**
+  - Added `spout graphs` command that generates JSON charts and tables of each variable in a dataset
+    - This command requires a `.spout.yml` file to be specified to identify the following variables:
+      - `visit`: This variable is used to separate subject encounters in a histogram
+      - `charts`: Array of choices, numeric, or integer variables for charts
+  - Graphs for histograms now specify units on the x-axis
+  - The `spout graphs` command does not generate graphs when no underlying values exists for the variable
+- **Image Generation Changes**
+  - The `spout pngs` command now renders the histogram for each variable
+- **Coverage Command Changes**
+  - The `spout coverage` command now lists variables that are defined in the data dictionary and that do not exist in any CSV dataset
+  - The `spout coverage` command now lists domains that are defined in the data dictionary and not referenced by any variable
+- **Outlier Identification Changes**
+  - Added `spout outliers` command that returns a list of integer or numeric variables that contain major and minor outliers
+- **Export Command Changes**
+  - The `spout export` command now includes a `forms.csv` file that exports form information referenced by variables
+- **General Changes**
+  - Spout dictionary can now be loaded using the following command in `irb`:
+    - `require 'spout'; dictionary = Spout::Models::Dictionary.new(Dir.pwd)`
+    - `dictionary.load_all!`
+    - `dictionary.variables.count`
+    - `dictionary.domains.count`
+    - `dictionary.forms.count`
+  - Removed the deprecated `spout hybrid` command
 - **Gem Changes**
+  - Use of Ruby 2.1.2 is now recommended
   - Updated to colorize 0.7.2
   - Updated to minitest
-- Use of Ruby 2.1.2 is now recommended
 
 ### Bug Fix
 - Spout commands are now more consistently case insensitive for file and column names across platforms
