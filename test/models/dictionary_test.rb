@@ -13,11 +13,6 @@ module ApplicationTests
       teardown_app
     end
 
-    def test_fail
-      skip
-      assert_equal true, false
-    end
-
     def test_empty_dictionary
       dictionary = Spout::Models::Dictionary.new(app_path)
 
