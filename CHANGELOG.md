@@ -25,6 +25,7 @@
   - `dictionary.domains.count`
   - `dictionary.forms.count`
 - The `spout export` command now includes a `forms.csv` file that exports form information referenced by variables
+- Graphs for histograms now specify units on the x-axis
 - **Gem Changes**
   - Updated to colorize 0.7.2
   - Updated to minitest

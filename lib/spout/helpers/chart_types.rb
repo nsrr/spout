@@ -353,6 +353,7 @@ module Spout
         title = "#{json['display_name']}"
         subtitle = "By Visit"
         units = "Subjects"
+        x_axis_units = json["units"]
         series = []
 
         all_subject_values = subjects.collect(&method.to_sym).compact.sort
@@ -370,7 +371,7 @@ module Spout
           series << { name: display_name, data: data }
         end
 
-        { title: title, subtitle: subtitle, categories: categories, units: units, series: series }
+        { title: title, subtitle: subtitle, categories: categories, units: units, series: series, x_axis_title: x_axis_units }
       end
 
       def self.pull_categories(json, method, all_subject_values, domain_json)
