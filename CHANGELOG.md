@@ -1,4 +1,4 @@
-## 0.8.0
+## 0.8.0 (June 27, 2014)
 
 ### Enhancements
 - **Testing Changes**
