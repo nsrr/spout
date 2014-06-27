@@ -24,6 +24,7 @@
   - `dictionary.variables.count`
   - `dictionary.domains.count`
   - `dictionary.forms.count`
+- The `spout export` command now includes a `forms.csv` file that exports form information referenced by variables
 - **Gem Changes**
   - Updated to colorize 0.7.2
   - Updated to minitest

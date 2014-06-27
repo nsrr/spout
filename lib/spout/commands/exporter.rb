@@ -19,45 +19,42 @@ module Spout
         puts "      create".colorize( :green ) + "  #{folder}"
         FileUtils.mkpath folder
 
-        variables_export_file = "variables.csv"
-        puts "      export".colorize( :blue ) + "  #{folder}/#{variables_export_file}"
-        CSV.open("#{folder}/#{variables_export_file}", "wb") do |csv|
-          keys = %w(id display_name description type units domain labels calculation)
-          csv << ['folder'] + keys
-          Dir.glob("variables/**/*.json").sort.each do |file|
-            if json = JSON.parse(File.read(file)) rescue false
-              variable_folder = variable_folder_path(file)
-              csv << [variable_folder] + keys.collect{|key| json[key].kind_of?(Array) ? json[key].join(';') : json[key].to_s}
-            end
+        generic_export(folder, 'variables', %w(id display_name description type units domain labels calculation))
+        generic_export(folder, 'domains', %w(value display_name description), true)
+        generic_export(folder, 'forms', %w(id display_name code_book))
+      end
+
+      def generic_export(folder, type, keys, include_domain_name = false)
+        export_file = "#{type}.csv"
+        puts "      export".colorize( :blue ) + "  #{folder}/#{export_file}"
+        CSV.open("#{folder}/#{export_file}", "wb") do |csv|
+          if include_domain_name
+            csv << ['folder', 'domain_id'] + keys
+          else
+            csv << ['folder'] + keys
           end
-        end
-        domains_export_file = "domains.csv"
-        puts "      export".colorize( :blue ) + "  #{folder}/#{domains_export_file}"
-        CSV.open("#{folder}/#{domains_export_file}", "wb") do |csv|
-          keys = %w(value display_name description)
-          csv << ['folder', 'domain_id'] + keys
-          Dir.glob("domains/**/*.json").sort.each do |file|
+          Dir.glob("#{type}/**/*.json").sort.each do |file|
             if json = JSON.parse(File.read(file)) rescue false
-              domain_folder = domain_folder_path(file)
-              domain_name = extract_domain_name(file)
-              json.each do |hash|
-                csv << [domain_folder, domain_name] + keys.collect{|key| hash[key]}
+              relative_folder = generic_folder_path(file, type)
+              if include_domain_name
+                domain_name = extract_domain_name(file)
+                json.each do |hash|
+                  csv << [relative_folder, domain_name] + keys.collect{|key| hash[key]}
+                end
+              else
+                csv << [relative_folder] + keys.collect{|key| json[key].kind_of?(Array) ? json[key].join(';') : json[key].to_s}
               end
             end
           end
         end
       end
 
+      def generic_folder_path(file, type)
+        file.gsub(/#{type}\//, '').split('/')[0..-2].join('/')
+      end
+
       def extract_domain_name(file)
         file.gsub(/domains\//, '').split('/').last.to_s.gsub(/.json/, '')
-      end
-
-      def domain_folder_path(file)
-        file.gsub(/domains\//, '').split('/')[0..-2].join('/')
-      end
-
-      def variable_folder_path(file)
-        file.gsub(/variables\//, '').split('/')[0..-2].join('/')
       end
 
     end

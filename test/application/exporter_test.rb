@@ -39,5 +39,20 @@ folder,domain_id,value,display_name,description
       assert_match "dd/1.0.0/variables.csv", output
       assert_match "dd/1.0.0/domains.csv", output
     end
+
+    def test_export_creates_forms_csv
+      form_csv = <<-CSV
+folder,id,display_name,code_book
+"",intake_questionnaire,Intake Questionnaire at Baseline Visit,Baseline-Visit-Intake-Questionnaire.pdf
+      CSV
+
+      output, error = util_capture do
+        Dir.chdir(app_path) { Spout.launch ['export'] }
+      end
+
+      assert File.directory?(File.join(app_path, 'dd'))
+      assert_equal form_csv, File.read(File.join(app_path, 'dd', '1.0.0', 'forms.csv'))
+      assert_match "dd/1.0.0/forms.csv", output
+    end
   end
 end
