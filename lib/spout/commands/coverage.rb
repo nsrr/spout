@@ -50,8 +50,7 @@ module Spout
 
         @coverage_results = []
 
-        @csv_files = Dir.glob("csvs/#{@standard_version}/*.csv")
-        @csv_files.each do |csv_file|
+        @subject_loader.csv_files.each do |csv_file|
           total_column_count = @matching_results.select{|mr| mr[0].include?(csv_file)}.count
           mapped_column_count = @matching_results.select{|mr| mr[0].include?(csv_file) and mr[2].number_of_errors == 0}.count
           @coverage_results << [ csv_file, total_column_count, mapped_column_count ]

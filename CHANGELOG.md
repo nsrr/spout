@@ -1,5 +1,13 @@
 ## 0.9.0
 
+### Enhancements
+- **General Changes**
+  - `spout c`, `spout o`, `spout g`, `spout p`, will now use datasets that are compatible with the data dictionary
+    - The following examples use a Data Dictionary that is currently on version 0.2.1.beta2
+    - Ex: If a dataset exists in folder 0.2.0, then this folder will be used.
+    - Ex: If datasets exist in 0.2.0, 0.2.1.beta2, and 0.2.1, then the exact match, 0.2.1.beta2, will be used.
+    - Ex: If datasets exist in 0.2.0, 0.2.1.beta1, 0.2.1, and 0.3.0, then the highest match on the minor version is used, in this case 0.2.1.
+
 ## 0.8.0 (June 27, 2014)
 
 ### Enhancements

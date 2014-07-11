@@ -1,13 +1,15 @@
+require 'colorize'
 require 'csv'
 require 'json'
 
 require 'spout/models/subject'
+require 'spout/helpers/semantic'
 
 module Spout
   module Helpers
     class SubjectLoader
       attr_accessor :subjects
-      attr_reader :all_methods, :all_domains
+      attr_reader :all_methods, :all_domains, :csv_files, :csv_directory
 
       def initialize(variable_files, valid_ids, standard_version, number_of_rows, visit)
         @subjects = []
@@ -18,6 +20,8 @@ module Spout
         @visit = visit
         @all_methods = {}
         @all_domains = []
+        @csv_files = []
+        @csv_directory = ''
       end
 
       def load_subjects_from_csvs!
@@ -28,8 +32,14 @@ module Spout
       def load_subjects_from_csvs_part_one!
         @subjects = []
 
-        csv_files = Dir.glob("csvs/#{@standard_version}/*.csv")
-        csv_files.each_with_index do |csv_file, index|
+        available_folders = (Dir.exist?('csvs') ? Dir.entries('csvs').select{|e| File.directory? File.join('csvs', e) }.reject{|e| [".",".."].include?(e)}.sort : [])
+
+        @semantic = Spout::Helpers::Semantic.new(@standard_version, available_folders)
+
+        @csv_directory = @semantic.selected_folder
+
+        @csv_files = Dir.glob("csvs/#{@csv_directory}/*.csv")
+        @csv_files.each_with_index do |csv_file, index|
           count = 0
           puts "Parsing: #{csv_file}"
           CSV.parse( File.open(csv_file, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true, header_converters: lambda { |h| h.to_s.downcase } ) do |line|
@@ -60,6 +70,13 @@ module Spout
           end
           puts "\n\n"
         end
+
+        if @csv_directory != @standard_version
+          puts "Using dataset in " + "csvs/#{@csv_directory}/".colorize( :green ) + " for dictionary version " + @standard_version.to_s.colorize( :green ) + "\n\n"
+        else
+          puts "Using dataset in " + "csvs/#{@standard_version}/".colorize( :green ) + "\n\n"
+        end
+
       end
 
       def load_subjects_from_csvs_part_two!

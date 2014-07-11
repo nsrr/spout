@@ -77,11 +77,27 @@ tfoot td {
       <div class="container" style="margin-top:30px">
         <div class="jumbotron">
           <h1>You made Spout cry... :'-(</h1>
-          <p>No CSVs found in <code><%= Dir.pwd %>/csvs/<%= @standard_version %>/</code></p>
+          <p>No CSVs found in <code><%= Dir.pwd %>/csvs/<%= @subject_loader.csv_directory %>/</code></p>
         </div>
       </div>
     <% else %>
       <div style="padding: 30px 30px 10px 30px;">
+
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="panel panel-info" style="text-align:center">
+              <div class="panel-heading">Data Dictionary Version</div>
+              <div class="panel-body"><strong><%= @standard_version %></strong></div>
+            </div>
+          </div>
+
+          <div class="col-sm-6">
+            <div class="panel panel-info" style="text-align:center">
+              <div class="panel-heading">Dataset Directory</div>
+              <div class="panel-body"><strong>csvs/<%= @subject_loader.csv_directory %></strong></div>
+            </div>
+          </div>
+        </div>
 
         <table class="table">
           <thead>
@@ -128,7 +144,7 @@ tfoot td {
                   <% outlier_result.csv_files.each do |csv_file| %>
                     <% css_class = 'success' if outlier_result.outliers.size == 0 %>
                     <% css_class = 'warning-pale' if outlier_result.major_outliers.size == 0 and outlier_result.minor_outliers.size > 0 %>
-                    <code class="<%= css_class %>"><%= csv_file %></code><br />
+                    <code class="<%= css_class %>"><%= csv_file.gsub(/^csvs\/#{@subject_loader.csv_directory}\//, '') %></code><br />
                   <% end %></td>
                 <td><%= outlier_result.method %></td>
                 <td><%= outlier_result.display_name.to_s[0..20] %></td>

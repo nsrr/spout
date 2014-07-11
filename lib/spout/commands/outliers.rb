@@ -37,8 +37,7 @@ module Spout
 
         @outlier_results.sort!{|a,b| [a.weight, a.method] <=> [b.weight, b.method]}
 
-        @csv_files = Dir.glob("csvs/#{@standard_version}/*.csv")
-        @overall_results = @csv_files.collect do |csv_file|
+        @overall_results = @subject_loader.csv_files.collect do |csv_file|
           major_outliers = @outlier_results.select{|outlier_result| outlier_result.csv_files.include?(csv_file) and outlier_result.weight == 0 }.count
           minor_outliers = @outlier_results.select{|outlier_result| outlier_result.csv_files.include?(csv_file) and outlier_result.weight == 1 }.count
           total_outliers = major_outliers + minor_outliers
