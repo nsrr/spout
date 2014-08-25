@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/sleepepi/spout.svg?branch=master)](https://travis-ci.org/sleepepi/spout)
 [![Dependency Status](https://gemnasium.com/sleepepi/spout.svg)](https://gemnasium.com/sleepepi/spout)
-[![Code Climate](https://codeclimate.com/github/sleepepi/spout.png)](https://codeclimate.com/github/sleepepi/spout)
+[![Code Climate](https://codeclimate.com/github/sleepepi/spout/badges/gpa.svg)](https://codeclimate.com/github/sleepepi/spout)
 
 Turn your CSV data dictionary into a JSON repository. Collaborate with others to update the data dictionary in JSON format. Generate new Data Dictionary from the JSON repository. Test and validate your data dictionary using built-in tests, or add your own tests and validations.
 
