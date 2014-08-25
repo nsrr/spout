@@ -91,7 +91,7 @@ module Spout
 
           @chart_variables.each do |chart_type_hash|
             chart_type = chart_type_hash["chart"]
-            chart_title = chart_type_hash["title"].downcase
+            chart_title = chart_type_hash["title"].downcase.gsub(' ', '-')
 
             if chart_type == @visit
               filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil }  # and s.send(variable_name) != nil
