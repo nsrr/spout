@@ -14,6 +14,7 @@
     - `slug: my-repo-name`
     - Setting the slug will allow the `spout export` command to export the data dictionary to `my-repo-name-data-dictionary-0.1.0-variables.csv`, etc.
   - `spout p` and `spout g` now indicate if the target CSV folder is empty
+  - `spout o` now only calculates averages and outliers for `numeric` and `integer` variables
 - **Gem Changes**
   - Use of Ruby 2.1.3 is now recommended
 

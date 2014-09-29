@@ -35,6 +35,7 @@ module Spout
           Spout::Models::OutlierResult.new(@subjects, method, csv_files)
         end
 
+        @outlier_results.select!{|outlier_result| ['numeric', 'integer'].include?(outlier_result.variable_type) }
         @outlier_results.sort!{|a,b| [a.weight, a.method] <=> [b.weight, b.method]}
 
         @overall_results = @subject_loader.csv_files.collect do |csv_file|
