@@ -7,6 +7,8 @@
     - Ex: If a dataset exists in folder 0.2.0, then this folder will be used.
     - Ex: If datasets exist in 0.2.0, 0.2.1.beta2, and 0.2.1, then the exact match, 0.2.1.beta2, will be used.
     - Ex: If datasets exist in 0.2.0, 0.2.1.beta1, 0.2.1, and 0.3.0, then the highest match on the minor version is used, in this case 0.2.1.
+- **Gem Changes**
+  - Use of Ruby 2.1.3 is now recommended
 
 ## 0.8.0 (June 27, 2014)
 
