@@ -42,6 +42,7 @@ module TestHelpers
   module Fixtures
     def basic_info
       app_file '.spout.yml', <<-YML
+# slug: myrepo
 visit: visit
 charts:
   - chart: age_at_visit

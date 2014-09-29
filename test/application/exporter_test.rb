@@ -40,6 +40,40 @@ folder,domain_id,value,display_name,description
       assert_match "dd/1.0.0/domains.csv", output
     end
 
+    def test_exports_with_slug_specified
+      app_file '.spout.yml', <<-YML
+slug: myrepo
+visit: visit
+charts:
+  - chart: age_at_visit
+    title: Age
+  - chart: gender
+    title: Gender
+      YML
+
+      variable_csv = <<-CSV
+folder,id,display_name,description,type,units,domain,labels,calculation
+"",age_at_visit,Age at Visit,Age at time of visit.,numeric,years,"",age_at_visit,""
+"",gender,Gender,Gender as reported by Parent Cohort,choices,"",gdomain,gender,""
+      CSV
+
+      domain_csv = <<-CSV
+folder,domain_id,value,display_name,description
+"",gdomain,m,Male,""
+"",gdomain,f,Female,""
+      CSV
+
+      output, error = util_capture do
+        Dir.chdir(app_path) { Spout.launch ['export'] }
+      end
+
+      assert File.directory?(File.join(app_path, 'dd'))
+      assert_equal variable_csv, File.read(File.join(app_path, 'dd', '1.0.0', 'myrepo-data-dictionary-1.0.0-variables.csv'))
+      assert_equal domain_csv, File.read(File.join(app_path, 'dd', '1.0.0', 'myrepo-data-dictionary-1.0.0-domains.csv'))
+      assert_match "dd/1.0.0/myrepo-data-dictionary-1.0.0-variables.csv", output
+      assert_match "dd/1.0.0/myrepo-data-dictionary-1.0.0-domains.csv", output
+    end
+
     def test_export_creates_forms_csv
       form_csv = <<-CSV
 folder,id,display_name,code_book

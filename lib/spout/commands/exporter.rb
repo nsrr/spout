@@ -3,12 +3,15 @@ require 'json'
 require 'fileutils'
 require 'colorize'
 
+require 'spout/helpers/config_reader'
+
 module Spout
   module Commands
     class Exporter
       def initialize(standard_version, argv)
         @csv_file = argv[1].to_s
         @standard_version = standard_version
+        @config = Spout::Helpers::ConfigReader.new
         expanded_export!
       end
 
@@ -25,7 +28,7 @@ module Spout
       end
 
       def generic_export(folder, type, keys, include_domain_name = false)
-        export_file = "#{type}.csv"
+        export_file = export_file_name(type)
         puts "      export".colorize( :blue ) + "  #{folder}/#{export_file}"
         CSV.open("#{folder}/#{export_file}", "wb") do |csv|
           if include_domain_name
@@ -46,6 +49,14 @@ module Spout
               end
             end
           end
+        end
+      end
+
+      def export_file_name(type)
+        if @config.slug == ''
+          "#{type}.csv"
+        else
+          "#{@config.slug}-data-dictionary-#{@standard_version}-#{type}.csv"
         end
       end
 
