@@ -10,7 +10,7 @@
   - `spout p` command now uses same syntax as `spout g` command to reference variables
     - `spout p <variable_id>`
     - `spout p age --size-sm`
-  - The data dictionary slug can now be specified in the `spout.yml` file:
+  - The data dictionary slug can now be specified in the `.spout.yml` file:
     - `slug: my-repo-name`
     - Setting the slug will allow the `spout export` command to export the data dictionary to `my-repo-name-data-dictionary-0.1.0-variables.csv`, etc.
   - `spout p` and `spout g` now indicate if the target CSV folder is empty
