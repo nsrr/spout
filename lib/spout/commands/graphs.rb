@@ -54,7 +54,7 @@ module Spout
         @subjects = @subject_loader.subjects
         compute_tables_and_charts
 
-        puts "Took #{Time.now - t} seconds."
+        puts "Took #{Time.now - t} seconds." if @subjects.size > 0
       end
 
       def compute_tables_and_charts

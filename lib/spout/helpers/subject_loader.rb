@@ -72,9 +72,9 @@ module Spout
         end
 
         if @csv_directory != @standard_version
-          puts "Using dataset in " + "csvs/#{@csv_directory}/".colorize( :green ) + " for dictionary version " + @standard_version.to_s.colorize( :green ) + "\n\n"
+          puts "#{@csv_files.size == 0 ? 'No CSVs found' : 'Using dataset' } in " + "csvs/#{@csv_directory}/".colorize( :green ) + " for dictionary version " + @standard_version.to_s.colorize( :green ) + "\n\n"
         else
-          puts "Using dataset in " + "csvs/#{@standard_version}/".colorize( :green ) + "\n\n"
+          puts "#{@csv_files.size == 0 ? 'No CSVs found' : 'Using dataset' } in " + "csvs/#{@standard_version}/".colorize( :green ) + "\n\n"
         end
 
       end
