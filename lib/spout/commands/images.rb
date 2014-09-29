@@ -6,6 +6,7 @@ require 'yaml'
 
 require 'spout/helpers/subject_loader'
 require 'spout/helpers/chart_types'
+require 'spout/helpers/config_reader'
 
 module Spout
   module Commands
@@ -22,18 +23,12 @@ module Spout
 
         @number_of_rows = nil
 
-        spout_config = YAML.load_file('.spout.yml')
-
-        @visit = ''
-
-        if spout_config.kind_of?(Hash)
-          @visit = spout_config['visit'].to_s.strip
-        end
+        @config = Spout::Helpers::ConfigReader.new
 
         t = Time.now
         FileUtils.mkpath "graphs/#{@standard_version}"
 
-        @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, @valid_ids, @standard_version, @number_of_rows, @visit)
+        @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, @valid_ids, @standard_version, @number_of_rows, @config.visit)
 
         @subject_loader.load_subjects_from_csvs!
         @subjects = @subject_loader.subjects
@@ -60,9 +55,9 @@ module Spout
 
           puts "#{file_index+1} of #{variable_files_count}: #{variable_file.gsub(/(^variables\/|\.json$)/, '').gsub('/', ' / ')}"
 
-          filtered_subjects = @subjects.select{ |s| s.send(@visit) != nil }
+          filtered_subjects = @subjects.select{ |s| s.send(@config.visit) != nil }
 
-          chart_json = Spout::Helpers::ChartTypes::chart_histogram(@visit, filtered_subjects, json, variable_name)
+          chart_json = Spout::Helpers::ChartTypes::chart_histogram(@config.visit, filtered_subjects, json, variable_name)
 
           if chart_json
             File.open(tmp_options_file, "w") do |outfile|

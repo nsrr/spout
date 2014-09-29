@@ -5,6 +5,7 @@ require 'fileutils'
 require 'spout/helpers/subject_loader'
 require 'spout/models/coverage_result'
 require 'spout/helpers/number_helper'
+require 'spout/helpers/config_reader'
 
 module Spout
   module Commands
@@ -19,10 +20,9 @@ module Spout
         @valid_ids = []
         @number_of_rows = nil
 
-        spout_config = YAML.load_file('.spout.yml')
-        @visit = (spout_config.kind_of?(Hash) ? spout_config['visit'].to_s.strip : '')
+        @config = Spout::Helpers::ConfigReader.new
 
-        @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, @valid_ids, @standard_version, @number_of_rows, @visit)
+        @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, @valid_ids, @standard_version, @number_of_rows, @config.visit)
         @subject_loader.load_subjects_from_csvs_part_one! # Not Part Two which is essentially cleaning the data
         @subjects = @subject_loader.subjects
 

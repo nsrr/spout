@@ -6,6 +6,7 @@ require 'yaml'
 
 require 'spout/helpers/subject_loader'
 require 'spout/helpers/chart_types'
+require 'spout/helpers/config_reader'
 
 module Spout
   module Commands
@@ -13,33 +14,18 @@ module Spout
       def initialize(variables, standard_version)
         @standard_version = standard_version
 
-        spout_config = YAML.load_file('.spout.yml')
+        @config = Spout::Helpers::ConfigReader.new
 
-        @visit = ''
-
-        if spout_config.kind_of?(Hash)
-          @visit = spout_config['visit'].to_s.strip
-
-          chart_variables = if spout_config['charts'].kind_of?(Array)
-            spout_config['charts'].select{|c| c.kind_of?(Hash)}
-          else
-            []
-          end
-        else
-          puts "The YAML file needs to be in the following format:"
-          puts "---\nvisit: visit_variable_name\ncharts:\n- chart: age_variable_name\n  title: Age\n- chart: gender_variable_name\n  title: Gender\n- chart: race_variable_name\n  title: Race\n"
-          return self
-        end
-
-        if Spout::Helpers::ChartTypes::get_json(@visit, 'variable') == nil
-          if @visit == ''
+        if Spout::Helpers::ChartTypes::get_json(@config.visit, 'variable') == nil
+          if @config.visit == ''
             puts "The visit variable in .spout.yml can't be blank."
           else
-            puts "Could not find the following visit variable: #{@visit}"
+            puts "Could not find the following visit variable: #{@config.visit}"
           end
           return self
         end
-        missing_variables = chart_variables.select{|c| Spout::Helpers::ChartTypes::get_json(c['chart'], 'variable') == nil}
+
+        missing_variables = @config.charts.select{|c| Spout::Helpers::ChartTypes::get_json(c['chart'], 'variable') == nil}
         if missing_variables.count > 0
           puts "Could not find the following chart variable#{'s' unless missing_variables.size == 1}: #{missing_variables.join(', ')}"
           return self
@@ -55,14 +41,14 @@ module Spout
 
         @valid_ids = argv_string.split(',').compact.reject{|s| s == ''}
 
-        @chart_variables = chart_variables.unshift( { "chart" => @visit, "title" => 'Histogram' } )
+        @chart_variables = @config.charts.unshift( { "chart" => @config.visit, "title" => 'Histogram' } )
 
         @variable_files = Dir.glob('variables/**/*.json')
 
         t = Time.now
         FileUtils.mkpath "graphs/#{@standard_version}"
 
-        @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, @valid_ids, @standard_version, @number_of_rows, @visit)
+        @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, @valid_ids, @standard_version, @number_of_rows, @config.visit)
 
         @subject_loader.load_subjects_from_csvs!
         @subjects = @subject_loader.subjects
@@ -93,7 +79,7 @@ module Spout
             chart_type = chart_type_hash["chart"]
             chart_title = chart_type_hash["title"].downcase.gsub(' ', '-')
 
-            if chart_type == @visit
+            if chart_type == @config.visit
               filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil }  # and s.send(variable_name) != nil
               if filtered_subjects.count > 0
                 stats[:charts][chart_title] = Spout::Helpers::ChartTypes::chart_histogram(chart_type, filtered_subjects, json, variable_name)
@@ -121,7 +107,7 @@ module Spout
       # [["Visit 1", "1"], ["Visit 2", "2"], ["CVD Outcomes", "3"]]
       def visits
         @visits ||= begin
-          Spout::Helpers::ChartTypes::domain_array(@visit)
+          Spout::Helpers::ChartTypes::domain_array(@config.visit)
         end
       end
 
