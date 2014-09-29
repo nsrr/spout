@@ -41,7 +41,7 @@ module Minitest
           print "    #{test.name}"
           puts
           print "             "
-          print test.failure
+          print test.failure.to_s.gsub("\n", "\n             ")
           puts
           puts
         end
