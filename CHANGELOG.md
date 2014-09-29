@@ -19,6 +19,7 @@
   - Multi-line assertions now maintain the correct amount of white-space padding
 - **Gem Changes**
   - Use of Ruby 2.1.3 is now recommended
+  - Updated to simplecov 0.9.1
 
 ## 0.8.0 (June 27, 2014)
 
