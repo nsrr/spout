@@ -45,8 +45,8 @@ module Spout
     argv = argv.last(argv.size - 1)
     require 'spout/commands/images'
     types         = flag_values(argv, 'type')
-    variable_ids  = flag_values(argv, 'id')
     sizes         = flag_values(argv, 'size')
+    variable_ids  = non_flag_values(argv)
     Spout::Commands::Images.new(types, variable_ids, sizes, standard_version, argv)
   end
 
@@ -109,6 +109,10 @@ EOT
 
   def self.flag_values(flags, param)
     flags.select{|f| f =~ /^--#{param}-/}.collect{|f| f[(param.size + 3)..-1]}
+  end
+
+  def self.non_flag_values(flags)
+    flags.reject{|f| f =~ /^--/}
   end
 
 end

@@ -232,7 +232,7 @@ The following flags can be passed to the `spout pngs` command:
 - `spout p --type-numeric --size-sm`
 
 For specific variables the following can be used:
-  - `spout p --id-<variable_id>`
+  - `spout p <variable_id>`
 
 Generated images are placed in: `./images/`
 

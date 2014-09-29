@@ -36,7 +36,7 @@ module ApplicationTests
 
     def test_png_creation_for_single_variable
       output, error = util_capture do
-        Dir.chdir(app_path) { Spout.launch ['pngs', '--pretend', '--id-visit'] }
+        Dir.chdir(app_path) { Spout.launch ['pngs', '--pretend', 'visit'] }
       end
 
       assert File.directory?(File.join(app_path, 'images', '1.0.0'))

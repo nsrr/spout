@@ -7,6 +7,9 @@
     - Ex: If a dataset exists in folder 0.2.0, then this folder will be used.
     - Ex: If datasets exist in 0.2.0, 0.2.1.beta2, and 0.2.1, then the exact match, 0.2.1.beta2, will be used.
     - Ex: If datasets exist in 0.2.0, 0.2.1.beta1, 0.2.1, and 0.3.0, then the highest match on the minor version is used, in this case 0.2.1.
+  - `spout p` command now uses same syntax as `spout g` command to reference variables
+    - `spout p <variable_id>`
+    - `spout p age --size-sm`
 - **Gem Changes**
   - Use of Ruby 2.1.3 is now recommended
 
@@ -73,7 +76,7 @@
     - `spout p --size-sm`
     - `spout p --type-numeric --size-sm`
   - For specific variables the following can be used:
-    - `spout p --id-<variable_id>`
+    - `spout p --id-<variable_id>` **NOTE** changed in v0.9.0
 
 ## 0.6.0 (March 7, 2014)
 
