@@ -1,4 +1,4 @@
-## 0.9.0
+## 0.9.0 (October 10, 2014)
 
 ### Enhancements
 - **General Changes**
