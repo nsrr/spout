@@ -1,5 +1,8 @@
 ## 0.9.1
 
+### Bug Fix
+- Fixed a bug that failed to require the `colorize` gem for the default set of spout tests
+
 ## 0.9.0 (October 10, 2014)
 
 ### Enhancements

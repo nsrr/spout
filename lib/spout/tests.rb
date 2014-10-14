@@ -4,6 +4,7 @@ require 'json'
 require 'minitest/autorun'
 require 'minitest/reporters'
 require 'ansi/code'
+require 'colorize'
 
 module Minitest
   module Reporters
