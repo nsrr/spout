@@ -68,6 +68,7 @@ require 'spout/tests/json_validation'
 require 'spout/tests/variable_type_validation'
 require 'spout/tests/variable_name_uniqueness'
 require 'spout/tests/variable_name_match'
+require 'spout/tests/variable_display_name_length'
 require 'spout/tests/domain_existence_validation'
 require 'spout/tests/domain_format'
 require 'spout/tests/domain_name_uniqueness'
@@ -84,6 +85,7 @@ module Spout
     include Spout::Tests::VariableTypeValidation
     include Spout::Tests::VariableNameUniqueness
     include Spout::Tests::VariableNameMatch
+    include Spout::Tests::VariableDisplayNameLength
     include Spout::Tests::DomainExistenceValidation
     include Spout::Tests::DomainFormat
     include Spout::Tests::DomainNameUniqueness
