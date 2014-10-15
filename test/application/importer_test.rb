@@ -80,6 +80,57 @@ folder,domain_id,display_name,description,value
       assert_equal domain_json, File.read(File.join(app_path, 'domains', 'gdomain.json'))
     end
 
+    def test_domain_imports_with_missing_codes
+      app_file 'domains-import-with-missing-codes.csv', <<-CSV
+folder,domain_id,display_name,description,value
+,energylevel,High,,10
+,energylevel,Medium,,5
+,energylevel,Low,,1
+,energylevel,Did Not Answer,,-1
+,energylevel,Equipment Failure,,.E
+      CSV
+
+      output, error = util_capture do
+        Dir.chdir(app_path) { Spout.launch ['import', 'domains-import-with-missing-codes.csv', '--domains'] }
+      end
+
+      domain_json = <<-JSON
+[
+  {
+    "value": "10",
+    "display_name": "High",
+    "description": ""
+  },
+  {
+    "value": "5",
+    "display_name": "Medium",
+    "description": ""
+  },
+  {
+    "value": "1",
+    "display_name": "Low",
+    "description": ""
+  },
+  {
+    "value": "-1",
+    "display_name": "Did Not Answer",
+    "description": "",
+    "missing": true
+  },
+  {
+    "value": ".E",
+    "display_name": "Equipment Failure",
+    "description": "",
+    "missing": true
+  }
+]
+      JSON
+
+      assert_equal 1, Dir.glob(File.join(app_path, 'domains', '**', '*.json')).count
+      assert_match /create(.*)domains\/energylevel\.json/, output
+      assert_equal domain_json, File.read(File.join(app_path, 'domains', 'energylevel.json'))
+    end
+
     def test_import_converts_ids_to_lowercase
       app_file 'variables-import-uppercase-ids.csv', <<-CSV
 folder,id,display_name,description,type,domain,units,calculation,labels

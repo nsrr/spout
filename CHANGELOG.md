@@ -4,6 +4,7 @@
 - **Import Command**
   - `spout import` now changes variables with all caps `display_name` to use title case instead
     - Display names that use mixed case are unaffected
+  - `spout import --domains` now marks options as `"missing": true` if the option value starts with a dot `.` or a dash `-`
 - **Testing Changes**
   - Tests now include checks to assure that variable display_name fields don't exceed 255 length requirement
     - `include Spout::Tests::VariableDisplayNameLength`

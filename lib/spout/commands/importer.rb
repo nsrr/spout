@@ -98,6 +98,7 @@ EOT
           hash['value'] = row.delete('value').to_s
           hash['display_name'] = row.delete('display_name').to_s
           hash['description'] = row.delete('description').to_s
+          hash['missing'] = true if hash['value'].match(/^[\.-]/)
 
           domains[domain_name]["options"] << hash
         end
