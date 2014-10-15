@@ -96,7 +96,7 @@ EOT
 
           hash = {}
           hash['value'] = row.delete('value').to_s
-          hash['display_name'] = row.delete('display_name').to_s
+          hash['display_name'] = tenderize(row.delete('display_name').to_s)
           hash['description'] = row.delete('description').to_s
           hash['missing'] = true if hash['value'].match(/^[\.-]/)
 
