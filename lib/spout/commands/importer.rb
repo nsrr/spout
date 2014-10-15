@@ -48,7 +48,7 @@ EOT
           hash = {}
           id = row.delete('id').to_s.downcase
           hash['id'] = id
-          hash['display_name'] = row.delete('display_name')
+          hash['display_name'] = tenderize(row.delete('display_name').to_s)
           hash['description'] = row.delete('description').to_s
           hash['type'] = row.delete('type')
           domain = row.delete('domain').to_s.downcase
@@ -114,6 +114,17 @@ EOT
           puts "      create".colorize( :green ) + "  #{file_name}"
         end
 
+      end
+
+      # Converts ALL-CAPS display names to title case
+      # Ex: BODY MASS INDEX changes to Body Mass Index
+      # Ex: Patient ID stays the same as Patient ID
+      def tenderize(text)
+        if text.match(/[a-z]/)
+          text
+        else
+          text.downcase.gsub(/\b\w/) { $&.upcase }
+        end
       end
 
       private

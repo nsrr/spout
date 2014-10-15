@@ -112,5 +112,23 @@ Demographics,gender,Gender,Gender Description,choices,GDomain,,,gender
       assert_equal 'gdomain', gender_json['domain']
     end
 
+    def test_import_removes_all_caps_from_display_names
+      app_file 'variables-import-all-caps-display-names.csv', <<-CSV
+folder,id,display_name,description,type,domain,units,calculation,labels
+Demographics,BMI,BODY MASS INDEX,Body Mass Index Description,numeric,,,,bmi
+Measurements,RdI3P,Respiratory index for PT,RDI Description,numeric,,,,ahi
+      CSV
+
+      output, error = util_capture do
+        Dir.chdir(app_path) { Spout.launch ['import', 'variables-import-all-caps-display-names.csv'] }
+      end
+
+      bmi_json = JSON.parse(File.read(File.join(app_path, 'variables', 'Demographics', 'bmi.json')))
+      assert_equal 'Body Mass Index', bmi_json['display_name']
+
+      rdi3p_json = JSON.parse(File.read(File.join(app_path, 'variables', 'Measurements', 'rdi3p.json')))
+      assert_equal 'Respiratory index for PT', rdi3p_json['display_name']
+    end
+
   end
 end
