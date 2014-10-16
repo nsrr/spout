@@ -2,6 +2,7 @@ require 'colorize'
 require 'net/http'
 
 require 'spout/helpers/config_reader'
+require 'spout/helpers/quietly'
 
 # - **User Authorization**
 #   - User authenticates via token, the user must be a dataset editor
@@ -33,6 +34,8 @@ end
 module Spout
   module Commands
     class Deploy
+
+      include Spout::Helpers::Quietly
 
       INDENT_LENGTH = 23
       INDENT = " "*INDENT_LENGTH
@@ -103,7 +106,9 @@ module Spout
       #   - `CHANGELOG.md` top line should include version, ex: `## 0.1.0`
       #   - "v#{VERSION}" matches HEAD git tag annotation
       def version_check
-        stdout = `git status --porcelain`
+        stdout = quietly do
+          `git status --porcelain`
+        end
 
         print "     Git Status Check: "
         if stdout.to_s.strip == ''
@@ -123,7 +128,9 @@ module Spout
           failure message
         end
 
-        stdout = `git describe --exact-match HEAD`
+        stdout = quietly do
+          `git describe --exact-match HEAD`
+        end
 
         print "        Version Check: "
         tag = stdout.to_s.strip
@@ -137,12 +144,14 @@ module Spout
       end
 
       def test_check
-        stdout = `spout t`
+        stdout = quietly do
+          `spout t`
+        end
         print "          Spout Tests: "
         if stdout.match(/[^\d]0 failures, 0 errors,/)
           puts "PASS".colorize(:green)
         else
-          message = "`spout t` had errors or failures".colorize(:red)
+          message = "#{INDENT}spout t".colorize(:white) + " had errors or failures".colorize(:red) + "\n#{INDENT}Please fix all errors and failures and then run spout deploy again."
           failure message
         end
 
@@ -187,7 +196,6 @@ module Spout
         puts message
         raise DeployError
       end
-
     end
   end
 end
