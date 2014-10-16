@@ -144,10 +144,12 @@ module Spout
       end
 
       def test_check
+        print "          Spout Tests: "
+
         stdout = quietly do
           `spout t`
         end
-        print "          Spout Tests: "
+
         if stdout.match(/[^\d]0 failures, 0 errors,/)
           puts "PASS".colorize(:green)
         else
