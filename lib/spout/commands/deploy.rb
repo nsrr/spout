@@ -137,9 +137,16 @@ module Spout
       end
 
       def test_check
+        stdout = `spout t`
         print "          Spout Tests: "
-        failure ''
-        puts "PASS".colorize(:green)
+        if stdout.match(/[^\d]0 failures, 0 errors,/)
+          puts "PASS".colorize(:green)
+        else
+          message = "`spout t` had errors or failures".colorize(:red)
+          failure message
+        end
+
+        puts "       Spout Coverage: " + "SKIP".colorize(:blue)
       end
 
       def user_authorization_check
@@ -151,26 +158,28 @@ module Spout
 
       def graph_generation
         print "     Graph Generation: "
-        failure ''
-        puts "PASS".colorize(:green)
+        # failure ''
+        puts "Launching Sandbox Mode".colorize(:green)
       end
 
       def image_generation
         print "     Image Generation: "
-        failure ''
-        puts "PASS".colorize(:green)
+        # failure ''
+        puts "Launching Sandbox Mode".colorize(:green)
       end
 
       def dataset_uploads
         print "      Dataset Uploads: "
-        failure ''
-        puts "PASS".colorize(:green)
+        # failure ''
+        # puts "PASS".colorize(:green)
+        puts "SKIP".colorize(:blue)
       end
 
       def trigger_server_updates
         print "Launch Server Scripts: "
-        failure ''
-        puts "PASS".colorize(:green)
+        # failure ''
+        # puts "PASS".colorize(:green)
+        puts "SKIP".colorize(:blue)
       end
 
       def failure(message)
