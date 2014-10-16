@@ -1,8 +1,9 @@
 require 'colorize'
+require 'net/http'
 
 require 'spout/helpers/config_reader'
 
-# - **User Validation**
+# - **User Authorization**
 #   - User authenticates via token, the user must be a dataset editor
 # - **Version Check**
 #   - "v#{VERSION}" matches HEAD git tag annotation
@@ -26,59 +27,123 @@ require 'spout/helpers/config_reader'
 #   - Server runs `load_data_dictionary!` for specified dataset slug
 #   - Server refreshes dataset folder to reflect new dataset and data dictionaries
 
+class DeployError < StandardError
+end
+
 module Spout
   module Commands
     class Deploy
 
-      attr_accessor :token, :version, :slug, :url
+      INDENT_LENGTH = 23
+      INDENT = " "*INDENT_LENGTH
+
+      attr_accessor :token, :version, :slug, :url, :config, :environment
 
       def initialize(argv)
-        puts "CODE GREEN INITIALIZED...".colorize(:green)
-        puts "Deploying to server...".colorize(:red)
+        # puts "CODE GREEN INITIALIZED...".colorize(:green)
+        # puts "Deploying to server...".colorize(:red)
+        @environment = argv[1].to_s
         run_all
       end
 
       def run_all
-        config_file_check
-        user_authorization_check
-        version_check
-        test_check
-        graph_generation
-        image_generation
-        dataset_uploads
-        trigger_server_updates
+        begin
+          config_file_check
+          user_authorization_check
+          version_check
+          test_check
+          graph_generation
+          image_generation
+          dataset_uploads
+          trigger_server_updates
+        rescue DeployError
+        end
       end
 
       def config_file_check
-        puts "config_file_check".colorize(:blue)
+        print "   `.spout.yml` Check: "
+        @config = Spout::Helpers::ConfigReader.new
+
+        @slug = @config.slug
+
+        if @slug == ''
+          message = "#{INDENT}Please specify a dataset slug in your `.spout.yml` file!".colorize(:red) + " Ex:\n---\nslug: mydataset\n".colorize(:orange)
+          failure(message)
+        end
+
+        if @config.webservers.empty?
+          message = "#{INDENT}Please specify a webserver in your `.spout.yml` file!".colorize(:red) + " Ex:\n---\nwebservers:\n  - name: production\n    url: https://sleepdata.org\n  - name: staging\n    url: https://staging.sleepdata.org\n".colorize(:orange)
+          failure(message)
+        end
+
+        matching_webservers = @config.webservers.select{|wh| /^#{@environment}/i =~ wh['name'].to_s.downcase}
+        if matching_webservers.count == 0
+          message = "#{INDENT}0 webservers match '#{@environment}'.".colorize(:red) + " The following webservers exist in your `.spout.yml` file:\n" + "#{INDENT}#{@config.webservers.collect{|wh| wh['name'].to_s.downcase}.join(', ')}".colorize(:white)
+          failure(message)
+        elsif matching_webservers.count > 1
+          message = "#{INDENT}#{matching_webservers.count} webservers match '#{@environment}'.".colorize(:red) + " Did you mean one of the following?\n" + "#{INDENT}#{matching_webservers.collect{|wh| wh['name'].to_s.downcase}.join(', ')}".colorize(:white)
+          failure(message)
+        end
+
+        @url = URI.parse(matching_webservers.first['url'].to_s.strip) rescue @url = nil
+
+        if @url.to_s == ''
+          message = "#{INDENT}Invalid URL format for #{matching_webservers.first['name'].to_s.strip.downcase} webserver: ".colorize(:red) + "'#{matching_webservers.first['url'].to_s.strip}'".colorize(:white)
+          failure(message)
+        end
+
+        puts "PASS".colorize(:green)
+        puts "        Target Server: " + "#{@url}".colorize(:white)
+        puts "       Target Dataset: " + "#{@slug}".colorize(:white)
       end
 
       def user_authorization_check
-        puts "user_authorization_check".colorize(:blue)
+        print "   User Authorization: "
+        # failure ''
+        # puts "PASS".colorize(:green)
+        puts "SKIP".colorize(:blue)
       end
 
       def version_check
-        puts "version_check".colorize(:blue)
+        print "        Version Check: "
+        failure ''
+        puts "PASS".colorize(:green)
       end
 
       def test_check
-        puts "test_check".colorize(:blue)
+        print "          Spout Tests: "
+        failure ''
+        puts "PASS".colorize(:green)
       end
 
       def graph_generation
-        puts "graph_generation".colorize(:blue)
+        print "     Graph Generation: "
+        failure ''
+        puts "PASS".colorize(:green)
       end
 
       def image_generation
-        puts "image_generation".colorize(:blue)
+        print "     Image Generation: "
+        failure ''
+        puts "PASS".colorize(:green)
       end
 
       def dataset_uploads
-        puts "dataset_uploads".colorize(:blue)
+        print "      Dataset Uploads: "
+        failure ''
+        puts "PASS".colorize(:green)
       end
 
       def trigger_server_updates
-        puts "trigger_server_updates".colorize(:blue)
+        print "Launch Server Scripts: "
+        failure ''
+        puts "PASS".colorize(:green)
+      end
+
+      def failure(message)
+        puts "FAIL".colorize(:red)
+        puts message
+        raise DeployError
       end
 
     end

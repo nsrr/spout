@@ -336,11 +336,11 @@ spout deploy NAME
 This command pushes a tagged version of the data dictionary to a webserver specified in the `.spout.yml` file.
 
 ```
-webserver:
+webservers:
   - name: production
     url: https://sleepdata.org
   - name: staging
-    url: https://sleepepi.partners.org/edge/sleepdata
+    url: https://staging.sleepdata.org
 ```
 
 Shorthand
@@ -357,7 +357,7 @@ spout d s
 
 The following steps are run:
 
-- **User Validation**
+- **User Authorization**
   - User authenticates via token, the user must be a dataset editor
 - **Version Check**
   - "v#{VERSION}" matches HEAD git tag annotation

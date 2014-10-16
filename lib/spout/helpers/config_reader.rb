@@ -4,13 +4,13 @@ module Spout
   module Helpers
     class ConfigReader
 
-      attr_reader :slug, :visit, :charts
-
+      attr_reader :slug, :visit, :charts, :webservers
 
       def initialize
         @slug = ''
         @visit = ''
         @charts = []
+        @webservers = []
         parse_yaml_file
       end
 
@@ -23,6 +23,12 @@ module Spout
 
           @charts = if spout_config['charts'].kind_of?(Array)
             spout_config['charts'].select{|c| c.kind_of?(Hash)}
+          else
+            []
+          end
+
+          @webservers = if spout_config['webservers'].kind_of?(Array)
+            spout_config['webservers'].select{|c| c.kind_of?(Hash)}
           else
             []
           end
