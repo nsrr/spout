@@ -39,19 +39,20 @@ module Spout
 
       attr_accessor :token, :version, :slug, :url, :config, :environment
 
-      def initialize(argv)
+      def initialize(argv, version)
         # puts "CODE GREEN INITIALIZED...".colorize(:green)
         # puts "Deploying to server...".colorize(:red)
         @environment = argv[1].to_s
+        @version = version
         run_all
       end
 
       def run_all
         begin
           config_file_check
-          user_authorization_check
           version_check
           test_check
+          user_authorization_check
           graph_generation
           image_generation
           dataset_uploads
@@ -97,23 +98,55 @@ module Spout
         puts "       Target Dataset: " + "#{@slug}".colorize(:white)
       end
 
-      def user_authorization_check
-        print "   User Authorization: "
-        # failure ''
-        # puts "PASS".colorize(:green)
-        puts "SKIP".colorize(:blue)
-      end
-
+      # - **Version Check**
+      #   - Git Repo should have zero uncommitted changes
+      #   - `CHANGELOG.md` top line should include version, ex: `## 0.1.0`
+      #   - "v#{VERSION}" matches HEAD git tag annotation
       def version_check
+        stdout = `git status --porcelain`
+
+        print "     Git Status Check: "
+        if stdout.to_s.strip == ''
+          puts "PASS".colorize(:green) + " " + "nothing to commit, working directory clean".colorize(:white)
+        else
+          message = "#{INDENT}working directory contains uncomitted changes".colorize(:red)
+          failure message
+        end
+
+        changelog = File.open('CHANGELOG.md', &:readline).strip rescue changelog = ''
+        if changelog.match(/^## #{@version.split('.')[0..2].join('.')}/)
+          puts "         CHANGELOG.md: " + "PASS".colorize(:green) + " " + changelog.colorize(:white)
+        else
+          print "         CHANGELOG.md: "
+          message = "#{INDENT}Expected: ".colorize(:red) + "## #{@version}".colorize(:white) +
+                  "\n#{INDENT}  Actual: ".colorize(:red) + changelog.colorize(:white)
+          failure message
+        end
+
+        stdout = `git describe --exact-match HEAD`
+
         print "        Version Check: "
-        failure ''
-        puts "PASS".colorize(:green)
+        tag = stdout.to_s.strip
+        if "v#{@version}" != tag
+          message = "#{INDENT}Version specified in `VERSION` file ".colorize(:red) + "'v#{@version}'".colorize(:white) + " does not match git tag on HEAD commit ".colorize(:red) + "'#{tag}'".colorize(:white)
+          failure message
+        else
+          puts   "PASS".colorize(:green) + " VERSION " + "'v#{@version}'".colorize(:white) + " matches git tag " + "'#{tag}'".colorize(:white)
+        end
+
       end
 
       def test_check
         print "          Spout Tests: "
         failure ''
         puts "PASS".colorize(:green)
+      end
+
+      def user_authorization_check
+        print "   User Authorization: "
+        # failure ''
+        # puts "PASS".colorize(:green)
+        puts "SKIP".colorize(:blue)
       end
 
       def graph_generation

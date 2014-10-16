@@ -85,7 +85,7 @@ EOT
 
   def self.deploy(argv)
     require 'spout/commands/deploy'
-    Spout::Commands::Deploy.new(argv)
+    Spout::Commands::Deploy.new(argv, standard_version)
   end
 
   def self.importer(argv)
