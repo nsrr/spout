@@ -1,6 +1,9 @@
 ## 0.10.0
 
 ### Enhancements
+- **Deploy Command**
+  - `spout deploy` command added that allows a data dictionary to be deployed to a web URL
+  - The webserver that is specified must respond to the web requests in a similar manner to nsrr/www.sleepdata.org
 - **Import Command**
   - `spout import` now changes variables with all caps `display_name` to use title case instead
     - Display names that use mixed case are unaffected

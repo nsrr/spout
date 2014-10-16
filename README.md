@@ -327,3 +327,56 @@ This will generate charts and tables for each variable in the dataset plotted ag
 }
 ```
 
+### Deploy your data dictionary to a staging or production webserver
+
+```
+spout deploy NAME
+```
+
+This command pushes a tagged version of the data dictionary to a webserver specified in the `.spout.yml` file.
+
+```
+webserver:
+  - name: production
+    url: https://sleepdata.org
+  - name: staging
+    url: https://sleepepi.partners.org/edge/sleepdata
+```
+
+Shorthand
+
+**Deploy to Production**
+```
+spout d p
+```
+
+**Deploy to Staging**
+```
+spout d s
+```
+
+The following steps are run:
+
+- **User Validation**
+  - User authenticates via token, the user must be a dataset editor
+- **Version Check**
+  - "v#{VERSION}" matches HEAD git tag annotation
+  - `CHANGELOG.md` top line should include version, ex: `## 0.1.0`
+  - Git Repo should have zero uncommitted changes
+- **Tests Pass**
+  - `spout t` passes for RC and FINAL versions (Include .rc, does not include .beta)
+  - `spout c` passes for RC and FINAL versions (Include .rc, does not include .beta)
+- **Graph Generation**
+  - `spout g` is run
+  - Graphs are pushed to server
+- **Image Generation**
+  - `spout p` is run
+  - `optipng` is run on image then uploaded to server
+  - Images are pushed to server
+- **Dataset Uploads**
+  - Dataset CSV data dictionary is generated (variables, domains, forms)
+  - Dataset and data dictionary CSVs uploaded to files section of dataset
+- **Server-Side Updates**
+  - Server checks out branch of specified tag
+  - Server runs `load_data_dictionary!` for specified dataset slug
+  - Server refreshes dataset folder to reflect new dataset and data dictionaries

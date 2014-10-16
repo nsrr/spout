@@ -11,7 +11,8 @@ Spout::COMMANDS = {
   'c' => :coverage_report,
   'p' => :generate_images,
   'g' => :generate_charts_and_tables,
-  'o' => :outliers_report
+  'o' => :outliers_report,
+  'd' => :deploy
 }
 
 module Spout
@@ -72,12 +73,19 @@ The most common spout commands are:
   [g]raphs          Generates JSON graphs for each variable
                     in a dataset and places them
                     in `<project_name>/graphs/<version>/`
+  [d]eploy NAME     Push dataset and data dictionary to a
+                    webserver specified in `.spout.yml`
   [v]ersion         Returns the version of Spout
 
 Commands can be referenced by the first letter:
   Ex: `spout t`, for test
 
 EOT
+  end
+
+  def self.deploy(argv)
+    require 'spout/commands/deploy'
+    Spout::Commands::Deploy.new(argv)
   end
 
   def self.importer(argv)
