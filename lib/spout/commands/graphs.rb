@@ -3,16 +3,22 @@ require 'fileutils'
 require 'rubygems'
 require 'json'
 require 'yaml'
+require 'colorize'
 
 require 'spout/helpers/subject_loader'
 require 'spout/helpers/chart_types'
 require 'spout/helpers/config_reader'
+require 'spout/helpers/send_file'
 
 module Spout
   module Commands
     class Graphs
-      def initialize(variables, standard_version)
+      def initialize(variables, standard_version, deploy_mode = false, url = '', slug = '', token = '')
+        @deploy_mode = deploy_mode
+        @url = url
         @standard_version = standard_version
+        @slug = slug
+        @token = token
 
         @config = Spout::Helpers::ConfigReader.new
 
@@ -54,7 +60,7 @@ module Spout
         @subjects = @subject_loader.subjects
         compute_tables_and_charts
 
-        puts "Took #{Time.now - t} seconds." if @subjects.size > 0
+        puts "Took #{Time.now - t} seconds." if @subjects.size > 0 and not @deploy_mode
       end
 
       def compute_tables_and_charts
@@ -67,7 +73,12 @@ module Spout
           variable_name  = json['id'].to_s.downcase
           next unless Spout::Models::Subject.method_defined?(variable_name)
 
-          puts "#{file_index+1} of #{variable_files_count}: #{variable_file.gsub(/(^variables\/|\.json$)/, '').gsub('/', ' / ')}"
+          if @deploy_mode
+            print "\r     Graph Generation: " + "#{"% 3d" % ((file_index+1)*100/variable_files_count)}% Uploaded".colorize(:white)
+          else
+            puts "#{file_index+1} of #{variable_files_count}: #{variable_file.gsub(/(^variables\/|\.json$)/, '').gsub('/', ' / ')}"
+          end
+
 
 
           stats = {
@@ -101,7 +112,15 @@ module Spout
           chart_json_file = File.join('graphs', @standard_version, "#{json['id']}.json")
           File.open(chart_json_file, 'w') { |file| file.write( JSON.pretty_generate(stats) + "\n" ) }
 
+          if @deploy_mode
+            send_to_server(chart_json_file)
+          end
+
         end
+      end
+
+      def send_to_server(chart_json_file)
+        response = Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_graph.json", chart_json_file, @standard_version, @token)
       end
 
       # [["Visit 1", "1"], ["Visit 2", "2"], ["CVD Outcomes", "3"]]

@@ -41,11 +41,11 @@ module Spout
         @csv_files = Dir.glob("csvs/#{@csv_directory}/*.csv")
         @csv_files.each_with_index do |csv_file, index|
           count = 0
-          puts "Parsing: #{csv_file}"
+          print "\nParsing #{csv_file}"
           CSV.parse( File.open(csv_file, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true, header_converters: lambda { |h| h.to_s.downcase } ) do |line|
             row = line.to_hash
             count += 1
-            print '.' if (count % 10 == 0)
+            print "\rParsing #{csv_file} - line ##{count}" if (count % 10 == 0)
             @subjects << Spout::Models::Subject.create do |t|
               t._visit = row[@visit]
 
@@ -68,7 +68,7 @@ module Spout
             # puts "Memory Used: " + (`ps -o rss -p #{$$}`.strip.split.last.to_i / 1024).to_s + " MB" if count % 1000 == 0
             break if @number_of_rows != nil and count >= @number_of_rows
           end
-          puts "\n\n"
+          puts "\n"
         end
 
         if @csv_directory != @standard_version

@@ -47,15 +47,16 @@ module Spout
         # puts "Deploying to server...".colorize(:red)
         @environment = argv[1].to_s
         @version = version
+        @skip_checks = false
         run_all
       end
 
       def run_all
         begin
-          config_file_check
-          version_check
-          test_check
-          user_authorization_check
+          config_file_load
+          version_check unless @skip_checks
+          test_check unless @skip_checks
+          user_authorization
           graph_generation
           image_generation
           dataset_uploads
@@ -64,7 +65,7 @@ module Spout
         end
       end
 
-      def config_file_check
+      def config_file_load
         print "   `.spout.yml` Check: "
         @config = Spout::Helpers::ConfigReader.new
 
@@ -160,23 +161,25 @@ module Spout
         puts "       Spout Coverage: " + "SKIP".colorize(:blue)
       end
 
-      def user_authorization_check
-        print "   User Authorization: "
+      def user_authorization
+        puts  "  Get your token here: " + "#{@url}/token".colorize(:blue).on_white.underline
+        print "     Enter your token: "
+        @token =  STDIN.gets.chomp
         # failure ''
         # puts "PASS".colorize(:green)
-        puts "SKIP".colorize(:blue)
       end
 
       def graph_generation
-        print "     Graph Generation: "
         # failure ''
-        puts "Launching Sandbox Mode".colorize(:green)
+        require 'spout/commands/graphs'
+        Spout::Commands::Graphs.new([], @version, true, @url, @slug, @token)
+        puts "\r     Graph Generation: " + "DONE          ".colorize(:green)
       end
 
       def image_generation
         print "     Image Generation: "
         # failure ''
-        puts "Launching Sandbox Mode".colorize(:green)
+        puts "SKIP".colorize(:blue)
       end
 
       def dataset_uploads

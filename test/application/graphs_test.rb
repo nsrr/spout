@@ -33,7 +33,7 @@ module ApplicationTests
 
       assert File.directory?(File.join(app_path, 'graphs', '1.0.0'))
       assert_equal ["age_at_visit.json", "gender.json", "visit.json", ".", ".."].sort, Dir.entries(File.join(app_path, 'graphs', '1.0.0')).sort
-      assert_match /Parsing: csvs\/1\.0\.0\/dataset\.csv/, output
+      assert_match /Parsing csvs\/1\.0\.0\/dataset\.csv/, output
       assert_match /of 3: age\_at\_visit/, output
       assert_match /of 3: gender/, output
       assert_match /of 3: visit/, output
@@ -54,7 +54,7 @@ module ApplicationTests
 
       assert File.directory?(File.join(app_path, 'graphs', '1.0.0'))
       assert_equal ["age_at_visit.json", "gender.json", "visit.json", ".", ".."].sort, Dir.entries(File.join(app_path, 'graphs', '1.0.0')).sort
-      assert_match /Parsing: csvs\/1\.0\.0\/dataset\.csv/, output
+      assert_match /Parsing csvs\/1\.0\.0\/dataset\.csv/, output
       assert_match /of 3: age\_at\_visit/, output
       assert_match /of 3: gender/, output
       assert_match /of 3: visit/, output

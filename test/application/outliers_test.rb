@@ -65,7 +65,7 @@ module ApplicationTests
         Dir.chdir(app_path) { Spout.launch(['outliers', '--console']) }
       end
 
-      assert_match /Parsing: csvs\/1\.0\.0\/dataset\.csv/, output
+      assert_match /Parsing csvs\/1\.0\.0\/dataset\.csv/, output
 
       assert_equal [".", "..", "dataset.csv"].sort, Dir.entries(File.join(app_path, 'csvs', '1.0.0')).sort
 
