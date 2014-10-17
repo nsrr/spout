@@ -3,6 +3,9 @@ require 'net/http'
 
 require 'spout/helpers/config_reader'
 require 'spout/helpers/quietly'
+require 'spout/helpers/send_file'
+require 'spout/helpers/semantic'
+require 'spout/helpers/json_request'
 
 # - **User Authorization**
 #   - User authenticates via token, the user must be a dataset editor
@@ -43,11 +46,14 @@ module Spout
       attr_accessor :token, :version, :slug, :url, :config, :environment
 
       def initialize(argv, version)
-        # puts "CODE GREEN INITIALIZED...".colorize(:green)
-        # puts "Deploying to server...".colorize(:red)
         @environment = argv[1].to_s
         @version = version
-        @skip_checks = false
+        @skip_checks = (argv.delete('--skip-checks') != nil)
+
+        @skip_graphs = (argv.delete('--skip-graphs') != nil)
+        @skip_images = (argv.delete('--skip-images') != nil)
+        @skip_server_updates = (argv.delete('--skip-server-updates') != nil)
+
         run_all
       end
 
@@ -57,10 +63,10 @@ module Spout
           version_check unless @skip_checks
           test_check unless @skip_checks
           user_authorization
-          graph_generation
-          image_generation
+          graph_generation unless @skip_graphs
+          image_generation unless @skip_images
           dataset_uploads
-          trigger_server_updates
+          trigger_server_updates unless @skip_server_updates
         rescue DeployError
         end
       end
@@ -184,17 +190,29 @@ module Spout
       end
 
       def dataset_uploads
-        print "      Dataset Uploads: "
-        # failure ''
-        # puts "PASS".colorize(:green)
-        puts "SKIP".colorize(:blue)
+        available_folders = (Dir.exist?('csvs') ? Dir.entries('csvs').select{|e| File.directory? File.join('csvs', e) }.reject{|e| [".",".."].include?(e)}.sort : [])
+
+        semantic = Spout::Helpers::Semantic.new(@version, available_folders)
+
+        csv_directory = semantic.selected_folder
+
+        csv_files = Dir.glob("csvs/#{csv_directory}/*.csv")
+
+        csv_files.each_with_index do |csv_file, index|
+          print "\r      Dataset Uploads: " + "#{index + 1} of #{csv_files.count}".colorize(:green)
+          response = Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_dataset_csv.json", csv_file, @version, @token)
+        end
+        puts "\r      Dataset Uploads: " + "DONE          ".colorize(:green)
       end
 
       def trigger_server_updates
         print "Launch Server Scripts: "
-        # failure ''
-        # puts "PASS".colorize(:green)
-        puts "SKIP".colorize(:blue)
+        response = Spout::Helpers::JsonRequest.get("#{@url}/datasets/#{@slug}/a/#{@token}/refresh_dictionary.json?version=#{@version}")
+        if response and response['refresh'] == 'success'
+          puts "DONE".colorize(:green)
+        else
+          puts "FAIL".colorize(:red)
+        end
       end
 
       def failure(message)
