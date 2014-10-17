@@ -171,8 +171,8 @@ module Spout
 
       def graph_generation
         # failure ''
-        # require 'spout/commands/graphs'
-        # Spout::Commands::Graphs.new([], @version, true, @url, @slug, @token)
+        require 'spout/commands/graphs'
+        Spout::Commands::Graphs.new([], @version, true, @url, @slug, @token)
         puts "\r     Graph Generation: " + "DONE          ".colorize(:green)
       end
 
