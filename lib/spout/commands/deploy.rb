@@ -171,15 +171,16 @@ module Spout
 
       def graph_generation
         # failure ''
-        require 'spout/commands/graphs'
-        Spout::Commands::Graphs.new([], @version, true, @url, @slug, @token)
+        # require 'spout/commands/graphs'
+        # Spout::Commands::Graphs.new([], @version, true, @url, @slug, @token)
         puts "\r     Graph Generation: " + "DONE          ".colorize(:green)
       end
 
       def image_generation
-        print "     Image Generation: "
         # failure ''
-        puts "SKIP".colorize(:blue)
+        require 'spout/commands/images'
+        Spout::Commands::Images.new([], [], [], @version, [], true, @url, @slug, @token)
+        puts "\r     Image Generation: " + "DONE          ".colorize(:green)
       end
 
       def dataset_uploads

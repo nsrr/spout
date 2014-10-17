@@ -7,12 +7,20 @@ require 'yaml'
 require 'spout/helpers/subject_loader'
 require 'spout/helpers/chart_types'
 require 'spout/helpers/config_reader'
+require 'spout/helpers/send_file'
 
 module Spout
   module Commands
     class Images
 
-      def initialize(types, variable_ids, sizes, standard_version, argv)
+      def initialize(types, variable_ids, sizes, standard_version, argv, deploy_mode = false, url = '', slug = '', token = '')
+        @deploy_mode = deploy_mode
+        @url = url
+        @standard_version = standard_version
+        @slug = slug
+        @token = token
+
+
         @variable_files = Dir.glob('variables/**/*.json')
         @standard_version = standard_version
         @pretend = (argv.delete('--pretend') != nil)
@@ -34,7 +42,7 @@ module Spout
         @subjects = @subject_loader.subjects
 
         compute_images
-        puts "Took #{Time.now - t} seconds." if @subjects.size > 0
+        puts "Took #{Time.now - t} seconds." if @subjects.size > 0 and not @deploy_mode
       end
 
       def compute_images
@@ -53,7 +61,11 @@ module Spout
           variable_name  = json['id'].to_s.downcase
           next unless Spout::Models::Subject.method_defined?(variable_name)
 
-          puts "#{file_index+1} of #{variable_files_count}: #{variable_file.gsub(/(^variables\/|\.json$)/, '').gsub('/', ' / ')}"
+          if @deploy_mode
+            print "\r     Image Generation: " + "#{"% 3d" % ((file_index+1)*100/variable_files_count)}% Uploaded".colorize(:white)
+          else
+            puts "#{file_index+1} of #{variable_files_count}: #{variable_file.gsub(/(^variables\/|\.json$)/, '').gsub('/', ' / ')}"
+          end
 
           filtered_subjects = @subjects.select{ |s| s.send(@config.visit) != nil }
 
@@ -115,8 +127,13 @@ module Spout
           puts phantomjs_command
         else
           `#{phantomjs_command}`
-        end
 
+          send_to_server(graph_path) if @deploy_mode
+        end
+      end
+
+      def send_to_server(file)
+        response = Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_graph.json", file, @standard_version, @token, 'images')
       end
 
     end

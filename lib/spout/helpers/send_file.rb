@@ -13,11 +13,12 @@ module Spout
 
       attr_reader :url
 
-      def initialize(url, filename, version, token)
+      def initialize(url, filename, version, token, type = nil)
 
         @params = {}
         @params["version"] = version
         @params["auth_token"] = token if token
+        @params["type"] = type if type
         begin
           file = File.open(filename, "rb")
           @params["file"] = file
