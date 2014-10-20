@@ -48,11 +48,11 @@ module Spout
       def initialize(argv, version)
         @environment = argv[1].to_s
         @version = version
-        @skip_checks = (argv.delete('--skip-checks') != nil)
+        @skip_checks = (argv.delete('--skip-checks') != nil or argv.delete('--no-checks') != nil)
 
-        @skip_graphs = (argv.delete('--skip-graphs') != nil)
-        @skip_images = (argv.delete('--skip-images') != nil)
-        @skip_server_updates = (argv.delete('--skip-server-updates') != nil)
+        @skip_graphs = (argv.delete('--skip-graphs') != nil or argv.delete('--no-graphs') != nil)
+        @skip_images = (argv.delete('--skip-images') != nil or argv.delete('--no-images') != nil)
+        @skip_server_updates = (argv.delete('--skip-server-updates') != nil or argv.delete('--no-server-updates') != nil)
 
         run_all
       end
