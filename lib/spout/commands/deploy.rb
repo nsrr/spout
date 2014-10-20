@@ -1,5 +1,6 @@
 require 'colorize'
 require 'net/http'
+require 'io/console'
 
 require 'spout/helpers/config_reader'
 require 'spout/helpers/quietly'
@@ -170,7 +171,7 @@ module Spout
       def user_authorization
         puts  "  Get your token here: " + "#{@url}/token".colorize(:blue).on_white.underline
         print "     Enter your token: "
-        @token =  STDIN.gets.chomp
+        @token = STDIN.noecho(&:gets).chomp
         # failure ''
         # puts "PASS".colorize(:green)
       end
