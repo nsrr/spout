@@ -172,6 +172,17 @@ module Spout
         puts  "  Get your token here: " + "#{@url}/token".colorize(:blue).on_white.underline
         print "     Enter your token: "
         @token = STDIN.noecho(&:gets).chomp
+
+        response = Spout::Helpers::JsonRequest.get("#{@url}/datasets/#{@slug}/a/#{@token}/editor.json")
+
+        if response.kind_of?(Hash) and response['editor']
+          puts "AUTHORIZED".colorize(:green)
+        else
+          puts "UNAUTHORIZED".colorize(:red)
+          puts "#{INDENT}You are not set as an editor on the #{@slug} dataset or you mistyped your token."
+          raise DeployError
+        end
+
         # failure ''
         # puts "PASS".colorize(:green)
       end
@@ -209,7 +220,7 @@ module Spout
       def trigger_server_updates
         print "Launch Server Scripts: "
         response = Spout::Helpers::JsonRequest.get("#{@url}/datasets/#{@slug}/a/#{@token}/refresh_dictionary.json?version=#{@version}")
-        if response and response['refresh'] == 'success'
+        if response.kind_of?(Hash) and response['refresh'] == 'success'
           puts "DONE".colorize(:green)
         else
           puts "FAIL".colorize(:red)
