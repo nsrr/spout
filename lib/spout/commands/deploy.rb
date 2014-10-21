@@ -55,6 +55,8 @@ module Spout
         @skip_images = (argv.delete('--skip-images') != nil or argv.delete('--no-images') != nil)
         @skip_server_updates = (argv.delete('--skip-server-updates') != nil or argv.delete('--no-server-updates') != nil)
 
+        @token = argv.select{|a| /^--token=/ =~ a}.collect{|a| a.gsub(/^--token=/, '')}.first
+
         run_all
       end
 
@@ -171,7 +173,7 @@ module Spout
       def user_authorization
         puts  "  Get your token here: " + "#{@url}/token".colorize(:blue).on_white.underline
         print "     Enter your token: "
-        @token = STDIN.noecho(&:gets).chomp
+        @token = STDIN.noecho(&:gets).chomp if @token.to_s.strip == ''
 
         response = Spout::Helpers::JsonRequest.get("#{@url}/datasets/#{@slug}/a/#{@token}/editor.json")
 
