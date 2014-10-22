@@ -57,7 +57,11 @@ module Spout
 
         @token = argv.select{|a| /^--token=/ =~ a}.collect{|a| a.gsub(/^--token=/, '')}.first
 
-        run_all
+        begin
+          run_all
+        rescue Interrupt, IRB::Abort
+          puts "\nINTERRUPTED".colorize(:red)
+        end
       end
 
       def run_all
