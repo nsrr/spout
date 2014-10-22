@@ -59,6 +59,17 @@ slug: myrepo
         end
       end
 
+      def test_server_message_data_dictionary_git_repo_does_not_exist
+        Artifice.activate_with(app) do
+          output, error = util_capture do
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=5-qrst', '--no-checks', '--no-graphs', '--no-images'] }
+          end
+
+          assert_match "Launch Server Scripts: FAIL", output.uncolorize
+          assert_match "Dataset data dictionary git repository has not been cloned on the server. Contact server admin.", output.uncolorize
+        end
+      end
+
     end
   end
 end

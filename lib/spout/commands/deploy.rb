@@ -246,6 +246,10 @@ module Spout
           puts "FAIL".colorize(:red)
           puts "#{INDENT}Tag not found in repository, resolve using: " + "git push --tags".colorize(:white)
           raise DeployError
+        elsif response.kind_of?(Hash) and response['refresh'] == 'gitrepodoesnotexist'
+          puts "FAIL".colorize(:red)
+          puts "#{INDENT}Dataset data dictionary git repository has not been cloned on the server. Contact server admin.".colorize(:white)
+          raise DeployError
         else
           puts "FAIL".colorize(:red)
           raise DeployError

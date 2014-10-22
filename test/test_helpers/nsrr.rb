@@ -18,6 +18,10 @@ module TestHelpers
           [200, { 'Content-Type' => 'application/json' }, [{ editor: true, user_id: 4 }.to_json]]
         when "/datasets/myrepo/a/4-mnop/refresh_dictionary.json"
           [200, { 'Content-Type' => 'application/json' }, [{ refresh: 'notagfound' }.to_json]]
+        when "/datasets/myrepo/a/5-qrst/editor.json"
+          [200, { 'Content-Type' => 'application/json' }, [{ editor: true, user_id: 5 }.to_json]]
+        when "/datasets/myrepo/a/5-qrst/refresh_dictionary.json"
+          [200, { 'Content-Type' => 'application/json' }, [{ refresh: 'gitrepodoesnotexist' }.to_json]]
         when "/datasets/myrepo/a/2-efgh/editor.json"
           [200, { 'Content-Type' => 'application/json' }, [{ editor: false, user_id: 2 }.to_json]]
         when "/datasets/myrepo/a/_/editor.json"
