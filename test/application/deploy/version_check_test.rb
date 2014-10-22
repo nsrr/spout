@@ -61,11 +61,7 @@ slug: myrepo
         Artifice.activate_with(app) do
           output, error = util_capture do
             Dir.chdir(app_path) do
-              if ENV["TRAVIS"]
-                `git config --global user.email "travis-ci@example.com"`
-                `git config --global user.name "Travis CI"`
-              end
-              `git init`
+              initialize_git_repository!
               `git add .`
               `git commit -m "Initial commit"`
               `git tag -a "v1.0.0" -m "v1.0.0"`
@@ -85,7 +81,7 @@ slug: myrepo
         Artifice.activate_with(app) do
           output, error = util_capture do
             Dir.chdir(app_path) do
-              `git init`
+              initialize_git_repository!
               `git add .`
               `git commit -m "Initial commit"`
               Spout.launch ['deploy', 't', '--token=1-abcd', '--no-graphs', '--no-images', '--no-server-updates']
@@ -99,13 +95,21 @@ slug: myrepo
         Artifice.activate_with(app) do
           output, error = util_capture do
             Dir.chdir(app_path) do
-              `git init`
+              initialize_git_repository!
               Spout.launch ['deploy', 't', '--token=1-abcd', '--no-graphs', '--no-images', '--no-server-updates']
             end
           end
           assert_match "Git Status Check: FAIL", output.uncolorize
           assert_match "working directory contains uncomitted changes", output.uncolorize
         end
+      end
+
+      def initialize_git_repository!
+        if ENV["TRAVIS"]
+          `git config --global user.email "travis-ci@example.com"`
+          `git config --global user.name "Travis CI"`
+        end
+        `git init`
       end
 
     end
