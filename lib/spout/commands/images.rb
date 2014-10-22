@@ -24,6 +24,7 @@ module Spout
         @variable_files = Dir.glob('variables/**/*.json')
         @standard_version = standard_version
         @pretend = (argv.delete('--pretend') != nil)
+        @clean = (argv.delete('--no-resume') != nil or argv.delete('--clean'))
         @sizes = sizes
         @types = types
 
@@ -34,15 +35,30 @@ module Spout
         @config = Spout::Helpers::ConfigReader.new
 
         t = Time.now
-        FileUtils.mkpath "graphs/#{@standard_version}"
+        @images_folder = File.join("images", @standard_version)
+        FileUtils.mkpath @images_folder
 
         @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, @valid_ids, @standard_version, @number_of_rows, @config.visit)
 
         @subject_loader.load_subjects_from_csvs!
         @subjects = @subject_loader.subjects
 
+        load_current_progress
+
         compute_images
         puts "Took #{Time.now - t} seconds." if @subjects.size > 0 and not @deploy_mode
+      end
+
+      def load_current_progress
+        @progress_file = File.join(@images_folder, ".progress.json")
+        @progress = JSON.parse(File.read(@progress_file)) rescue @progress = {}
+        @progress = {} if @clean
+      end
+
+      def save_current_progress
+        File.open(@progress_file,"w") do |f|
+          f.write(@progress.to_json)
+        end
       end
 
       def compute_images
@@ -66,6 +82,10 @@ module Spout
           else
             puts "#{file_index+1} of #{variable_files_count}: #{variable_file.gsub(/(^variables\/|\.json$)/, '').gsub('/', ' / ')}"
           end
+
+          @progress[variable_name] ||= {}
+
+          next if (not @deploy_mode and @progress[variable_name]['generated'] == true) or (@deploy_mode and @progress[variable_name]['uploaded'] == true)
 
           filtered_subjects = @subjects.select{ |s| s.send(@config.visit) != nil }
 
@@ -103,16 +123,21 @@ module Spout
                 }
               eos
             end
-            run_phantom_js("#{json['id']}-lg.png", 600, tmp_options_file) if @sizes.size == 0 or @sizes.include?('lg')
-            run_phantom_js("#{json['id']}.png",     75, tmp_options_file) if @sizes.size == 0 or @sizes.include?('sm')
+            run_phantom_js(variable_name, "#{variable_name}-lg.png", 600, tmp_options_file) if @sizes.size == 0 or @sizes.include?('lg')
+            run_phantom_js(variable_name, "#{variable_name}.png",     75, tmp_options_file) if @sizes.size == 0 or @sizes.include?('sm')
+            @progress[variable_name]['uploaded'] = (@deploy_mode and @progress[variable_name]['failed'] != true)
+            save_current_progress
           end
 
         end
         File.delete(tmp_options_file) if File.exist?(tmp_options_file)
       end
 
-      def run_phantom_js(png_name, width, tmp_options_file)
-        graph_path = File.join(Dir.pwd, 'images', @standard_version, png_name)
+      def run_phantom_js(variable_name, png_name, width, tmp_options_file)
+        @progress[variable_name]['generated'] ||= []
+        @progress[variable_name]['uploaded_files'] ||= []
+
+        image_path = File.join(Dir.pwd, 'images', @standard_version, png_name)
         directory = File.join( File.dirname(__FILE__), '..', 'support', 'javascripts' )
 
         open_command = if RUBY_PLATFORM.match(/mingw/) != nil
@@ -121,19 +146,29 @@ module Spout
           'phantomjs'
         end
 
-        phantomjs_command = "#{open_command} #{directory}/highcharts-convert.js -infile #{tmp_options_file} -outfile #{graph_path} -scale 2.5 -width #{width} -constr Chart"
+        phantomjs_command = "#{open_command} #{directory}/highcharts-convert.js -infile #{tmp_options_file} -outfile #{image_path} -scale 2.5 -width #{width} -constr Chart"
 
         if @pretend
           puts phantomjs_command
         else
-          `#{phantomjs_command}`
+          if not @progress[variable_name]['generated'].include?(png_name) or not File.exist?(png_name) or (File.exist?(png_name) and File.size(png_name) == 0)
+            `#{phantomjs_command}`
+            @progress[variable_name]['generated'] << png_name
+          end
 
-          send_to_server(graph_path) if @deploy_mode
+          if @deploy_mode and not @progress[variable_name]['uploaded_files'].include?(png_name)
+            response = send_to_server(image_path)
+            if response.kind_of?(Hash) and response['upload'] == 'success'
+              @progress[variable_name]['uploaded_files'] << png_name
+            else
+              @progress[variable_name]['upload_failed'] = true
+            end
+          end
         end
       end
 
       def send_to_server(file)
-        response = Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_graph.json", file, @standard_version, @token, 'images')
+        Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_graph.json", file, @standard_version, @token, 'images')
       end
 
     end

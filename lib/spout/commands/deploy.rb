@@ -53,6 +53,7 @@ module Spout
 
         @skip_graphs = (argv.delete('--skip-graphs') != nil or argv.delete('--no-graphs') != nil)
         @skip_images = (argv.delete('--skip-images') != nil or argv.delete('--no-images') != nil)
+        @clean = (argv.delete('--clean') != nil or argv.delete('--no-resume'))
         @skip_server_updates = (argv.delete('--skip-server-updates') != nil or argv.delete('--no-server-updates') != nil)
 
         @token = argv.select{|a| /^--token=/ =~ a}.collect{|a| a.gsub(/^--token=/, '')}.first
@@ -197,14 +198,18 @@ module Spout
       def graph_generation
         # failure ''
         require 'spout/commands/graphs'
-        Spout::Commands::Graphs.new([], @version, true, @url, @slug, @token)
+        argv = []
+        argv << "--clean" if @clean
+        Spout::Commands::Graphs.new(argv, @version, true, @url, @slug, @token)
         puts "\r     Graph Generation: " + "DONE          ".colorize(:green)
       end
 
       def image_generation
         # failure ''
         require 'spout/commands/images'
-        Spout::Commands::Images.new([], [], [], @version, [], true, @url, @slug, @token)
+        argv = []
+        argv << "--clean" if @clean
+        Spout::Commands::Images.new(argv, [], [], @version, [], true, @url, @slug, @token)
         puts "\r     Image Generation: " + "DONE          ".colorize(:green)
       end
 

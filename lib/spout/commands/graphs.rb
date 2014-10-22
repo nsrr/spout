@@ -20,6 +20,10 @@ module Spout
         @slug = slug
         @token = token
 
+        argv = variables
+
+        @clean = (argv.delete('--no-resume') != nil or argv.delete('--clean'))
+
         @config = Spout::Helpers::ConfigReader.new
 
         if Spout::Helpers::ChartTypes::get_json(@config.visit, 'variable') == nil
@@ -52,15 +56,31 @@ module Spout
         @variable_files = Dir.glob('variables/**/*.json')
 
         t = Time.now
-        FileUtils.mkpath "graphs/#{@standard_version}"
+        @graphs_folder = File.join("graphs", @standard_version)
+        FileUtils.mkpath @graphs_folder
 
         @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, @valid_ids, @standard_version, @number_of_rows, @config.visit)
 
         @subject_loader.load_subjects_from_csvs!
         @subjects = @subject_loader.subjects
+
+        load_current_progress
+
         compute_tables_and_charts
 
         puts "Took #{Time.now - t} seconds." if @subjects.size > 0 and not @deploy_mode
+      end
+
+      def load_current_progress
+        @progress_file = File.join(@graphs_folder, ".progress.json")
+        @progress = JSON.parse(File.read(@progress_file)) rescue @progress = {}
+        @progress = {} if @clean
+      end
+
+      def save_current_progress
+        File.open(@progress_file,"w") do |f|
+          f.write(@progress.to_json)
+        end
       end
 
       def compute_tables_and_charts
@@ -79,7 +99,8 @@ module Spout
             puts "#{file_index+1} of #{variable_files_count}: #{variable_file.gsub(/(^variables\/|\.json$)/, '').gsub('/', ' / ')}"
           end
 
-
+          @progress[variable_name] ||= {}
+          next if (not @deploy_mode and @progress[variable_name]['generated'] == true) or (@deploy_mode and @progress[variable_name]['uploaded'] == true)
 
           stats = {
             charts: {},
@@ -109,12 +130,17 @@ module Spout
             end
           end
 
-          chart_json_file = File.join('graphs', @standard_version, "#{json['id']}.json")
+          chart_json_file = File.join(@graphs_folder, "#{json['id']}.json")
           File.open(chart_json_file, 'w') { |file| file.write( JSON.pretty_generate(stats) + "\n" ) }
 
-          if @deploy_mode
-            send_to_server(chart_json_file)
+          @progress[variable_name]['generated'] = true
+
+          if @deploy_mode and not @progress[variable_name]['uploaded'] == true
+            response = send_to_server(chart_json_file)
+            @progress[variable_name]['uploaded'] = (response.kind_of?(Hash) and response['upload'] == 'success')
           end
+
+          save_current_progress
 
         end
       end
