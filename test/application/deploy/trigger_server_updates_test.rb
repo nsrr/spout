@@ -6,7 +6,7 @@ require 'test_helpers/nsrr'
 
 module ApplicationTests
   module DeployTests
-    class UserAuthorizationTest < SandboxTest
+    class TriggerServerUpdatesTest < SandboxTest
 
       include TestHelpers::Capture
       include TestHelpers::Nsrr
@@ -31,27 +31,31 @@ slug: myrepo
       def test_editor_approved_access
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--no-checks', '--no-graphs', '--no-images', '--no-server-updates'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--no-checks', '--no-graphs', '--no-images'] }
           end
-          assert_match "     Enter your token: AUTHORIZED", output.uncolorize
+
+          assert_match "Launch Server Scripts: DONE", output.uncolorize
         end
       end
 
-      def test_view_unauthorized_access
+      def test_trigger_update_failure
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=2-efgh', '--no-checks', '--no-graphs', '--no-images', '--no-server-updates'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=3-ijkl', '--no-checks', '--no-graphs', '--no-images'] }
           end
-          assert_match "     Enter your token: UNAUTHORIZED", output.uncolorize
+
+          assert_match "Launch Server Scripts: FAIL", output.uncolorize
         end
       end
 
-      def test_anonymous_unauthorized_access
+      def test_server_message_tag_checkout_error
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=_', '--no-checks', '--no-graphs', '--no-images', '--no-server-updates'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=4-mnop', '--no-checks', '--no-graphs', '--no-images'] }
           end
-          assert_match "     Enter your token: UNAUTHORIZED", output.uncolorize
+
+          assert_match "Launch Server Scripts: FAIL", output.uncolorize
+          assert_match "Tag not found in repository, resolve using: git push --tags", output.uncolorize
         end
       end
 

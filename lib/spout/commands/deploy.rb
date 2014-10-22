@@ -224,8 +224,13 @@ module Spout
         response = Spout::Helpers::JsonRequest.get("#{@url}/datasets/#{@slug}/a/#{@token}/refresh_dictionary.json?version=#{@version}")
         if response.kind_of?(Hash) and response['refresh'] == 'success'
           puts "DONE".colorize(:green)
+        elsif response.kind_of?(Hash) and response['refresh'] == 'notagfound'
+          puts "FAIL".colorize(:red)
+          puts "#{INDENT}Tag not found in repository, resolve using: " + "git push --tags".colorize(:white)
+          raise DeployError
         else
           puts "FAIL".colorize(:red)
+          raise DeployError
         end
       end
 
