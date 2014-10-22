@@ -69,6 +69,7 @@ module Spout
           graph_generation unless @skip_graphs
           image_generation unless @skip_images
           dataset_uploads
+          data_dictionary_uploads
           trigger_server_updates unless @skip_server_updates
         rescue DeployError
         end
@@ -205,10 +206,13 @@ module Spout
 
       def dataset_uploads
         available_folders = (Dir.exist?('csvs') ? Dir.entries('csvs').select{|e| File.directory? File.join('csvs', e) }.reject{|e| [".",".."].include?(e)}.sort : [])
-
         semantic = Spout::Helpers::Semantic.new(@version, available_folders)
-
         csv_directory = semantic.selected_folder
+
+        if @version != csv_directory
+          puts "\r      Dataset Uploads: " + "SKIPPED - #{csv_directory} CSV dataset already on server".colorize(:blue)
+          return
+        end
 
         csv_files = Dir.glob("csvs/#{csv_directory}/*.csv")
 
@@ -217,6 +221,20 @@ module Spout
           response = Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_dataset_csv.json", csv_file, @version, @token)
         end
         puts "\r      Dataset Uploads: " + "DONE          ".colorize(:green)
+      end
+
+      def data_dictionary_uploads
+        print   "   Dictionary Uploads:"
+
+        require 'spout/commands/exporter'
+        Spout::Commands::Exporter.new(@version, ['--quiet'])
+
+        csv_files = Dir.glob("dd/#{@version}/*.csv")
+        csv_files.each_with_index do |csv_file, index|
+          print "\r   Dictionary Uploads: " + "#{index + 1} of #{csv_files.count}".colorize(:green)
+          response = Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_dataset_csv.json", csv_file, @version, @token)
+        end
+        puts "\r   Dictionary Uploads: " + "DONE          ".colorize(:green)
       end
 
       def trigger_server_updates

@@ -9,7 +9,7 @@ module Spout
   module Commands
     class Exporter
       def initialize(standard_version, argv)
-        @csv_file = argv[1].to_s
+        @quiet = (argv.delete('--quiet') != nil)
         @standard_version = standard_version
         @config = Spout::Helpers::ConfigReader.new
         expanded_export!
@@ -19,7 +19,7 @@ module Spout
 
       def expanded_export!
         folder = "dd/#{@standard_version}"
-        puts "      create".colorize( :green ) + "  #{folder}"
+        puts "      create".colorize( :green ) + "  #{folder}" unless @quiet
         FileUtils.mkpath folder
 
         generic_export(folder, 'variables', %w(id display_name description type units domain labels calculation))
@@ -29,7 +29,7 @@ module Spout
 
       def generic_export(folder, type, keys, include_domain_name = false)
         export_file = export_file_name(type)
-        puts "      export".colorize( :blue ) + "  #{folder}/#{export_file}"
+        puts "      export".colorize( :blue ) + "  #{folder}/#{export_file}" unless @quiet
         CSV.open("#{folder}/#{export_file}", "wb") do |csv|
           if include_domain_name
             csv << ['folder', 'domain_id'] + keys
