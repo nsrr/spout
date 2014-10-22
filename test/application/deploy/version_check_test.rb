@@ -17,19 +17,8 @@ module ApplicationTests
         app_file '.spout.yml', <<-YML
 ---
 webservers:
-  - name: local
-    url: http://localhost
-  - name: live
-    url: https://live.sleepdata.org
-  - name: production
-    url: https://production.sleepdata.org
   - name: test
     url: http://test.sleepdata.org
-  - name: staging
-    url: http://staging.sleepdata.org
-  - name: emptyurl
-  - name: invalidurl
-    url: This is a sentence.
 slug: myrepo
         YML
       end
@@ -72,6 +61,10 @@ slug: myrepo
         Artifice.activate_with(app) do
           output, error = util_capture do
             Dir.chdir(app_path) do
+              if ENV["TRAVIS"]
+                `git config --global user.email "travis-ci@example.com"`
+                `git config --global user.name "Travis CI"`
+              end
               `git init`
               `git add .`
               `git commit -m "Initial commit"`
