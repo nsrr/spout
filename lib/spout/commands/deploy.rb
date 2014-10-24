@@ -209,7 +209,7 @@ module Spout
         require 'spout/commands/images'
         argv = []
         argv << "--clean" if @clean
-        Spout::Commands::Images.new(argv, [], [], @version, [], true, @url, @slug, @token)
+        Spout::Commands::Images.new([], [], [], @version, argv, true, @url, @slug, @token)
         puts "\r     Image Generation: " + "DONE          ".colorize(:green)
       end
 

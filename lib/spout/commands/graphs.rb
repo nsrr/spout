@@ -9,6 +9,7 @@ require 'spout/helpers/subject_loader'
 require 'spout/helpers/chart_types'
 require 'spout/helpers/config_reader'
 require 'spout/helpers/send_file'
+require 'spout/version'
 
 module Spout
   module Commands
@@ -74,7 +75,8 @@ module Spout
       def load_current_progress
         @progress_file = File.join(@graphs_folder, ".progress.json")
         @progress = JSON.parse(File.read(@progress_file)) rescue @progress = {}
-        @progress = {} if @clean
+        @progress = {} if !@progress.kind_of?(Hash) or @clean or @progress['SPOUT_VERSION'] != Spout::VERSION::STRING
+        @progress['SPOUT_VERSION'] = Spout::VERSION::STRING
       end
 
       def save_current_progress
@@ -137,7 +139,12 @@ module Spout
 
           if @deploy_mode and not @progress[variable_name]['uploaded'] == true
             response = send_to_server(chart_json_file)
-            @progress[variable_name]['uploaded'] = (response.kind_of?(Hash) and response['upload'] == 'success')
+            if response.kind_of?(Hash) and response['upload'] == 'success'
+              @progress[variable_name]['uploaded'] = true
+            else
+              puts "\nUPLOAD FAILED: ".colorize(:red) + File.basename(chart_json_file)
+              @progress[variable_name]['uploaded'] = false
+            end
           end
 
           save_current_progress

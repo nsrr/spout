@@ -52,7 +52,8 @@ module Spout
       def load_current_progress
         @progress_file = File.join(@images_folder, ".progress.json")
         @progress = JSON.parse(File.read(@progress_file)) rescue @progress = {}
-        @progress = {} if @clean
+        @progress = {} if !@progress.kind_of?(Hash) or @clean or @progress['SPOUT_VERSION'] != Spout::VERSION::STRING
+        @progress['SPOUT_VERSION'] = Spout::VERSION::STRING
       end
 
       def save_current_progress
@@ -125,7 +126,9 @@ module Spout
             end
             run_phantom_js(variable_name, "#{variable_name}-lg.png", 600, tmp_options_file) if @sizes.size == 0 or @sizes.include?('lg')
             run_phantom_js(variable_name, "#{variable_name}.png",     75, tmp_options_file) if @sizes.size == 0 or @sizes.include?('sm')
-            @progress[variable_name]['uploaded'] = (@deploy_mode and @progress[variable_name]['failed'] != true)
+
+            @progress[variable_name]['uploaded'] = (@deploy_mode and @progress[variable_name]['upload_failed'] != true)
+
             save_current_progress
           end
 
@@ -161,6 +164,7 @@ module Spout
             if response.kind_of?(Hash) and response['upload'] == 'success'
               @progress[variable_name]['uploaded_files'] << png_name
             else
+              puts "\nUPLOAD FAILED: ".colorize(:red) + File.basename(png_name)
               @progress[variable_name]['upload_failed'] = true
             end
           end
