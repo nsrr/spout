@@ -11,6 +11,7 @@
     - Display names for domain options are also changed to title case if they are all caps
 - **Graph Command**
   - Graphs and tables no longer display missing codes that do not exist in the dataset for variables of type `choices`
+  - Graphs and tables now remove domain values for variables of type `integer` or `numeric`
 - **Testing Changes**
   - Tests now include checks to assure that variable display_name fields don't exceed 255 length requirement
     - `include Spout::Tests::VariableDisplayNameLength`

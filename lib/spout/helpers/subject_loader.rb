@@ -68,6 +68,7 @@ module Spout
             # puts "Memory Used: " + (`ps -o rss -p #{$$}`.strip.split.last.to_i / 1024).to_s + " MB" if count % 1000 == 0
             break if @number_of_rows != nil and count >= @number_of_rows
           end
+          print "\rParsing #{csv_file} - line ##{count}"
           puts "\n"
         end
 
@@ -80,7 +81,10 @@ module Spout
       end
 
       def load_subjects_from_csvs_part_two!
-        @variable_files.each do |variable_file|
+        variable_count = @variable_files.count
+        print "Converting numeric values to floats"
+        @variable_files.each_with_index do |variable_file, index|
+          print "\rConverting numeric values to floats:#{"% 3d" % ((index+1)*100/variable_count)}%"
           json = JSON.parse(File.read(variable_file)) rescue json = nil
           next unless json
           next unless @valid_ids.include?(json["id"].to_s.downcase) or @valid_ids.size == 0
@@ -88,8 +92,16 @@ module Spout
           method  = json['id'].to_s.downcase
           next unless Spout::Models::Subject.method_defined?(method)
 
+          domain_json = get_domain(json)
+          # Make all domain options nil for numerics/integers
+          if domain_json
+            domain_values = domain_json.collect{|option_hash| option_hash['value']}
+            @subjects.each{ |s| domain_values.include?(s.send(method)) ? s.send("#{method}=", nil) : nil }
+          end
+
           @subjects.each{ |s| s.send(method) != nil ? s.send("#{method}=", s.send("#{method}").to_f) : nil }
         end
+        puts "\n"
         @subjects
       end
 
@@ -103,6 +115,22 @@ module Spout
         end
         @all_domains = @all_domains.compact.uniq.sort
       end
+
+      def get_json(file_name, file_type)
+        file = Dir.glob("#{file_type.to_s.downcase}s/**/#{file_name.to_s.downcase}.json", File::FNM_CASEFOLD).first
+        json = JSON.parse(File.read(file)) rescue json = nil
+        json
+      end
+
+      def get_variable(variable_name)
+        get_json(variable_name, 'variable')
+      end
+
+      def get_domain(json)
+        get_json(json['domain'], 'domain')
+      end
+
+
     end
   end
 end
