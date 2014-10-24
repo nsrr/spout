@@ -369,7 +369,7 @@ module Spout
         all_subject_values = subjects.collect(&method.to_sym).compact.sort
         return nil if all_subject_values.count == 0
 
-        domain_json = remove_unused_missing_codes_from_domain(domain_json, all_subject_values.uniq)
+        domain_json = remove_unused_missing_codes_from_domain(domain_json, all_subject_values.uniq) if domain_json
 
         categories = pull_categories(json, method, all_subject_values, domain_json)
 
