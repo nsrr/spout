@@ -72,6 +72,9 @@ module Spout
 
         filtered_subjects = subjects.select{ |s| s.send(method) != nil and s.send(chart_type) != nil }.sort_by(&chart_type.to_sym)
 
+        all_subject_values = filtered_subjects.collect(&method.to_sym).compact.sort
+        domain_json = remove_unused_missing_codes_from_domain(domain_json, all_subject_values.uniq)
+
         categories = [:quartile_one, :quartile_two, :quartile_three, :quartile_four].collect do |quartile|
           bucket = filtered_subjects.send(quartile).collect(&chart_type.to_sym)
           "#{bucket.min} to #{bucket.max}"
@@ -168,6 +171,8 @@ module Spout
         return unless domain_json = get_domain(json)
 
         filtered_subjects = subjects.select{ |s| s.send(method) != nil and s.send(chart_type) != nil }.sort_by(&chart_type.to_sym)
+        all_subject_values = filtered_subjects.collect(&method.to_sym).compact.sort
+        domain_json = remove_unused_missing_codes_from_domain(domain_json, all_subject_values.uniq)
 
         categories = [:quartile_one, :quartile_two, :quartile_three, :quartile_four].collect do |quartile|
           bucket = filtered_subjects.send(quartile).collect(&chart_type.to_sym)
@@ -216,6 +221,8 @@ module Spout
         units = 'percent'
         series = []
 
+        all_subject_values = subjects.collect(&method.to_sym).compact.sort
+        domain_json = remove_unused_missing_codes_from_domain(domain_json, all_subject_values.uniq)
 
         domain_json.each do |option_hash|
           domain_values = subjects.select{ |s| s.send(method) == option_hash['value'] }
@@ -311,6 +318,9 @@ module Spout
 
         filtered_subjects = subjects.select{ |s| s.send(chart_type) != nil }
 
+        all_subject_values = filtered_subjects.collect(&method.to_sym).compact.sort
+        domain_json = remove_unused_missing_codes_from_domain(domain_json, all_subject_values.uniq)
+
         rows = domain_json.collect do |option_hash|
           row_subjects = filtered_subjects.select{ |s| s.send(method) == option_hash['value'] }
           row_cells = chart_variable_domain.collect do |display_name, value|
@@ -358,6 +368,9 @@ module Spout
 
         all_subject_values = subjects.collect(&method.to_sym).compact.sort
         return nil if all_subject_values.count == 0
+
+        domain_json = remove_unused_missing_codes_from_domain(domain_json, all_subject_values.uniq)
+
         categories = pull_categories(json, method, all_subject_values, domain_json)
 
         buckets = continuous_buckets(all_subject_values)
@@ -398,6 +411,11 @@ module Spout
         end
         data
       end
+
+      def self.remove_unused_missing_codes_from_domain(domain_json, unique_subject_values)
+        domain_json.select{|option_hash| option_hash['missing'] != true or (option_hash['missing'] == true and unique_subject_values.include?(option_hash['value']))}
+      end
+
     end
   end
 end
