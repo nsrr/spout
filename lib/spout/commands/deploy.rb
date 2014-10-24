@@ -60,7 +60,7 @@ module Spout
 
         begin
           run_all
-        rescue Interrupt, IRB::Abort
+        rescue Interrupt
           puts "\nINTERRUPTED".colorize(:red)
         end
       end
