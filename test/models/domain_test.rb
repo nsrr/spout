@@ -1,5 +1,7 @@
 require 'test_helpers/sandbox'
 
+require 'spout/models/graph'
+
 module ApplicationTests
   class DomainTest < SandboxTest
 
@@ -17,15 +19,22 @@ module ApplicationTests
       domain = Spout::Models::Domain.new(File.join(app_path, 'domains', 'gdomain.json'), app_path)
 
       assert_equal 'gdomain', domain.id
-      assert_equal 2, domain.options.size
+      assert_equal 3, domain.options.size
 
       assert_equal 'm', domain.options[0].value
       assert_equal 'Male', domain.options[0].display_name
       assert_equal '', domain.options[0].description
+      refute_equal true, domain.options[0].missing
 
       assert_equal 'f', domain.options[1].value
       assert_equal 'Female', domain.options[1].display_name
       assert_equal '', domain.options[1].description
+      refute_equal true, domain.options[1].missing
+
+      assert_equal 'r', domain.options[2].value
+      assert_equal 'Refused to Answer', domain.options[2].display_name
+      assert_equal '', domain.options[2].description
+      assert_equal true, domain.options[2].missing
     end
 
     def test_non_existent_file

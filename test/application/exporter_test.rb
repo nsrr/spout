@@ -27,6 +27,7 @@ folder,id,display_name,description,type,units,domain,labels,calculation
 folder,domain_id,value,display_name,description
 "",gdomain,m,Male,""
 "",gdomain,f,Female,""
+"",gdomain,r,Refused to Answer,""
       CSV
 
       output, error = util_capture do
@@ -61,6 +62,7 @@ folder,id,display_name,description,type,units,domain,labels,calculation
 folder,domain_id,value,display_name,description
 "",gdomain,m,Male,""
 "",gdomain,f,Female,""
+"",gdomain,r,Refused to Answer,""
       CSV
 
       output, error = util_capture do

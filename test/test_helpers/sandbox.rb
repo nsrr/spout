@@ -90,6 +90,12 @@ charts:
             "value": "f",
             "display_name": "Female",
             "description": ""
+          },
+          {
+            "value": "r",
+            "display_name": "Refused to Answer",
+            "description": "",
+            "missing": true
           }
         ]
       JSON

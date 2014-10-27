@@ -1,11 +1,13 @@
 require 'json'
 
+require 'spout/models/record'
 require 'spout/models/option'
 
 module Spout
   module Models
 
-    class Domain
+    class Domain < Spout::Models::Record
+
       attr_accessor :id, :folder, :options
       attr_reader :errors
 

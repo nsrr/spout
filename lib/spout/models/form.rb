@@ -4,11 +4,12 @@
 #   "code_book": "Baseline-Visit-Intake-Questionnaire.pdf"
 # }
 
-require 'json'
+require 'spout/models/record'
 
 module Spout
   module Models
-    class Form
+    class Form < Spout::Models::Record
+
       attr_accessor :id, :display_name, :code_book
       attr_accessor :errors
 

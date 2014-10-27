@@ -18,6 +18,9 @@
 - **Gem Changes**
   - Use of Ruby 2.1.4 is now recommended
 
+### Refactoring
+- Removing ChartTypes class in favor of a more modular Graph and Table class
+
 ## 0.9.1 (October 14, 2014)
 
 ### Bug Fix

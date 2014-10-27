@@ -1,8 +1,13 @@
 require 'json'
 
+require 'spout/models/record'
+require 'spout/models/domain'
+require 'spout/models/form'
+
+
 module Spout
   module Models
-    class Variable
+    class Variable < Spout::Models::Record
       # VARIABLE_TYPES = ['choices', 'numeric', 'integer']
 
       attr_accessor :id, :folder, :display_name, :description, :type, :units, :labels, :commonly_used, :calculation
@@ -14,7 +19,7 @@ module Spout
         @errors = []
         @id     = file_name.to_s.gsub(/^(.*)\/|\.json$/, '').downcase
         @folder = file_name.to_s.gsub(/^#{dictionary_root}\/variables\/|#{@id}\.json$/, '')
-
+        @form_names = []
 
         json = begin
           JSON.parse(File.read(file_name))
@@ -41,6 +46,9 @@ module Spout
         end
 
         @errors = (@errors + [error]).compact
+
+        @domain = Spout::Models::Domain.find_by_id(@domain_name)
+        @forms = @form_names.collect{|form_name| Spout::Models::Form.find_by_id(form_name)}.compact
       end
 
       def path
