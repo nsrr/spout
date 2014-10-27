@@ -15,6 +15,8 @@
 - **Testing Changes**
   - Tests now include checks to assure that variable display_name fields don't exceed 255 length requirement
     - `include Spout::Tests::VariableDisplayNameLength`
+- **Gem Changes**
+  - Use of Ruby 2.1.4 is now recommended
 
 ## 0.9.1 (October 14, 2014)
 
