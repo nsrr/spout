@@ -56,7 +56,8 @@ module Spout
 
         @chart_variables = @config.charts.unshift( { "chart" => @config.visit, "title" => 'Histogram' } )
 
-        @variable_files = Dir.glob('variables/**/*.json')
+        @dictionary_root = Dir.pwd
+        @variable_files = Dir.glob(File.join(@dictionary_root, 'variables', '**', '*.json'))
 
         t = Time.now
         @graphs_folder = File.join("graphs", @standard_version)
@@ -89,29 +90,33 @@ module Spout
 
       def compute_tables_and_charts
         variable_files_count = @variable_files.count
+
         @variable_files.each_with_index do |variable_file, file_index|
+          variable = Spout::Models::Variable.new(variable_file, @dictionary_root)
+
+          # Remove following lines when tables rewritten
           json = JSON.parse(File.read(variable_file)) rescue json = nil
           next unless json
-          next unless @valid_ids.include?(json["id"].to_s.downcase) or @valid_ids.size == 0
-          next unless ["numeric", "integer", "choices"].include?(json["type"])
-          variable_name  = json['id'].to_s.downcase
-          next unless Spout::Models::Subject.method_defined?(variable_name)
+
+          next unless variable.errors.size == 0
+          next unless @valid_ids.include?(variable.id) or @valid_ids.size == 0
+          next unless ["numeric", "integer", "choices"].include?(variable.type)
+          next unless Spout::Models::Subject.method_defined?(variable.id)
 
           if @deploy_mode
             print "\r     Graph Generation: " + "#{"% 3d" % ((file_index+1)*100/variable_files_count)}% Uploaded".colorize(:white)
           else
-            puts "#{file_index+1} of #{variable_files_count}: #{variable_file.gsub(/(^variables\/|\.json$)/, '').gsub('/', ' / ')}"
+            puts "#{file_index+1} of #{variable_files_count}: #{variable.folder}#{variable.id}"
           end
 
-          @progress[variable_name] ||= {}
-          next if (not @deploy_mode and @progress[variable_name]['generated'] == true) or (@deploy_mode and @progress[variable_name]['uploaded'] == true)
+          @progress[variable.id] ||= {}
+          next if (not @deploy_mode and @progress[variable.id]['generated'] == true) or (@deploy_mode and @progress[variable.id]['uploaded'] == true)
 
           stats = {
             charts: {},
             tables: {}
           }
 
-          variable = Spout::Models::Variable.find_by_id variable_name
           visit = Spout::Models::Variable.find_by_id @config.visit
 
           @chart_variables.each do |chart_type_hash|
@@ -119,38 +124,38 @@ module Spout
             chart_title = chart_type_hash["title"].downcase.gsub(' ', '-')
 
             if chart_type == @config.visit
-              filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil }  # and s.send(variable_name) != nil
+              filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil }  # and s.send(variable.id) != nil
               if filtered_subjects.count > 0
                 graph = Spout::Models::Graph.new(chart_type, filtered_subjects, variable, nil)
                 stats[:charts][chart_title] = graph.to_hash
-                stats[:tables][chart_title] = Spout::Helpers::ChartTypes::table_arbitrary(chart_type, filtered_subjects, json, variable_name)
+                stats[:tables][chart_title] = Spout::Helpers::ChartTypes::table_arbitrary(chart_type, filtered_subjects, json, variable.id)
               end
             else
-              filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil } # and s.send(variable_name) != nil
-              if filtered_subjects.collect(&variable_name.to_sym).compact.count > 0
+              filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil } # and s.send(variable.id) != nil
+              if filtered_subjects.collect(&variable.id.to_sym).compact.count > 0
                 graph = Spout::Models::Graph.new(chart_type, filtered_subjects, variable, visit)
                 stats[:charts][chart_title] = graph.to_hash
                 stats[:tables][chart_title] = visits.collect do |visit_display_name, visit_value|
                   visit_subjects = filtered_subjects.select{ |s| s._visit == visit_value }
-                  unknown_subjects = visit_subjects.select{ |s| s.send(variable_name) == nil }
-                  (visit_subjects.count > 0 && visit_subjects.count != unknown_subjects.count) ? Spout::Helpers::ChartTypes::table_arbitrary(chart_type, visit_subjects, json, variable_name, visit_display_name) : nil
+                  unknown_subjects = visit_subjects.select{ |s| s.send(variable.id) == nil }
+                  (visit_subjects.count > 0 && visit_subjects.count != unknown_subjects.count) ? Spout::Helpers::ChartTypes::table_arbitrary(chart_type, visit_subjects, json, variable.id, visit_display_name) : nil
                 end.compact
               end
             end
           end
 
-          chart_json_file = File.join(@graphs_folder, "#{json['id']}.json")
+          chart_json_file = File.join(@graphs_folder, "#{variable.id}.json")
           File.open(chart_json_file, 'w') { |file| file.write( JSON.pretty_generate(stats) + "\n" ) }
 
-          @progress[variable_name]['generated'] = true
+          @progress[variable.id]['generated'] = true
 
-          if @deploy_mode and not @progress[variable_name]['uploaded'] == true
+          if @deploy_mode and not @progress[variable.id]['uploaded'] == true
             response = send_to_server(chart_json_file)
             if response.kind_of?(Hash) and response['upload'] == 'success'
-              @progress[variable_name]['uploaded'] = true
+              @progress[variable.id]['uploaded'] = true
             else
               puts "\nUPLOAD FAILED: ".colorize(:red) + File.basename(chart_json_file)
-              @progress[variable_name]['uploaded'] = false
+              @progress[variable.id]['uploaded'] = false
             end
           end
 

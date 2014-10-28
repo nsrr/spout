@@ -1,5 +1,3 @@
-
-# require 'spout/models/dictionary' # Includes forms, variables, and domains
 require 'spout/models/variable'
 require 'spout/models/bucket'
 require 'spout/helpers/array_statistics'
@@ -15,7 +13,7 @@ module Spout
         @subjects = subjects
         @variable = variable # Spout::Models::Variable
         @stratification_variable = stratification_variable # This should be Spout::Models::Variable
-        @values = subjects.collect(&@variable.id.to_sym).uniq rescue @values = []
+        @values = subjects.collect(&@variable.id.to_sym) rescue @values = []
         @values_unique = @values.uniq
 
         @buckets = continuous_buckets
