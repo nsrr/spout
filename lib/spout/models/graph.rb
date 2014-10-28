@@ -1,20 +1,20 @@
 
 # require 'spout/models/dictionary' # Includes forms, variables, and domains
 require 'spout/models/variable'
+require 'spout/models/bucket'
 
 module Spout
   module Models
     class Graph
 
-      attr_accessor :chart_variable, :subjects, :variable, :visits
+      attr_accessor :chart_variable, :subjects, :variable, :stratification_variable
 
-      def initialize(chart_type, subjects, variable, visits)
+      def initialize(chart_type, subjects, variable, stratification_variable)
         @chart_variable = Spout::Models::Variable.find_by_id(chart_type)
         @subjects = subjects
         @variable = variable # Spout::Models::Variable
-        # @method = @variable.id
-        @visits = visits # This should be Spout::Models::Domain
-        @values = subjects.collect(&@variable.id.to_sym).uniq
+        @stratification_variable = stratification_variable # This should be Spout::Models::Variable
+        @values = subjects.collect(&@variable.id.to_sym).uniq rescue @values = []
         @values_unique = @values.uniq
 
         @buckets = continuous_buckets
@@ -22,16 +22,22 @@ module Spout
 
       # Public methods
 
-      def has_graph?
-        # @variable.type == 'choices' and @variable.domain.present?
-        # Other
-      end
-
       def to_hash
+        if @values == []
+          nil
+        elsif @variable.type == 'choices' and @variable.domain.options == []
+          nil
+        elsif @chart_variable == nil
+          nil
+        elsif @chart_variable and @chart_variable.type == 'choices' and @chart_variable.domain.options == []
+          nil
+        else
+          { title: title, subtitle: subtitle, categories: categories, units: units, series: series, stacking: stacking, x_axis_title: x_axis_title }
+        end
       end
 
       def title
-        if @visits == nil
+        if histogram?
           @variable.display_name
         else
           "#{@variable.display_name} by #{@chart_variable.display_name}"
@@ -47,10 +53,21 @@ module Spout
           categories_result = []
           if histogram?
             if @variable.type == 'choices'
-              categories_result = @variable.domain.options.select{|o| o.missing != true or (o.missing == true and @values_unique.include?(o.value))}.collect(&:display_name)
+              categories_result = filtered_domain_options(@variable).collect(&:display_name)
             else
-              categories_result = @buckets.collect{|b| "#{b[0]} to #{b[1]}"}
+              categories_result = @buckets.collect(&:display_name)
             end
+          elsif numeric_versus_choices?
+            # chart_arbitrary
+            @stratification_variable.domain.options.each do |option|
+              visit_subjects = @subjects.select{ |s| s._visit == option.value and s.send(@variable.id) != nil } rescue visit_subjects = []
+              if visit_subjects.count > 0
+                categories_result << option.display_name
+              end
+            end
+          elsif choices_versus_choices?
+            categories_result = filtered_domain_options(@chart_variable).collect(&:display_name)
+            # categories = chart_variable_domain.collect{|a| a[0]}
           else
             # chart_arbitrary_choices_by_quartile
             # categories_result = [:quartile_one, :quartile_two, :quartile_three, :quartile_four].collect do |quartile|
@@ -61,17 +78,6 @@ module Spout
             # chart_arbitrary_by_quartile
             # categories = ["Quartile One", "Quartile Two", "Quartile Three", "Quartile Four"]
 
-            # chart_arbitrary_choices
-            # categories = chart_variable_domain.collect{|a| a[0]}
-
-            # chart_arbitrary
-            # categories = []
-            # visits.each do |visit_display_name, visit_value|
-            #   visit_subjects = subjects.select{ |s| s._visit == visit_value and s.send(method) != nil }
-            #   if visit_subjects.count > 0
-            #     categories << visit_display_name
-            #   end
-            # end
           end
 
           categories_result
@@ -82,6 +88,12 @@ module Spout
         units_result = ''
         if histogram?
           units_result = 'Subjects'
+        elsif numeric_versus_choices?
+          # chart_arbitrary
+          units_result = @variable.units
+        elsif choices_versus_choices?
+          # chart_arbitrary_choices
+          units_result = 'percent'
         else
 
           # chart_arbitrary_choices_by_quartile
@@ -90,11 +102,6 @@ module Spout
           # chart_arbitrary_by_quartile
           # units_result = json["units"]
 
-          # chart_arbitrary_choices
-          # units_result = 'percent'
-
-          # chart_arbitrary
-          # units = json["units"]
 
         end
 
@@ -106,17 +113,18 @@ module Spout
         if histogram?
           # chart_histogram
           @chart_variable.domain.options.each do |option|
-            visit_subjects = @subjects.select{ |s| s.send(@chart_variable.id) == option.value and s.send(@variable.id) != nil }.collect(&@variable.id.to_sym).sort
-            next unless visit_subjects.size > 0
+            visit_subjects = @subjects.select{ |s| s.send(@chart_variable.id) == option.value and s.send(@variable.id) != nil } rescue visit_subjects = []
+            visit_subject_values = visit_subjects.collect(&@variable.id.to_sym).sort rescue visit_subject_values = []
+            next unless visit_subject_values.size > 0
 
             data = []
 
             if @variable.type == 'choices'
-              data = @variable.domain.options.collect do |option|
-                visit_subjects.select{ |v| v == option.value }.count
+              data = filtered_domain_options(@variable).collect do |option|
+                visit_subject_values.select{ |v| v == option.value }.count
               end
             else
-              visit_subjects.group_by{|v| get_bucket(v) }.each do |key, values|
+              visit_subject_values.group_by{|v| get_bucket(v) }.each do |key, values|
                 data[categories.index(key)] = values.count if categories.index(key)
               end
             end
@@ -124,14 +132,39 @@ module Spout
             series_result << { name: option.display_name, data: data }
 
           end
-          # chart_variable_domain.each do |display_name, value|
-          #   visit_subjects = subjects.select{ |s| s.send(chart_type) == value and s.send(method) != nil }.collect(&method.to_sym).sort
-          #   next unless visit_subjects.size > 0
+        elsif numeric_versus_choices?
+          # chart_arbitrary
 
-          #   data = pull_data(json, visit_subjects, buckets, categories, domain_json)
+          data = []
 
-          #   series << { name: display_name, data: data }
+          @stratification_variable.domain.options.each do |option|
+            visit_subjects = @subjects.select{ |s| s._visit == option.value and s.send(@variable.id) != nil } rescue visit_subjects = []
+            if visit_subjects.count > 0
+
+              filtered_domain_options(@chart_variable).each_with_index do |option, index| ###
+                values = visit_subjects.select{|s| s.send(@chart_variable.id) == option.value }.collect(&@variable.id.to_sym)
+                data[index] ||= []
+                data[index] << (values.mean.round(2) rescue 0.0)
+              end
+
+            end
+          end
+
+          filtered_domain_options(@chart_variable).each_with_index do |option, index|
+             series_result << { name: option.display_name, data: data[index] }
+          end
+          # chart_variable_domain.each_with_index do |(display_name, value), index|
+          #   series << { name: display_name, data: data[index] }
           # end
+        elsif choices_versus_choices?
+          # chart_arbitrary_choices
+          series_result = filtered_domain_options(@variable).collect do |option|
+            filtered_subjects = @subjects.select{ |s| s.send(@variable.id) == option.value }
+            data = filtered_domain_options(@chart_variable).collect do |chart_option|
+              filtered_subjects.select{ |s| s.send(@chart_variable.id) == chart_option.value }.count
+            end
+            { name: option.display_name, data: data }
+          end
         else
 
           # chart_arbitrary_choices_by_quartile
@@ -161,20 +194,7 @@ module Spout
           #   series << { name: visit_display_name, data: data } unless filtered_subjects.size == 0
           # end
 
-          # chart_arbitrary_choices
-          # domain_json.each do |option_hash|
-          #   domain_values = subjects.select{ |s| s.send(method) == option_hash['value'] }
 
-          #   data = chart_variable_domain.collect do |display_name, value|
-          #     domain_values.select{ |s| s.send(chart_type) == value }.count
-          #   end
-          #   series << { name: option_hash['display_name'], data: data }
-          # end
-
-          # chart_arbitrary
-          # chart_variable_domain.each_with_index do |(display_name, value), index|
-          #   series << { name: display_name, data: data[index] }
-          # end
         end
         series_result
       end
@@ -184,6 +204,11 @@ module Spout
 
         if histogram?
           # chart_histogram
+        elsif numeric_versus_choices?
+          # chart_arbitrary
+        elsif choices_versus_choices?
+          # chart_arbitrary_choices
+          stacking_result = 'percent'
         else
 
           # chart_arbitrary_choices_by_quartile
@@ -191,10 +216,7 @@ module Spout
 
           # chart_arbitrary_by_quartile
 
-          # chart_arbitrary_choices
-          # stacking_result = 'percent'
 
-          # chart_arbitrary
         end
 
         stacking_result
@@ -204,14 +226,14 @@ module Spout
         x_axis_title_result = nil
         if histogram?
           x_axis_title_result = @variable.units
+        elsif numeric_versus_choices?
+          # chart_arbitrary
+        elsif choices_versus_choices?
+          # chart_arbitrary_choices
         else
           # chart_arbitrary_choices_by_quartile
 
           # chart_arbitrary_by_quartile
-
-          # chart_arbitrary_choices
-
-          # chart_arbitrary
         end
 
         x_axis_title_result
@@ -220,7 +242,15 @@ module Spout
       private
 
       def histogram?
-        @visits == nil
+        @stratification_variable == nil
+      end
+
+      def numeric_versus_choices?
+        ['numeric', 'integer'].include?(@variable.type) and @chart_variable.type == 'choices'
+      end
+
+      def choices_versus_choices?
+        @variable.type == 'choices' and @chart_variable.type == 'choices'
       end
 
       def continuous_buckets
@@ -236,7 +266,7 @@ module Spout
         (0..(max_buckets-1)).to_a.each do |index|
           start = (minimum_bucket + index * bucket_size)
           stop = (start + bucket_size)
-          buckets << [start.round(precision),stop.round(precision)]
+          buckets << Spout::Models::Bucket.new(start.round(precision),stop.round(precision))
         end
         buckets
       end
@@ -244,12 +274,21 @@ module Spout
       def get_bucket(value)
         return nil if @buckets.size == 0 or not value.kind_of?(Numeric)
         @buckets.each do |b|
-          return "#{b[0]} to #{b[1]}" if value >= b[0] and value <= b[1]
+          return b.display_name if b.in_bucket?(value)
         end
-        if value <= @buckets.first[0]
-          "#{@buckets.first[0]} to #{@buckets.first[1]}"
+        if value <= @buckets.first.start
+          @buckets.first.display_name
         else
-          "#{@buckets.last[0]} to #{@buckets.last[1]}"
+          @buckets.last.display_name
+        end
+      end
+
+      # Returns variable options that are either:
+      # a) are not missing codes
+      # b) or are marked as missing codes but represented in the dataset
+      def filtered_domain_options(variable)
+        variable.domain.options.select do |o|
+          o.missing != true or (o.missing == true and @values_unique.include?(o.value))
         end
       end
 
