@@ -10,18 +10,20 @@ module Spout
       attr_accessor :chart_variable, :subjects, :variable, :subtitle
 
       def initialize(chart_type, subjects, variable, subtitle)
-        @chart_variable = Spout::Models::Variable.find_by_id(chart_type)
-        @subjects = subjects
-        @filtered_subjects = @subjects.select{ |s| s.send(@chart_variable.id) != nil } rescue @filtered_subjects = []
-
         @variable = variable
-        @values = @filtered_subjects.collect(&@variable.id.to_sym).uniq rescue @values = [] # Depends on which table needs filtered subjects
-        # @values = @subjects.collect(&@variable.id.to_sym).uniq rescue @values = [] # Depends on which table needs filtered subjects
-        @values_unique = @values.uniq
-        # @buckets = continuous_buckets
-
-
         @subtitle = subtitle
+        @subjects = subjects
+
+        @chart_variable = Spout::Models::Variable.find_by_id(chart_type)
+        @filtered_subjects = @subjects.select{ |s| s.send(@chart_variable.id) != nil } rescue @filtered_subjects = []
+        @filtered_both_variables_subjects = subjects.select{ |s| s.send(@variable.id) != nil and s.send(@chart_variable.id) != nil }.sort_by(&@chart_variable.id.to_sym) rescue @filtered_both_variables_subjects = []
+
+        @values = @filtered_subjects.collect(&@variable.id.to_sym).uniq rescue @values = []
+
+        @values_unique = @values.uniq
+
+        @values_both_variables = @filtered_both_variables_subjects.collect(&@variable.id.to_sym).uniq rescue @values_both_variables = []
+        @values_both_variables_unique = @values_both_variables.uniq
       end
 
       # Public methods
@@ -41,25 +43,43 @@ module Spout
       end
 
       def title
-        "#{@variable.display_name} by #{@chart_variable.display_name}"
+        if numeric_versus_choices?
+          "#{@chart_variable.display_name} vs #{@variable.display_name}"
+        elsif choices_versus_choices?
+          "#{@variable.display_name} vs #{@chart_variable.display_name}"
+        elsif numeric_versus_numeric?
+          "#{@chart_variable.display_name} vs #{@variable.display_name}"
+        elsif choices_versus_numeric?
+          "#{@variable.display_name} vs #{@chart_variable.display_name}"
+        else
+
+        end
       end
 
       def headers
         headers_result = []
         if numeric_versus_choices?
-          # table_arbitrary
           headers_result = [
             [""] + Spout::Helpers::ArrayStatistics::calculations.collect{|calculation_label, calculation_method| calculation_label} + ["Total"]
           ]
         elsif choices_versus_choices?
-          # table_arbitrary_choices
           headers_result = [
             [""] + filtered_domain_options(@chart_variable).collect{|option| option.display_name} + ["Total"]
           ]
         elsif numeric_versus_numeric?
-
+          headers_result = [
+            [""] + Spout::Helpers::ArrayStatistics::calculations.collect{|calculation_label, calculation_method| calculation_label} + ["Total"]
+          ]
         elsif choices_versus_numeric?
+          # table_arbitrary_choices_by_quartile
+          categories = [:quartile_one, :quartile_two, :quartile_three, :quartile_four].collect do |quartile|
+            bucket = @filtered_both_variables_subjects.send(quartile).collect(&@chart_variable.id.to_sym)
+            "#{bucket.min} to #{bucket.max} #{@chart_variable.units}"
+          end
 
+          headers_result = [
+            [""] + categories + ["Total"]
+          ]
         else
 
         end
@@ -69,30 +89,38 @@ module Spout
       def footers
         footers_result = []
         if numeric_versus_choices?
-          # table_arbitrary
           total_values = Spout::Helpers::ArrayStatistics::calculations.collect do |calculation_label, calculation_method, calculation_type, calculation_format|
             total_count = @filtered_subjects.collect(&@variable.id.to_sym).send(calculation_method)
             { text: Spout::Helpers::TableFormatting::format_number(total_count, calculation_type, calculation_format), style: "font-weight:bold" }
           end
-
           footers_result = [
             [{ text: "Total", style: "font-weight:bold" }] + total_values + [{ text: Spout::Helpers::TableFormatting::format_number(@filtered_subjects.count, :count), style: 'font-weight:bold'}]
           ]
         elsif choices_versus_choices?
-          # table_arbitrary_choices
           total_values = filtered_domain_options(@chart_variable).collect do |option|
             total_count = @filtered_subjects.select{|s| s.send(@chart_variable.id) == option.value }.count
             { text: (total_count == 0 ? "-" : Spout::Helpers::TableFormatting::format_number(total_count, :count)), style: "font-weight:bold" }
           end
-
           footers_result = [
             [{ text: "Total", style: "font-weight:bold" }] + total_values + [{ text: Spout::Helpers::TableFormatting::format_number(@filtered_subjects.count, :count), style: 'font-weight:bold'}]
           ]
-
         elsif numeric_versus_numeric?
+          total_values = Spout::Helpers::ArrayStatistics::calculations.collect do |calculation_label, calculation_method, calculation_type, calculation_format|
+            total_count = @filtered_both_variables_subjects.collect(&@variable.id.to_sym).send(calculation_method)
+            { text: Spout::Helpers::TableFormatting::format_number(total_count, calculation_type, calculation_format), style: "font-weight:bold" }
+          end
 
+          footers_result = [
+            [{ text: "Total", style: "font-weight:bold" }] + total_values + [{ text: Spout::Helpers::TableFormatting::format_number(@filtered_both_variables_subjects.count, :count), style: 'font-weight:bold'}]
+          ]
         elsif choices_versus_numeric?
+          total_values = [:quartile_one, :quartile_two, :quartile_three, :quartile_four].collect do |quartile|
+            { text: Spout::Helpers::TableFormatting::format_number(@filtered_both_variables_subjects.send(quartile).count, :count), style: "font-weight:bold" }
+          end
 
+          footers_result = [
+            [{ text: "Total", style: "font-weight:bold" }] + total_values + [{ text: Spout::Helpers::TableFormatting::format_number(@filtered_both_variables_subjects.count, :count), style: 'font-weight:bold'}]
+          ]
         else
 
         end
@@ -114,8 +142,6 @@ module Spout
             [option.display_name] + row_cells + [{ text: Spout::Helpers::TableFormatting::format_number(row_subjects.count, :count), style: 'font-weight:bold'}]
           end
         elsif choices_versus_choices?
-          # table_arbitrary_choices
-
           rows_result = filtered_domain_options(@variable).collect do |option|
             row_subjects = @filtered_subjects.select{ |s| s.send(@variable.id) == option.value }
             row_cells = filtered_domain_options(@chart_variable).collect do |chart_option|
@@ -134,12 +160,33 @@ module Spout
             end
             rows_result << [{ text: 'Unknown', class: 'text-muted'}] + unknown_values + [ { text: Spout::Helpers::TableFormatting::format_number(@filtered_subjects.select{|s| s.send(@variable.id) == nil}.count, :count), style: 'font-weight:bold', class: 'text-muted' } ]
           end
-
-
         elsif numeric_versus_numeric?
+          rows_result = [:quartile_one, :quartile_two, :quartile_three, :quartile_four].collect do |quartile|
+            bucket = @filtered_both_variables_subjects.send(quartile)
+            row_subjects = bucket.collect(&@variable.id.to_sym)
+            data = Spout::Helpers::ArrayStatistics::calculations.collect do |calculation_label, calculation_method, calculation_type, calculation_format|
+              Spout::Helpers::TableFormatting::format_number(row_subjects.send(calculation_method), calculation_type, calculation_format)
+            end
 
+            row_name = if row_subjects.size == 0
+              quartile.to_s.capitalize.gsub('_one', ' One').gsub('_two', ' Two').gsub('_three', ' Three').gsub('_four', ' Four')
+            else
+              "#{bucket.collect(&@chart_variable.id.to_sym).min} to #{bucket.collect(&@chart_variable.id.to_sym).max} #{@chart_variable.units}"
+            end
+
+            [row_name] + data + [{ text: Spout::Helpers::TableFormatting::format_number(row_subjects.count, :count), style: 'font-weight:bold'}]
+          end
         elsif choices_versus_numeric?
+          rows_result = filtered_both_variables_domain_options(@variable).collect do |option|
+            row_subjects = @filtered_both_variables_subjects.select{ |s| s.send(@variable.id) == option.value }
 
+            data = [:quartile_one, :quartile_two, :quartile_three, :quartile_four].collect do |quartile|
+              bucket = @filtered_both_variables_subjects.send(quartile).select{ |s| s.send(@variable.id) == option.value }
+              Spout::Helpers::TableFormatting::format_number(bucket.count, :count)
+            end
+
+            [option.display_name] + data + [{ text: Spout::Helpers::TableFormatting::format_number(row_subjects.count, :count), style: 'font-weight:bold'}]
+          end
         else
 
         end
@@ -164,42 +211,18 @@ module Spout
         @variable.type == 'choices' and ['numeric', 'integer'].include?(@chart_variable.type)
       end
 
-      # def continuous_buckets
-      #   values_numeric = @values.select{|v| v.kind_of? Numeric}
-      #   return [] if values_numeric.count == 0
-      #   minimum_bucket = values_numeric.min
-      #   maximum_bucket = values_numeric.max
-      #   max_buckets = 12
-      #   bucket_size = ((maximum_bucket - minimum_bucket) / max_buckets.to_f)
-      #   precision = (bucket_size == 0 ? 0 : [-Math.log10(bucket_size).floor, 0].max)
-
-      #   buckets = []
-      #   (0..(max_buckets-1)).to_a.each do |index|
-      #     start = (minimum_bucket + index * bucket_size)
-      #     stop = (start + bucket_size)
-      #     buckets << Spout::Models::Bucket.new(start.round(precision),stop.round(precision))
-      #   end
-      #   buckets
-      # end
-
-      # def get_bucket(value)
-      #   return nil if @buckets.size == 0 or not value.kind_of?(Numeric)
-      #   @buckets.each do |b|
-      #     return b.display_name if b.in_bucket?(value)
-      #   end
-      #   if value <= @buckets.first.start
-      #     @buckets.first.display_name
-      #   else
-      #     @buckets.last.display_name
-      #   end
-      # end
-
       # Returns variable options that are either:
       # a) are not missing codes
       # b) or are marked as missing codes but represented in the dataset
       def filtered_domain_options(variable)
         variable.domain.options.select do |o|
           o.missing != true or (o.missing == true and @values_unique.include?(o.value))
+        end
+      end
+
+      def filtered_both_variables_domain_options(variable)
+        variable.domain.options.select do |o|
+          o.missing != true or (o.missing == true and @values_both_variables_unique.include?(o.value))
         end
       end
 

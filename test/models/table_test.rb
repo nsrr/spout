@@ -34,7 +34,7 @@ module ApplicationTests
           visit = Spout::Models::Variable.find_by_id 'visit'
           table = Spout::Models::Table.new('gender', @subject_loader.subjects, variable, "All Visits")
 
-          assert_equal 'Age at Visit by Gender', table.title
+          assert_equal 'Gender vs Age at Visit', table.title
           assert_equal 'All Visits', table.subtitle
           assert_equal [["", "N", "Mean", "StdDev", "Median", "Min", "Max", "Unknown", "Total"]], table.headers
           assert_equal [[{ text: "Total", style: "font-weight:bold" },
@@ -53,7 +53,7 @@ module ApplicationTests
       end
     end
 
-    def test_choices_vs_choices_graph
+    def test_choices_vs_choices_table
       app_file 'csvs/1.0.0/dataset.csv', <<-CSV
 visit,age_at_visit,gender,race
 1,30,m,b
@@ -105,12 +105,10 @@ visit,age_at_visit,gender,race
           @subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'gender'
-          visit = Spout::Models::Variable.find_by_id 'visit'
           table = Spout::Models::Table.new('race', @subject_loader.subjects, variable, nil)
 
-          assert_equal 'Gender by Race', table.title
+          assert_equal 'Gender vs Race', table.title
           assert_equal nil, table.subtitle
-
           assert_equal [["", "White", "Black", "Total"]], table.headers
           assert_equal [[{ text: "Total", style: "font-weight:bold" },
                          { text: "10",    style: "font-weight:bold" },
@@ -118,7 +116,96 @@ visit,age_at_visit,gender,race
                          { text: "18",    style: "font-weight:bold" }]], table.footers
           assert_equal [["Male",   "3", "6", { text: "9", style: "font-weight:bold" }],
                         ["Female", "7", "2", { text: "9", style: "font-weight:bold" }]], table.rows
+          assert_equal Hash, table.to_hash.class
+        end
+      end
+    end
 
+    def test_numeric_vs_numeric_table
+      app_file 'csvs/1.0.0/dataset.csv', <<-CSV
+visit,age_at_visit,gender,bmi
+1,30,m,15
+1,40,m,20
+1,42,m,22
+1,28,m,25
+1,48,m,30
+1,22,f,17
+1,53,f,19
+1,30,f,22
+1,44,f,25
+1,34,f,27
+2,45,m,15
+2,47,m,19
+2,33,m,20
+2,53,m,20
+2,27,f,15
+2,35,f,17
+2,49,f,18
+2,39,f,22
+      CSV
+
+      app_file 'variables/bmi.json', <<-JSON
+        {
+          "id": "bmi",
+          "display_name": "Body Mass Index",
+          "type": "numeric",
+          "units": "kilograms per square meter"
+        }
+      JSON
+
+      Dir.chdir(app_path) do
+        output, error = util_capture do
+          @variable_files = Dir.glob('variables/**/*.json')
+          @config = Spout::Helpers::ConfigReader.new
+          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
+          @subject_loader.load_subjects_from_csvs!
+
+          variable = Spout::Models::Variable.find_by_id 'bmi'
+          table = Spout::Models::Table.new('age_at_visit', @subject_loader.subjects, variable, nil)
+
+          assert_equal 'Age at Visit vs Body Mass Index', table.title
+          assert_equal nil, table.subtitle
+          assert_equal [["", "N", "Mean", "StdDev", "Median", "Min", "Max", "Unknown", "Total"]], table.headers
+          assert_equal [[{ text: "Total", style: "font-weight:bold" },
+                         { text: "18",    style: "font-weight:bold" },
+                         { text: "20.4",  style: "font-weight:bold" },
+                         { text: "± 4.2", style: "font-weight:bold" },
+                         { text: "20.0",  style: "font-weight:bold" },
+                         { text: "15.0",  style: "font-weight:bold" },
+                         { text: "30.0",  style: "font-weight:bold" },
+                         { text: "-",     style: "font-weight:bold" },
+                         { text: "18",    style: "font-weight:bold" }]], table.footers
+          assert_equal [["22.0 to 30.0 years", "5", "18.8", "± 4.5", "17.0", "15.0", "25.0", "-", { text: "5", style: "font-weight:bold" }],
+                        ["33.0 to 40.0 years", "5", "21.2", "± 3.7", "20.0", "17.0", "27.0", "-", { text: "5", style: "font-weight:bold" }],
+                        ["42.0 to 47.0 years", "4", "20.3", "± 4.3", "20.5", "15.0", "25.0", "-", { text: "4", style: "font-weight:bold" }],
+                        ["48.0 to 53.0 years", "4", "21.8", "± 5.6", "19.5", "18.0", "30.0", "-", { text: "4", style: "font-weight:bold" }]], table.rows
+          assert_equal Hash, table.to_hash.class
+        end
+      end
+    end
+
+    def test_choices_vs_numeric_table
+      Dir.chdir(app_path) do
+        output, error = util_capture do
+          @variable_files = Dir.glob('variables/**/*.json')
+          @config = Spout::Helpers::ConfigReader.new
+          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
+          @subject_loader.load_subjects_from_csvs!
+
+          variable = Spout::Models::Variable.find_by_id 'gender'
+          table = Spout::Models::Table.new('age_at_visit', @subject_loader.subjects, variable, nil)
+
+          assert_equal 'Gender vs Age at Visit', table.title
+          assert_equal nil, table.subtitle
+          assert_equal [["", "22.0 to 30.0 years", "33.0 to 40.0 years", "42.0 to 47.0 years", "48.0 to 53.0 years", "Total"]], table.headers
+          assert_equal [[{ text: "Total", style: "font-weight:bold" },
+                         { text: "5",     style: "font-weight:bold" },
+                         { text: "5",     style: "font-weight:bold" },
+                         { text: "4",     style: "font-weight:bold" },
+                         { text: "4",     style: "font-weight:bold" },
+                         { text: "18",    style: "font-weight:bold" }]], table.footers
+          assert_equal [["Male", "2", "2", "3", "2", { text: "9",  style: "font-weight:bold" }],
+                        ["Female", "3", "3", "1", "2", { text: "9", style: "font-weight:bold"}]], table.rows
           assert_equal Hash, table.to_hash.class
         end
       end
