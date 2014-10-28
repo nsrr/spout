@@ -51,6 +51,7 @@ module ApplicationTests
           assert_equal [{ name: "Visit One", data: [1, nil, 3, nil, 1, nil, 1, 1, 1, 1, nil, 1] }, { name: "Visit Two", data: [nil, 1, nil, nil, 2, nil, 1, nil, 1, 1, 1, 1] }], graph.series
           assert_equal nil, graph.stacking
           assert_equal 'years', graph.x_axis_title
+          assert_equal Hash, graph.to_hash.class
         end
       end
     end
@@ -73,6 +74,7 @@ module ApplicationTests
           assert_equal [{ name: "Visit One", data: [5, 5] }, { name: "Visit Two", data: [4, 4] }], graph.series
           assert_equal nil, graph.stacking
           assert_equal nil, graph.x_axis_title
+          assert_equal Hash, graph.to_hash.class
         end
       end
     end
@@ -178,6 +180,7 @@ visit,age_at_visit,gender,nodomain
           assert_equal [{ name: "Male", data: [37.6, 44.5] }, { name: "Female", data: [36.6, 37.5] }], graph.series
           assert_equal nil, graph.stacking
           assert_equal nil, graph.x_axis_title
+          assert_equal Hash, graph.to_hash.class
         end
       end
     end
@@ -244,6 +247,7 @@ visit,age_at_visit,gender,race
           assert_equal [{ name: "Male", data: [3, 6] }, { name: "Female", data: [7, 2] }], graph.series
           assert_equal 'percent', graph.stacking
           assert_equal nil, graph.x_axis_title
+          assert_equal Hash, graph.to_hash.class
         end
       end
     end
@@ -267,6 +271,7 @@ visit,age_at_visit,gender,race
           assert_equal [{ name: "Male", data: [2, 2, 3, 2] }, { name: "Female", data: [3, 3, 1, 2] }], graph.series
           assert_equal 'percent', graph.stacking
           assert_equal nil, graph.x_axis_title
+          assert_equal Hash, graph.to_hash.class
         end
       end
     end
@@ -329,6 +334,7 @@ visit,age_at_visit,gender,bmi
                                                     { y: 19.0, stddev: "1.4", median: "19.0", min: "18.0", max: "20.0", n: 2 }] }], graph.series
           assert_equal nil, graph.stacking
           assert_equal nil, graph.x_axis_title
+          assert_equal Hash, graph.to_hash.class
         end
       end
     end
