@@ -9,6 +9,7 @@ require 'spout/helpers/subject_loader'
 require 'spout/helpers/chart_types'
 require 'spout/models/variable'
 require 'spout/models/graph'
+require 'spout/models/table'
 require 'spout/helpers/config_reader'
 require 'spout/helpers/send_file'
 require 'spout/version'
@@ -29,7 +30,9 @@ module Spout
 
         @config = Spout::Helpers::ConfigReader.new
 
-        if Spout::Helpers::ChartTypes::get_json(@config.visit, 'variable') == nil
+        @stratification_variable = Spout::Models::Variable.find_by_id @config.visit
+
+        if @stratification_variable == nil
           if @config.visit == ''
             puts "The visit variable in .spout.yml can't be blank."
           else
@@ -38,7 +41,7 @@ module Spout
           return self
         end
 
-        missing_variables = @config.charts.select{|c| Spout::Helpers::ChartTypes::get_json(c['chart'], 'variable') == nil}
+        missing_variables = @config.charts.select{|c| Spout::Models::Variable.find_by_id(c['chart']) == nil}
         if missing_variables.count > 0
           puts "Could not find the following chart variable#{'s' unless missing_variables.size == 1}: #{missing_variables.join(', ')}"
           return self
@@ -94,10 +97,6 @@ module Spout
         @variable_files.each_with_index do |variable_file, file_index|
           variable = Spout::Models::Variable.new(variable_file, @dictionary_root)
 
-          # Remove following lines when tables rewritten
-          json = JSON.parse(File.read(variable_file)) rescue json = nil
-          next unless json
-
           next unless variable.errors.size == 0
           next unless @valid_ids.include?(variable.id) or @valid_ids.size == 0
           next unless ["numeric", "integer", "choices"].include?(variable.type)
@@ -117,28 +116,28 @@ module Spout
             tables: {}
           }
 
-          visit = Spout::Models::Variable.find_by_id @config.visit
-
           @chart_variables.each do |chart_type_hash|
             chart_type = chart_type_hash["chart"]
             chart_title = chart_type_hash["title"].downcase.gsub(' ', '-')
 
             if chart_type == @config.visit
-              filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil }  # and s.send(variable.id) != nil
+              filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil }
               if filtered_subjects.count > 0
                 graph = Spout::Models::Graph.new(chart_type, filtered_subjects, variable, nil)
                 stats[:charts][chart_title] = graph.to_hash
-                stats[:tables][chart_title] = Spout::Helpers::ChartTypes::table_arbitrary(chart_type, filtered_subjects, json, variable.id)
+                table = Spout::Models::Table.new(chart_type, filtered_subjects, variable, nil)
+                stats[:tables][chart_title] = table.to_hash
               end
             else
-              filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil } # and s.send(variable.id) != nil
+              filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil }
               if filtered_subjects.collect(&variable.id.to_sym).compact.count > 0
-                graph = Spout::Models::Graph.new(chart_type, filtered_subjects, variable, visit)
+                graph = Spout::Models::Graph.new(chart_type, filtered_subjects, variable, @stratification_variable)
                 stats[:charts][chart_title] = graph.to_hash
-                stats[:tables][chart_title] = visits.collect do |visit_display_name, visit_value|
-                  visit_subjects = filtered_subjects.select{ |s| s._visit == visit_value }
+                stats[:tables][chart_title] = @stratification_variable.domain.options.collect do |option|
+                  visit_subjects = filtered_subjects.select{ |s| s._visit == option.value }
                   unknown_subjects = visit_subjects.select{ |s| s.send(variable.id) == nil }
-                  (visit_subjects.count > 0 && visit_subjects.count != unknown_subjects.count) ? Spout::Helpers::ChartTypes::table_arbitrary(chart_type, visit_subjects, json, variable.id, visit_display_name) : nil
+                  table = Spout::Models::Table.new(chart_type, visit_subjects, variable, option.display_name)
+                  (visit_subjects.count > 0 && visit_subjects.count != unknown_subjects.count) ? table.to_hash : nil
                 end.compact
               end
             end
@@ -166,13 +165,6 @@ module Spout
 
       def send_to_server(chart_json_file)
         response = Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_graph.json", chart_json_file, @standard_version, @token)
-      end
-
-      # [["Visit 1", "1"], ["Visit 2", "2"], ["CVD Outcomes", "3"]]
-      def visits
-        @visits ||= begin
-          Spout::Helpers::ChartTypes::domain_array(@config.visit)
-        end
       end
 
     end
