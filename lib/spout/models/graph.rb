@@ -2,6 +2,7 @@
 # require 'spout/models/dictionary' # Includes forms, variables, and domains
 require 'spout/models/variable'
 require 'spout/models/bucket'
+require 'spout/helpers/array_statistics'
 
 module Spout
   module Models
@@ -23,7 +24,7 @@ module Spout
       # Public methods
 
       def to_hash
-        if @values == []
+        if @values == [] or @variable == nil or @chart_variable == nil
           nil
         elsif @variable.type == 'choices' and @variable.domain.options == []
           nil

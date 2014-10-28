@@ -339,5 +339,40 @@ visit,age_at_visit,gender,bmi
       end
     end
 
+    def test_graph_creation_for_non_existent_primary_variable_do_not_exist
+      Dir.chdir(app_path) do
+        output, error = util_capture do
+          @variable_files = Dir.glob('variables/**/*.json')
+          @config = Spout::Helpers::ConfigReader.new
+          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
+          @subject_loader.load_subjects_from_csvs!
+
+          variable = Spout::Models::Variable.find_by_id 'notfound'
+          visit = Spout::Models::Variable.find_by_id 'visit'
+          graph = Spout::Models::Graph.new('gender', @subject_loader.subjects, variable, visit)
+
+          assert_equal nil, graph.to_hash
+        end
+      end
+    end
+
+    def test_graph_creation_for_non_existent_chart_variable
+      Dir.chdir(app_path) do
+        output, error = util_capture do
+          @variable_files = Dir.glob('variables/**/*.json')
+          @config = Spout::Helpers::ConfigReader.new
+          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
+          @subject_loader.load_subjects_from_csvs!
+
+          variable = Spout::Models::Variable.find_by_id 'age_at_visit'
+          visit = Spout::Models::Variable.find_by_id 'visit'
+          graph = Spout::Models::Graph.new('nochart', @subject_loader.subjects, variable, visit)
+
+          assert_equal nil, graph.to_hash
+        end
+      end
+    end
+
+
   end
 end

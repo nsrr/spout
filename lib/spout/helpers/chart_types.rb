@@ -59,71 +59,6 @@ module Spout
         end
       end
 
-      def self.chart_arbitrary_choices_by_quartile(chart_type, subjects, json, method)
-        # CHART TYPE IS THE QUARTILE VARIABLE
-        return unless chart_variable_json = get_variable(chart_type)
-        return unless domain_json = get_domain(json)
-
-        title = "#{json['display_name']} by #{chart_variable_json['display_name']}"
-        subtitle = "By Visit"
-        # categories = ["Quartile One", "Quartile Two", "Quartile Three", "Quartile Four"]
-        units = 'percent'
-        series = []
-
-        filtered_subjects = subjects.select{ |s| s.send(method) != nil and s.send(chart_type) != nil }.sort_by(&chart_type.to_sym)
-
-        all_subject_values = filtered_subjects.collect(&method.to_sym).compact.sort
-        domain_json = remove_unused_missing_codes_from_domain(domain_json, all_subject_values.uniq)
-
-        categories = [:quartile_one, :quartile_two, :quartile_three, :quartile_four].collect do |quartile|
-          bucket = filtered_subjects.send(quartile).collect(&chart_type.to_sym)
-          "#{bucket.min} to #{bucket.max}"
-        end
-
-        domain_json.each do |option_hash|
-          data = [:quartile_one, :quartile_two, :quartile_three, :quartile_four].collect do |quartile|
-            filtered_subjects.send(quartile).select{ |s| s.send(method) == option_hash['value'] }.count
-          end
-
-          series << { name: option_hash['display_name'], data: data } unless filtered_subjects.size == 0
-        end
-
-        { title: title, subtitle: subtitle, categories: categories, units: units, series: series, stacking: 'percent' }
-      end
-
-      def self.chart_arbitrary_by_quartile(chart_type, subjects, json, method, visits)
-        # CHART TYPE IS THE QUARTILE VARIABLE
-        return unless chart_variable_json = get_variable(chart_type)
-        return chart_arbitrary_choices_by_quartile(chart_type, subjects, json, method) if json['type'] == 'choices'
-
-        title = "#{json['display_name']} by #{chart_variable_json['display_name']}"
-        subtitle = "By Visit"
-        categories = ["Quartile One", "Quartile Two", "Quartile Three", "Quartile Four"]
-        units = json["units"]
-        series = []
-
-        series = []
-
-        visits.each do |visit_display_name, visit_value|
-          data = []
-          filtered_subjects = subjects.select{ |s| s._visit == visit_value and s.send(method) != nil and s.send(chart_type) != nil }.sort_by(&chart_type.to_sym)
-
-          [:quartile_one, :quartile_two, :quartile_three, :quartile_four].each do |quartile|
-            array = filtered_subjects.send(quartile).collect(&method.to_sym)
-            data << {       y: (array.mean.round(1) rescue 0.0),
-                         stddev: ("%0.1f" % array.standard_deviation rescue ''),
-                         median: ("%0.1f" % array.median rescue ''),
-                            min: ("%0.1f" % array.min rescue ''),
-                            max: ("%0.1f" % array.max rescue ''),
-                              n: array.n }
-          end
-
-          series << { name: visit_display_name, data: data } unless filtered_subjects.size == 0
-        end
-
-        { title: title, subtitle: subtitle, categories: categories, units: units, series: series }
-      end
-
       def self.table_arbitrary_by_quartile(chart_type, subjects, json, method, subtitle = nil)
         return table_arbitrary_choices_by_quartile(chart_type, subjects, json, method, subtitle) if json['type'] == 'choices'
         # CHART TYPE IS THE QUARTILE VARIABLE
@@ -208,69 +143,6 @@ module Spout
         { title: "#{json['display_name']} vs #{chart_variable_json['display_name']}", subtitle: subtitle, headers: headers, footers: footers, rows: rows }
       end
 
-
-      def self.chart_arbitrary_choices(chart_type, subjects, json, method)
-        return unless chart_variable_json = get_variable(chart_type)
-        return unless chart_variable_domain = domain_array(chart_type)
-        return unless domain_json = get_domain(json)
-
-
-        title = "#{json['display_name']} by #{chart_variable_json['display_name']}"
-        subtitle = "By Visit"
-        categories = chart_variable_domain.collect{|a| a[0]}
-        units = 'percent'
-        series = []
-
-        all_subject_values = subjects.collect(&method.to_sym).compact.sort
-        domain_json = remove_unused_missing_codes_from_domain(domain_json, all_subject_values.uniq)
-
-        domain_json.each do |option_hash|
-          domain_values = subjects.select{ |s| s.send(method) == option_hash['value'] }
-
-          data = chart_variable_domain.collect do |display_name, value|
-            domain_values.select{ |s| s.send(chart_type) == value }.count
-          end
-          series << { name: option_hash['display_name'], data: data }
-        end
-
-        { title: title, subtitle: subtitle, categories: categories, units: units, series: series, stacking: 'percent' }
-      end
-
-      def self.chart_arbitrary(chart_type, subjects, json, method, visits)
-        return unless chart_variable_json = get_variable(chart_type)
-        return unless chart_variable_domain = domain_array(chart_type)
-        return chart_arbitrary_by_quartile(chart_type, subjects, json, method, visits) if ['numeric', 'integer'].include?(chart_variable_json['type'])
-
-        return chart_arbitrary_choices(chart_type, subjects, json, method) if json['type'] == 'choices'
-
-        title = "#{json['display_name']} by #{chart_variable_json['display_name']}"
-        subtitle = "By Visit"
-        categories = []
-        units = json["units"]
-        series = []
-
-        data = []
-
-        visits.each do |visit_display_name, visit_value|
-          visit_subjects = subjects.select{ |s| s._visit == visit_value and s.send(method) != nil }
-          if visit_subjects.count > 0
-            chart_variable_domain.each_with_index do |(display_name, value), index|
-              values = visit_subjects.select{|s| s.send(chart_type) == value }.collect(&method.to_sym)
-              data[index] ||= []
-              data[index] << (values.mean.round(2) rescue 0.0)
-            end
-            categories << visit_display_name
-          end
-        end
-
-        chart_variable_domain.each_with_index do |(display_name, value), index|
-          series << { name: display_name, data: data[index] }
-        end
-
-        { title: title, subtitle: subtitle, categories: categories, units: units, series: series }
-      end
-
-
       def self.table_arbitrary(chart_type, subjects, json, method, subtitle = nil)
         return unless chart_variable_json = get_variable(chart_type)
         return unless chart_variable_domain = domain_array(chart_type)
@@ -352,64 +224,6 @@ module Spout
         ]
 
         { title: "#{json['display_name']} vs #{chart_variable_json['display_name']}", subtitle: subtitle, headers: headers, footers: footers, rows: rows }
-      end
-
-      def self.chart_histogram(chart_type, subjects, json, method)
-        domain_json = get_domain(json)
-        return if json['type'] == 'choices' and not domain_json
-        return unless chart_variable_json = get_variable(chart_type)
-        return unless chart_variable_domain = domain_array(chart_type)
-
-        title = "#{json['display_name']}"
-        subtitle = "By Visit"
-        units = "Subjects"
-        x_axis_units = json["units"]
-        series = []
-
-        all_subject_values = subjects.collect(&method.to_sym).compact.sort
-        return nil if all_subject_values.count == 0
-
-        domain_json = remove_unused_missing_codes_from_domain(domain_json, all_subject_values.uniq) if domain_json
-
-        categories = pull_categories(json, method, all_subject_values, domain_json)
-
-        buckets = continuous_buckets(all_subject_values)
-
-        chart_variable_domain.each do |display_name, value|
-          visit_subjects = subjects.select{ |s| s.send(chart_type) == value and s.send(method) != nil }.collect(&method.to_sym).sort
-          next unless visit_subjects.size > 0
-
-          data = pull_data(json, visit_subjects, buckets, categories, domain_json)
-
-          series << { name: display_name, data: data }
-        end
-
-        { title: title, subtitle: subtitle, categories: categories, units: units, series: series, x_axis_title: x_axis_units }
-      end
-
-      def self.pull_categories(json, method, all_subject_values, domain_json)
-        categories = []
-        if json['type'] == 'choices'
-          categories = domain_json.collect{|option_hash| option_hash['display_name']}
-        else
-          buckets = continuous_buckets(all_subject_values)
-          categories = buckets.collect{|b| "#{b[0]} to #{b[1]}"}
-        end
-        categories
-      end
-
-      def self.pull_data(json, visit_subjects, buckets, categories, domain_json)
-        data = []
-        if json['type'] == 'choices'
-          domain_json.each do |option_hash|
-            data << visit_subjects.select{ |v| v == option_hash['value'] }.count
-          end
-        else
-          visit_subjects.group_by{|v| get_bucket(buckets, v) }.each do |key, values|
-            data[categories.index(key)] = values.count if categories.index(key)
-          end
-        end
-        data
       end
 
       def self.remove_unused_missing_codes_from_domain(domain_json, unique_subject_values)

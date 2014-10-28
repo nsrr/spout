@@ -7,6 +7,8 @@ require 'colorize'
 
 require 'spout/helpers/subject_loader'
 require 'spout/helpers/chart_types'
+require 'spout/models/variable'
+require 'spout/models/graph'
 require 'spout/helpers/config_reader'
 require 'spout/helpers/send_file'
 require 'spout/version'
@@ -109,6 +111,9 @@ module Spout
             tables: {}
           }
 
+          variable = Spout::Models::Variable.find_by_id variable_name
+          visit = Spout::Models::Variable.find_by_id @config.visit
+
           @chart_variables.each do |chart_type_hash|
             chart_type = chart_type_hash["chart"]
             chart_title = chart_type_hash["title"].downcase.gsub(' ', '-')
@@ -116,13 +121,15 @@ module Spout
             if chart_type == @config.visit
               filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil }  # and s.send(variable_name) != nil
               if filtered_subjects.count > 0
-                stats[:charts][chart_title] = Spout::Helpers::ChartTypes::chart_histogram(chart_type, filtered_subjects, json, variable_name)
+                graph = Spout::Models::Graph.new(chart_type, filtered_subjects, variable, nil)
+                stats[:charts][chart_title] = graph.to_hash
                 stats[:tables][chart_title] = Spout::Helpers::ChartTypes::table_arbitrary(chart_type, filtered_subjects, json, variable_name)
               end
             else
               filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil } # and s.send(variable_name) != nil
               if filtered_subjects.collect(&variable_name.to_sym).compact.count > 0
-                stats[:charts][chart_title] = Spout::Helpers::ChartTypes::chart_arbitrary(chart_type, filtered_subjects, json, variable_name, visits)
+                graph = Spout::Models::Graph.new(chart_type, filtered_subjects, variable, visit)
+                stats[:charts][chart_title] = graph.to_hash
                 stats[:tables][chart_title] = visits.collect do |visit_display_name, visit_value|
                   visit_subjects = filtered_subjects.select{ |s| s._visit == visit_value }
                   unknown_subjects = visit_subjects.select{ |s| s.send(variable_name) == nil }

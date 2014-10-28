@@ -4,6 +4,8 @@ require 'rubygems'
 require 'json'
 require 'yaml'
 
+require 'spout/models/variable'
+require 'spout/models/graph'
 require 'spout/helpers/subject_loader'
 require 'spout/helpers/chart_types'
 require 'spout/helpers/config_reader'
@@ -90,7 +92,9 @@ module Spout
 
           filtered_subjects = @subjects.select{ |s| s.send(@config.visit) != nil }
 
-          chart_json = Spout::Helpers::ChartTypes::chart_histogram(@config.visit, filtered_subjects, json, variable_name)
+          variable = Spout::Models::Variable.find_by_id variable_name
+          graph = Spout::Models::Graph.new(@config.visit, filtered_subjects, variable, nil)
+          chart_json = graph.to_hash
 
           if chart_json
             File.open(tmp_options_file, "w") do |outfile|
