@@ -249,7 +249,6 @@ visit,age_at_visit,gender,race
     end
 
     def test_choices_vs_numeric_graph
-      skip
       Dir.chdir(app_path) do
         output, error = util_capture do
           @variable_files = Dir.glob('variables/**/*.json')
@@ -263,18 +262,47 @@ visit,age_at_visit,gender,race
 
           assert_equal 'Gender by Age at Visit', graph.title
           assert_equal 'By Visit', graph.subtitle
-          assert_equal ["22 to 25", "25 to 27", "27 to 30", "30 to 32", "32 to 35", "35 to 38", "38 to 40", "40 to 43", "43 to 45", "45 to 48", "48 to 50", "50 to 53"], graph.categories
-          assert_equal 'Subjects', graph.units
-          assert_equal [{ name: "Visit One", data: [5, 5] }, { name: "Visit Two", data: [4, 4] }], graph.series
-          assert_equal nil, graph.stacking
+          assert_equal ["22.0 to 30.0", "33.0 to 40.0", "42.0 to 47.0", "48.0 to 53.0"], graph.categories
+          assert_equal 'percent', graph.units
+          assert_equal [{ name: "Male", data: [2, 2, 3, 2] }, { name: "Female", data: [3, 3, 1, 2] }], graph.series
+          assert_equal 'percent', graph.stacking
           assert_equal nil, graph.x_axis_title
         end
       end
     end
 
-
     def test_numeric_vs_numeric_graph
-      skip
+      app_file 'csvs/1.0.0/dataset.csv', <<-CSV
+visit,age_at_visit,gender,bmi
+1,30,m,15
+1,40,m,20
+1,42,m,22
+1,28,m,25
+1,48,m,30
+1,22,f,17
+1,53,f,19
+1,30,f,22
+1,44,f,25
+1,34,f,27
+2,45,m,15
+2,47,m,19
+2,33,m,20
+2,53,m,20
+2,27,f,15
+2,35,f,17
+2,49,f,18
+2,39,f,22
+      CSV
+
+      app_file 'variables/bmi.json', <<-JSON
+        {
+          "id": "bmi",
+          "display_name": "Body Mass Index",
+          "type": "numeric",
+          "units": "kilograms per square meter"
+        }
+      JSON
+
       Dir.chdir(app_path) do
         output, error = util_capture do
           @variable_files = Dir.glob('variables/**/*.json')
@@ -282,15 +310,23 @@ visit,age_at_visit,gender,race
           @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
           @subject_loader.load_subjects_from_csvs!
 
-          variable = Spout::Models::Variable.find_by_id 'age_at_visit'
+          variable = Spout::Models::Variable.find_by_id 'bmi'
           visit = Spout::Models::Variable.find_by_id 'visit'
           graph = Spout::Models::Graph.new('age_at_visit', @subject_loader.subjects, variable, visit)
 
-          assert_equal 'Age at Visit by Age at Visit', graph.title
+          assert_equal 'Body Mass Index by Age at Visit', graph.title
           assert_equal 'By Visit', graph.subtitle
-          assert_equal ["22 to 25", "25 to 27", "27 to 30", "30 to 32", "32 to 35", "35 to 38", "38 to 40", "40 to 43", "43 to 45", "45 to 48", "48 to 50", "50 to 53"], graph.categories
-          assert_equal 'years', graph.units
-          assert_equal [{ name: "Visit One", data: [5, 5] }, { name: "Visit Two", data: [4, 4] }], graph.series
+          assert_equal ["Quartile One", "Quartile Two", "Quartile Three", "Quartile Four"], graph.categories
+          assert_equal 'kilograms per square meter', graph.units
+          assert_equal [{ name: "Visit One", data: [{ y: 19.0, stddev: "5.3", median: "17.0", min: "15.0", max: "25.0", n: 3 },
+                                                    { y: 23.0, stddev: "3.6", median: "22.0", min: "20.0", max: "27.0", n: 3 },
+                                                    { y: 23.5, stddev: "2.1", median: "23.5", min: "22.0", max: "25.0", n: 2 },
+                                                    { y: 24.5, stddev: "7.8", median: "24.5", min: "19.0", max: "30.0", n: 2 }
+                                                   ]},
+                        { name: "Visit Two", data: [{ y: 17.5, stddev: "3.5", median: "17.5", min: "15.0", max: "20.0", n: 2 },
+                                                    { y: 19.5, stddev: "3.5", median: "19.5", min: "17.0", max: "22.0", n: 2 },
+                                                    { y: 17.0, stddev: "2.8", median: "17.0", min: "15.0", max: "19.0", n: 2 },
+                                                    { y: 19.0, stddev: "1.4", median: "19.0", min: "18.0", max: "20.0", n: 2 }] }], graph.series
           assert_equal nil, graph.stacking
           assert_equal nil, graph.x_axis_title
         end

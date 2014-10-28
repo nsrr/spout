@@ -67,17 +67,17 @@ module Spout
             end
           elsif choices_versus_choices?
             categories_result = filtered_domain_options(@chart_variable).collect(&:display_name)
-            # categories = chart_variable_domain.collect{|a| a[0]}
+          elsif numeric_versus_numeric?
+            categories_result = ["Quartile One", "Quartile Two", "Quartile Three", "Quartile Four"]
+          elsif choices_versus_numeric?
+            filtered_subjects = @subjects.select{ |s| s.send(@variable.id) != nil and s.send(@chart_variable.id) != nil }.sort_by(&@chart_variable.id.to_sym) rescue filtered_subjects = []
+
+            categories_result = [:quartile_one, :quartile_two, :quartile_three, :quartile_four].collect do |quartile|
+              quartile = filtered_subjects.send(quartile).collect(&@chart_variable.id.to_sym)
+              "#{quartile.min} to #{quartile.max}"
+            end
           else
-            # chart_arbitrary_choices_by_quartile
-            # categories_result = [:quartile_one, :quartile_two, :quartile_three, :quartile_four].collect do |quartile|
-            #   bucket = filtered_subjects.send(quartile).collect(&chart_type.to_sym)
-            #   "#{bucket.min} to #{bucket.max}"
-            # end
-
-            # chart_arbitrary_by_quartile
-            # categories = ["Quartile One", "Quartile Two", "Quartile Three", "Quartile Four"]
-
+            # Other Graph Types
           end
 
           categories_result
@@ -89,19 +89,14 @@ module Spout
         if histogram?
           units_result = 'Subjects'
         elsif numeric_versus_choices?
-          # chart_arbitrary
           units_result = @variable.units
         elsif choices_versus_choices?
-          # chart_arbitrary_choices
+          units_result = 'percent'
+        elsif numeric_versus_numeric?
+          units_result = @variable.units
+        elsif choices_versus_numeric?
           units_result = 'percent'
         else
-
-          # chart_arbitrary_choices_by_quartile
-          # units_result = 'percent'
-
-          # chart_arbitrary_by_quartile
-          # units_result = json["units"]
-
 
         end
 
@@ -111,7 +106,6 @@ module Spout
       def series
         series_result = []
         if histogram?
-          # chart_histogram
           @chart_variable.domain.options.each do |option|
             visit_subjects = @subjects.select{ |s| s.send(@chart_variable.id) == option.value and s.send(@variable.id) != nil } rescue visit_subjects = []
             visit_subject_values = visit_subjects.collect(&@variable.id.to_sym).sort rescue visit_subject_values = []
@@ -133,8 +127,6 @@ module Spout
 
           end
         elsif numeric_versus_choices?
-          # chart_arbitrary
-
           data = []
 
           @stratification_variable.domain.options.each do |option|
@@ -153,11 +145,7 @@ module Spout
           filtered_domain_options(@chart_variable).each_with_index do |option, index|
              series_result << { name: option.display_name, data: data[index] }
           end
-          # chart_variable_domain.each_with_index do |(display_name, value), index|
-          #   series << { name: display_name, data: data[index] }
-          # end
         elsif choices_versus_choices?
-          # chart_arbitrary_choices
           series_result = filtered_domain_options(@variable).collect do |option|
             filtered_subjects = @subjects.select{ |s| s.send(@variable.id) == option.value }
             data = filtered_domain_options(@chart_variable).collect do |chart_option|
@@ -165,35 +153,35 @@ module Spout
             end
             { name: option.display_name, data: data }
           end
+        elsif numeric_versus_numeric?
+
+           @stratification_variable.domain.options.each do |option|
+            data = []
+
+            filtered_subjects = @subjects.select{ |s| s._visit == option.value and s.send(@variable.id) != nil and s.send(@chart_variable.id) != nil }.sort_by(&@chart_variable.id.to_sym) rescue filtered_subjects = []
+
+            [:quartile_one, :quartile_two, :quartile_three, :quartile_four].each do |quartile|
+              array = filtered_subjects.send(quartile).collect(&@variable.id.to_sym)
+              data << {         y: (array.mean.round(1) rescue 0.0),
+                           stddev: ("%0.1f" % array.standard_deviation rescue ''),
+                           median: ("%0.1f" % array.median rescue ''),
+                              min: ("%0.1f" % array.min rescue ''),
+                              max: ("%0.1f" % array.max rescue ''),
+                                n: array.n }
+            end
+
+            series_result << { name: option.display_name, data: data } unless filtered_subjects.size == 0
+          end
+        elsif choices_versus_numeric?
+          filtered_subjects = @subjects.select{ |s| s.send(@variable.id) != nil and s.send(@chart_variable.id) != nil }.sort_by(&@chart_variable.id.to_sym) rescue filtered_subjects = []
+
+          filtered_domain_options(@variable).each do |option|
+            data = [:quartile_one, :quartile_two, :quartile_three, :quartile_four].collect do |quartile|
+              filtered_subjects.send(quartile).select{ |s| s.send(@variable.id) == option.value }.count
+            end
+            series_result << { name: option.display_name, data: data } unless filtered_subjects.size == 0
+          end
         else
-
-          # chart_arbitrary_choices_by_quartile
-          # domain_json.each do |option_hash|
-          #   data = [:quartile_one, :quartile_two, :quartile_three, :quartile_four].collect do |quartile|
-          #     filtered_subjects.send(quartile).select{ |s| s.send(method) == option_hash['value'] }.count
-          #   end
-
-          #   series << { name: option_hash['display_name'], data: data } unless filtered_subjects.size == 0
-          # end
-
-          # chart_arbitrary_by_quartile
-          # visits.each do |visit_display_name, visit_value|
-          #   data = []
-          #   filtered_subjects = subjects.select{ |s| s._visit == visit_value and s.send(method) != nil and s.send(chart_type) != nil }.sort_by(&chart_type.to_sym)
-
-          #   [:quartile_one, :quartile_two, :quartile_three, :quartile_four].each do |quartile|
-          #     array = filtered_subjects.send(quartile).collect(&method.to_sym)
-          #     data << {       y: (array.mean.round(1) rescue 0.0),
-          #                  stddev: ("%0.1f" % array.standard_deviation rescue ''),
-          #                  median: ("%0.1f" % array.median rescue ''),
-          #                     min: ("%0.1f" % array.min rescue ''),
-          #                     max: ("%0.1f" % array.max rescue ''),
-          #                       n: array.n }
-          #   end
-
-          #   series << { name: visit_display_name, data: data } unless filtered_subjects.size == 0
-          # end
-
 
         end
         series_result
@@ -209,13 +197,12 @@ module Spout
         elsif choices_versus_choices?
           # chart_arbitrary_choices
           stacking_result = 'percent'
-        else
-
-          # chart_arbitrary_choices_by_quartile
-          # stacking_result = 'percent'
-
+        elsif numeric_versus_numeric?
           # chart_arbitrary_by_quartile
-
+        elsif choices_versus_numeric?
+          # chart_arbitrary_choices_by_quartile
+          stacking_result = 'percent'
+        else
 
         end
 
@@ -230,10 +217,12 @@ module Spout
           # chart_arbitrary
         elsif choices_versus_choices?
           # chart_arbitrary_choices
-        else
-          # chart_arbitrary_choices_by_quartile
-
+        elsif numeric_versus_numeric?
           # chart_arbitrary_by_quartile
+        elsif choices_versus_numeric?
+          # chart_arbitrary_choices_by_quartile
+        else
+
         end
 
         x_axis_title_result
@@ -251,6 +240,14 @@ module Spout
 
       def choices_versus_choices?
         @variable.type == 'choices' and @chart_variable.type == 'choices'
+      end
+
+      def numeric_versus_numeric?
+        ['numeric', 'integer'].include?(@variable.type) and ['numeric', 'integer'].include?(@chart_variable.type)
+      end
+
+      def choices_versus_numeric?
+        @variable.type == 'choices' and ['numeric', 'integer'].include?(@chart_variable.type)
       end
 
       def continuous_buckets
