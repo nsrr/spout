@@ -16,7 +16,7 @@ module Spout
 
         def series
           @stratification_variable.domain.options.collect do |option|
-            filtered_subjects = filter_and_sort_subjects_by_option(option)
+            filtered_subjects = filter_and_sort_subjects_by_stratification_option(option)
             next if filtered_subjects.size == 0
 
             data = [:quartile_one, :quartile_two, :quartile_three, :quartile_four].collect do |quartile|
@@ -30,7 +30,7 @@ module Spout
 
         private
 
-        def filter_and_sort_subjects_by_option(option)
+        def filter_and_sort_subjects_by_stratification_option(option)
           begin
             @subjects.select do |s|
               s._visit == option.value and s.send(@variable.id) != nil and s.send(@chart_variable.id) != nil
