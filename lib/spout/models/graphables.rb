@@ -12,11 +12,11 @@ module Spout
 
       DEFAULT_CLASS = Spout::Models::Graphables::Default
       GRAPHABLE_CLASSES = {
-        'histogram' => Histogram,
-        'numeric_vs_choices' => NumericVsChoices,
-        'choices_vs_choices' => ChoicesVsChoices,
-        'numeric_vs_numeric' => NumericVsNumeric,
-        'choices_vs_numeric' => ChoicesVsNumeric
+        'histogram' =>          Spout::Models::Graphables::Histogram,
+        'numeric_vs_choices' => Spout::Models::Graphables::NumericVsChoices,
+        'choices_vs_choices' => Spout::Models::Graphables::ChoicesVsChoices,
+        'numeric_vs_numeric' => Spout::Models::Graphables::NumericVsNumeric,
+        'choices_vs_numeric' => Spout::Models::Graphables::ChoicesVsNumeric
       }
 
       def self.for(variable, chart_variable, stratification_variable, subjects)

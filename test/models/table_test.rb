@@ -2,6 +2,7 @@ require 'test_helpers/sandbox'
 require 'test_helpers/capture'
 
 require 'spout/models/table'
+require 'spout/models/tables'
 require 'spout/helpers/config_reader'
 require 'spout/helpers/subject_loader'
 
@@ -31,8 +32,9 @@ module ApplicationTests
           @subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'age_at_visit'
+          chart_variable = Spout::Models::Variable.find_by_id 'gender'
           visit = Spout::Models::Variable.find_by_id 'visit'
-          table = Spout::Models::Table.new('gender', @subject_loader.subjects, variable, "All Visits")
+          table = Spout::Models::Tables.for(variable, chart_variable, @subject_loader.subjects, "All Visits")
 
           assert_equal 'Gender vs Age at Visit', table.title
           assert_equal 'All Visits', table.subtitle
