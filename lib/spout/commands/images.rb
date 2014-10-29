@@ -5,7 +5,7 @@ require 'json'
 require 'yaml'
 
 require 'spout/models/variable'
-require 'spout/models/graph'
+require 'spout/models/graphables'
 require 'spout/helpers/subject_loader'
 require 'spout/helpers/chart_types'
 require 'spout/helpers/config_reader'
@@ -70,7 +70,9 @@ module Spout
         FileUtils.mkpath( options_folder )
         tmp_options_file = File.join( options_folder, 'options.json' )
 
+        chart_variable = Spout::Models::Variable.find_by_id(@config.visit)
         variable_files_count = @variable_files.count
+
         @variable_files.each_with_index do |variable_file, file_index|
           json = JSON.parse(File.read(variable_file)) rescue json = nil
           next unless json
@@ -93,7 +95,8 @@ module Spout
           filtered_subjects = @subjects.select{ |s| s.send(@config.visit) != nil }
 
           variable = Spout::Models::Variable.find_by_id variable_name
-          graph = Spout::Models::Graph.new(@config.visit, filtered_subjects, variable, nil)
+          graph = Spout::Models::Graphables.for(variable, chart_variable, nil, filtered_subjects)
+
           chart_json = graph.to_hash
 
           if chart_json

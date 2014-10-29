@@ -1,7 +1,5 @@
 require 'test_helpers/sandbox'
 
-require 'spout/models/graph'
-
 module ApplicationTests
   class DomainTest < SandboxTest
 

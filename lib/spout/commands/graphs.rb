@@ -8,7 +8,7 @@ require 'colorize'
 require 'spout/helpers/subject_loader'
 require 'spout/helpers/chart_types'
 require 'spout/models/variable'
-require 'spout/models/graph'
+require 'spout/models/graphables'
 require 'spout/models/table'
 require 'spout/helpers/config_reader'
 require 'spout/helpers/send_file'
@@ -119,11 +119,12 @@ module Spout
           @chart_variables.each do |chart_type_hash|
             chart_type = chart_type_hash["chart"]
             chart_title = chart_type_hash["title"].downcase.gsub(' ', '-')
+            chart_variable = Spout::Models::Variable.find_by_id(chart_type)
 
             if chart_type == @config.visit
               filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil }
               if filtered_subjects.count > 0
-                graph = Spout::Models::Graph.new(chart_type, filtered_subjects, variable, nil)
+                graph = Spout::Models::Graphables.for(variable, chart_variable, nil, filtered_subjects)
                 stats[:charts][chart_title] = graph.to_hash
                 table = Spout::Models::Table.new(chart_type, filtered_subjects, variable, nil)
                 stats[:tables][chart_title] = table.to_hash
@@ -131,7 +132,7 @@ module Spout
             else
               filtered_subjects = @subjects.select{ |s| s.send(chart_type) != nil }
               if filtered_subjects.collect(&variable.id.to_sym).compact.count > 0
-                graph = Spout::Models::Graph.new(chart_type, filtered_subjects, variable, @stratification_variable)
+                graph = Spout::Models::Graphables.for(variable, chart_variable, @stratification_variable, filtered_subjects)
                 stats[:charts][chart_title] = graph.to_hash
                 stats[:tables][chart_title] = @stratification_variable.domain.options.collect do |option|
                   visit_subjects = filtered_subjects.select{ |s| s._visit == option.value }

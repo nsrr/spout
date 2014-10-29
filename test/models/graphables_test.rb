@@ -1,12 +1,12 @@
 require 'test_helpers/sandbox'
 require 'test_helpers/capture'
 
-require 'spout/models/graph'
+require 'spout/models/graphables'
 require 'spout/helpers/config_reader'
 require 'spout/helpers/subject_loader'
 
 module ApplicationTests
-  class GraphTest < SandboxTest
+  class GraphablesTest < SandboxTest
 
     include TestHelpers::Capture
 
@@ -36,13 +36,14 @@ module ApplicationTests
     def test_histogram_numeric_graph
       Dir.chdir(app_path) do
         output, error = util_capture do
-          @variable_files = Dir.glob('variables/**/*.json')
-          @config = Spout::Helpers::ConfigReader.new
-          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
-          @subject_loader.load_subjects_from_csvs!
+          variable_files = Dir.glob('variables/**/*.json')
+          config = Spout::Helpers::ConfigReader.new
+          subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
+          subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'age_at_visit'
-          graph = Spout::Models::Graph.new('visit', @subject_loader.subjects, variable, nil)
+          chart_variable = Spout::Models::Variable.find_by_id 'visit'
+          graph = Spout::Models::Graphables.for(variable, chart_variable, nil, subject_loader.subjects)
 
           assert_equal 'Age at Visit', graph.title
           assert_equal 'By Visit', graph.subtitle
@@ -59,13 +60,14 @@ module ApplicationTests
     def test_histogram_choices_graph
       Dir.chdir(app_path) do
         output, error = util_capture do
-          @variable_files = Dir.glob('variables/**/*.json')
-          @config = Spout::Helpers::ConfigReader.new
-          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
-          @subject_loader.load_subjects_from_csvs!
+          variable_files = Dir.glob('variables/**/*.json')
+          config = Spout::Helpers::ConfigReader.new
+          subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
+          subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'gender'
-          graph = Spout::Models::Graph.new('visit', @subject_loader.subjects, variable, nil)
+          chart_variable = Spout::Models::Variable.find_by_id 'visit'
+          graph = Spout::Models::Graphables.for(variable, chart_variable, nil, subject_loader.subjects)
 
           assert_equal 'Gender', graph.title
           assert_equal 'By Visit', graph.subtitle
@@ -112,13 +114,14 @@ visit,age_at_visit,gender,nodomain
 
       Dir.chdir(app_path) do
         output, error = util_capture do
-          @variable_files = Dir.glob('variables/**/*.json')
-          @config = Spout::Helpers::ConfigReader.new
-          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
-          @subject_loader.load_subjects_from_csvs!
+          variable_files = Dir.glob('variables/**/*.json')
+          config = Spout::Helpers::ConfigReader.new
+          subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
+          subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'nodomain'
-          graph = Spout::Models::Graph.new('visit', @subject_loader.subjects, variable, nil)
+          chart_variable = Spout::Models::Variable.find_by_id 'visit'
+          graph = Spout::Models::Graphables.for(variable, chart_variable, nil, subject_loader.subjects)
 
           assert_equal nil, graph.to_hash
         end
@@ -136,13 +139,14 @@ visit,age_at_visit,gender,nodomain
 
       Dir.chdir(app_path) do
         output, error = util_capture do
-          @variable_files = Dir.glob('variables/**/*.json')
-          @config = Spout::Helpers::ConfigReader.new
-          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
-          @subject_loader.load_subjects_from_csvs!
+          variable_files = Dir.glob('variables/**/*.json')
+          config = Spout::Helpers::ConfigReader.new
+          subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
+          subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'notindataset'
-          graph = Spout::Models::Graph.new('visit', @subject_loader.subjects, variable, nil)
+          chart_variable = Spout::Models::Variable.find_by_id 'visit'
+          graph = Spout::Models::Graphables.for(variable, chart_variable, nil, subject_loader.subjects)
 
           assert_equal nil, graph.to_hash
         end
@@ -164,14 +168,15 @@ visit,age_at_visit,gender,nodomain
     def test_numeric_vs_choices_graph
       Dir.chdir(app_path) do
         output, error = util_capture do
-          @variable_files = Dir.glob('variables/**/*.json')
-          @config = Spout::Helpers::ConfigReader.new
-          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
-          @subject_loader.load_subjects_from_csvs!
+          variable_files = Dir.glob('variables/**/*.json')
+          config = Spout::Helpers::ConfigReader.new
+          subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
+          subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'age_at_visit'
-          visit = Spout::Models::Variable.find_by_id 'visit'
-          graph = Spout::Models::Graph.new('gender', @subject_loader.subjects, variable, visit)
+          chart_variable = Spout::Models::Variable.find_by_id 'gender'
+          stratification_variable = Spout::Models::Variable.find_by_id 'visit'
+          graph = Spout::Models::Graphables.for(variable, chart_variable, stratification_variable, subject_loader.subjects)
 
           assert_equal 'Age at Visit by Gender', graph.title
           assert_equal 'By Visit', graph.subtitle
@@ -231,14 +236,15 @@ visit,age_at_visit,gender,race
 
       Dir.chdir(app_path) do
         output, error = util_capture do
-          @variable_files = Dir.glob('variables/**/*.json')
-          @config = Spout::Helpers::ConfigReader.new
-          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
-          @subject_loader.load_subjects_from_csvs!
+          variable_files = Dir.glob('variables/**/*.json')
+          config = Spout::Helpers::ConfigReader.new
+          subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
+          subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'gender'
-          visit = Spout::Models::Variable.find_by_id 'visit'
-          graph = Spout::Models::Graph.new('race', @subject_loader.subjects, variable, visit)
+          chart_variable = Spout::Models::Variable.find_by_id 'race'
+          stratification_variable = Spout::Models::Variable.find_by_id 'visit'
+          graph = Spout::Models::Graphables.for(variable, chart_variable, stratification_variable, subject_loader.subjects)
 
           assert_equal 'Gender by Race', graph.title
           assert_equal 'By Visit', graph.subtitle
@@ -255,14 +261,15 @@ visit,age_at_visit,gender,race
     def test_choices_vs_numeric_graph
       Dir.chdir(app_path) do
         output, error = util_capture do
-          @variable_files = Dir.glob('variables/**/*.json')
-          @config = Spout::Helpers::ConfigReader.new
-          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
-          @subject_loader.load_subjects_from_csvs!
+          variable_files = Dir.glob('variables/**/*.json')
+          config = Spout::Helpers::ConfigReader.new
+          subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
+          subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'gender'
-          visit = Spout::Models::Variable.find_by_id 'visit'
-          graph = Spout::Models::Graph.new('age_at_visit', @subject_loader.subjects, variable, visit)
+          chart_variable = Spout::Models::Variable.find_by_id 'age_at_visit'
+          stratification_variable = Spout::Models::Variable.find_by_id 'visit'
+          graph = Spout::Models::Graphables.for(variable, chart_variable, stratification_variable, subject_loader.subjects)
 
           assert_equal 'Gender by Age at Visit', graph.title
           assert_equal 'By Visit', graph.subtitle
@@ -310,14 +317,15 @@ visit,age_at_visit,gender,bmi
 
       Dir.chdir(app_path) do
         output, error = util_capture do
-          @variable_files = Dir.glob('variables/**/*.json')
-          @config = Spout::Helpers::ConfigReader.new
-          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
-          @subject_loader.load_subjects_from_csvs!
+          variable_files = Dir.glob('variables/**/*.json')
+          config = Spout::Helpers::ConfigReader.new
+          subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
+          subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'bmi'
-          visit = Spout::Models::Variable.find_by_id 'visit'
-          graph = Spout::Models::Graph.new('age_at_visit', @subject_loader.subjects, variable, visit)
+          chart_variable = Spout::Models::Variable.find_by_id 'age_at_visit'
+          stratification_variable = Spout::Models::Variable.find_by_id 'visit'
+          graph = Spout::Models::Graphables.for(variable, chart_variable, stratification_variable, subject_loader.subjects)
 
           assert_equal 'Body Mass Index by Age at Visit', graph.title
           assert_equal 'By Visit', graph.subtitle
@@ -342,14 +350,15 @@ visit,age_at_visit,gender,bmi
     def test_graph_creation_for_non_existent_primary_variable_do_not_exist
       Dir.chdir(app_path) do
         output, error = util_capture do
-          @variable_files = Dir.glob('variables/**/*.json')
-          @config = Spout::Helpers::ConfigReader.new
-          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
-          @subject_loader.load_subjects_from_csvs!
+          variable_files = Dir.glob('variables/**/*.json')
+          config = Spout::Helpers::ConfigReader.new
+          subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
+          subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'notfound'
-          visit = Spout::Models::Variable.find_by_id 'visit'
-          graph = Spout::Models::Graph.new('gender', @subject_loader.subjects, variable, visit)
+          chart_variable = Spout::Models::Variable.find_by_id 'gender'
+          stratification_variable = Spout::Models::Variable.find_by_id 'visit'
+          graph = Spout::Models::Graphables.for(variable, chart_variable, stratification_variable, subject_loader.subjects)
 
           assert_equal nil, graph.to_hash
         end
@@ -359,14 +368,15 @@ visit,age_at_visit,gender,bmi
     def test_graph_creation_for_non_existent_chart_variable
       Dir.chdir(app_path) do
         output, error = util_capture do
-          @variable_files = Dir.glob('variables/**/*.json')
-          @config = Spout::Helpers::ConfigReader.new
-          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
-          @subject_loader.load_subjects_from_csvs!
+          variable_files = Dir.glob('variables/**/*.json')
+          config = Spout::Helpers::ConfigReader.new
+          subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
+          subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'age_at_visit'
-          visit = Spout::Models::Variable.find_by_id 'visit'
-          graph = Spout::Models::Graph.new('nochart', @subject_loader.subjects, variable, visit)
+          chart_variable = Spout::Models::Variable.find_by_id 'nochart'
+          stratification_variable = Spout::Models::Variable.find_by_id 'visit'
+          graph = Spout::Models::Graphables.for(variable, chart_variable, stratification_variable, subject_loader.subjects)
 
           assert_equal nil, graph.to_hash
         end
