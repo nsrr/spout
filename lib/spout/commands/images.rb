@@ -97,9 +97,7 @@ module Spout
           variable = Spout::Models::Variable.find_by_id variable_name
           graph = Spout::Models::Graphables.for(variable, chart_variable, nil, filtered_subjects)
 
-          chart_json = graph.to_hash
-
-          if chart_json
+          if graph.valid?
             File.open(tmp_options_file, "w") do |outfile|
               outfile.puts <<-eos
                 {
@@ -113,21 +111,21 @@ module Spout
                     "text": ""
                   },
                   "xAxis": {
-                    "categories": #{chart_json[:categories].to_json}
+                    "categories": #{graph.categories.to_json}
                   },
                   "yAxis": {
                     "title": {
-                      "text": #{chart_json[:units].to_json}
+                      "text": #{graph.units.to_json}
                     }
                   },
                   "plotOptions": {
                     "column": {
                       "pointPadding": 0.2,
                       "borderWidth": 0,
-                      "stacking": #{chart_json[:stacking].to_json}
+                      "stacking": #{graph.stacking.to_json}
                     }
                   },
-                  "series": #{chart_json[:series].to_json}
+                  "series": #{graph.series.to_json}
                 }
               eos
             end

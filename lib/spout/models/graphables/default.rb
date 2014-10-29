@@ -21,14 +21,22 @@ module Spout
         end
 
         def to_hash
-          if @variable == nil or @chart_variable == nil or @values == []
-            nil
-          elsif @variable.type == 'choices' and @variable.domain.options == []
-            nil
-          elsif @chart_variable.type == 'choices' and @chart_variable.domain.options == []
-            nil
-          else
+          if valid?
             { title: title, subtitle: subtitle, categories: categories, units: units, series: series, stacking: stacking, x_axis_title: x_axis_title }
+          else
+            nil
+          end
+        end
+
+        def valid?
+          if @variable == nil or @chart_variable == nil or @values == []
+            false
+          elsif @variable.type == 'choices' and @variable.domain.options == []
+            false
+          elsif @chart_variable.type == 'choices' and @chart_variable.domain.options == []
+            false
+          else
+            true
           end
         end
 
