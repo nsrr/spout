@@ -1,13 +1,12 @@
 require 'test_helpers/sandbox'
 require 'test_helpers/capture'
 
-require 'spout/models/table'
 require 'spout/models/tables'
 require 'spout/helpers/config_reader'
 require 'spout/helpers/subject_loader'
 
 module ApplicationTests
-  class TableTest < SandboxTest
+  class TablesTest < SandboxTest
 
     include TestHelpers::Capture
 
@@ -107,7 +106,8 @@ visit,age_at_visit,gender,race
           @subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'gender'
-          table = Spout::Models::Table.new('race', @subject_loader.subjects, variable, nil)
+          chart_variable = Spout::Models::Variable.find_by_id 'race'
+          table = Spout::Models::Tables.for(variable, chart_variable, @subject_loader.subjects, nil)
 
           assert_equal 'Gender vs Race', table.title
           assert_equal nil, table.subtitle
@@ -163,7 +163,8 @@ visit,age_at_visit,gender,bmi
           @subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'bmi'
-          table = Spout::Models::Table.new('age_at_visit', @subject_loader.subjects, variable, nil)
+          chart_variable = Spout::Models::Variable.find_by_id 'age_at_visit'
+          table = Spout::Models::Tables.for(variable, chart_variable, @subject_loader.subjects, nil)
 
           assert_equal 'Age at Visit vs Body Mass Index', table.title
           assert_equal nil, table.subtitle
@@ -195,7 +196,8 @@ visit,age_at_visit,gender,bmi
           @subject_loader.load_subjects_from_csvs!
 
           variable = Spout::Models::Variable.find_by_id 'gender'
-          table = Spout::Models::Table.new('age_at_visit', @subject_loader.subjects, variable, nil)
+          chart_variable = Spout::Models::Variable.find_by_id 'age_at_visit'
+          table = Spout::Models::Tables.for(variable, chart_variable, @subject_loader.subjects, nil)
 
           assert_equal 'Gender vs Age at Visit', table.title
           assert_equal nil, table.subtitle

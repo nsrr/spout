@@ -9,7 +9,7 @@ require 'spout/helpers/subject_loader'
 require 'spout/helpers/chart_types'
 require 'spout/models/variable'
 require 'spout/models/graphables'
-require 'spout/models/table'
+require 'spout/models/tables'
 require 'spout/helpers/config_reader'
 require 'spout/helpers/send_file'
 require 'spout/version'
@@ -126,7 +126,7 @@ module Spout
               if filtered_subjects.count > 0
                 graph = Spout::Models::Graphables.for(variable, chart_variable, nil, filtered_subjects)
                 stats[:charts][chart_title] = graph.to_hash
-                table = Spout::Models::Table.new(chart_type, filtered_subjects, variable, nil)
+                table = Spout::Models::Tables.for(variable, chart_variable, filtered_subjects, nil)
                 stats[:tables][chart_title] = table.to_hash
               end
             else
@@ -137,7 +137,7 @@ module Spout
                 stats[:tables][chart_title] = @stratification_variable.domain.options.collect do |option|
                   visit_subjects = filtered_subjects.select{ |s| s._visit == option.value }
                   unknown_subjects = visit_subjects.select{ |s| s.send(variable.id) == nil }
-                  table = Spout::Models::Table.new(chart_type, visit_subjects, variable, option.display_name)
+                  table = Spout::Models::Tables.for(variable, chart_variable, visit_subjects, option.display_name)
                   (visit_subjects.count > 0 && visit_subjects.count != unknown_subjects.count) ? table.to_hash : nil
                 end.compact
               end
