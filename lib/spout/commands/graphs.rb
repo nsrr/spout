@@ -17,12 +17,13 @@ require 'spout/version'
 module Spout
   module Commands
     class Graphs
-      def initialize(variables, standard_version, deploy_mode = false, url = '', slug = '', token = '')
+      def initialize(variables, standard_version, deploy_mode = false, url = '', slug = '', token = '', webserver_name = '')
         @deploy_mode = deploy_mode
         @url = url
         @standard_version = standard_version
         @slug = slug
         @token = token
+        @webserver_name = webserver_name
 
         argv = variables
 
@@ -109,7 +110,8 @@ module Spout
           end
 
           @progress[variable.id] ||= {}
-          next if (not @deploy_mode and @progress[variable.id]['generated'] == true) or (@deploy_mode and @progress[variable.id]['uploaded'] == true)
+          @progress[variable.id]['uploaded'] ||= []
+          next if (not @deploy_mode and @progress[variable.id]['generated'] == true) or (@deploy_mode and @progress[variable.id]['uploaded'].include?(@webserver_name))
 
           stats = {
             charts: {},
@@ -149,13 +151,12 @@ module Spout
 
           @progress[variable.id]['generated'] = true
 
-          if @deploy_mode and not @progress[variable.id]['uploaded'] == true
+          if @deploy_mode and not @progress[variable.id]['uploaded'].include?(@webserver_name)
             response = send_to_server(chart_json_file)
             if response.kind_of?(Hash) and response['upload'] == 'success'
-              @progress[variable.id]['uploaded'] = true
+              @progress[variable.id]['uploaded'] << @webserver_name
             else
               puts "\nUPLOAD FAILED: ".colorize(:red) + File.basename(chart_json_file)
-              @progress[variable.id]['uploaded'] = false
             end
           end
 

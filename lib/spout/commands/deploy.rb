@@ -44,7 +44,7 @@ module Spout
       INDENT_LENGTH = 23
       INDENT = " "*INDENT_LENGTH
 
-      attr_accessor :token, :version, :slug, :url, :config, :environment
+      attr_accessor :token, :version, :slug, :url, :config, :environment, :webserver_name
 
       def initialize(argv, version)
         @environment = argv[1].to_s
@@ -105,6 +105,7 @@ module Spout
           failure(message)
         end
 
+        @webserver_name = matching_webservers.first['name'].to_s.strip rescue @webserver_name = ''
         @url = URI.parse(matching_webservers.first['url'].to_s.strip) rescue @url = nil
 
         if @url.to_s == ''
@@ -200,7 +201,7 @@ module Spout
         require 'spout/commands/graphs'
         argv = []
         argv << "--clean" if @clean
-        Spout::Commands::Graphs.new(argv, @version, true, @url, @slug, @token)
+        Spout::Commands::Graphs.new(argv, @version, true, @url, @slug, @token, @webserver_name)
         puts "\r     Graph Generation: " + "DONE          ".colorize(:green)
       end
 
@@ -209,7 +210,7 @@ module Spout
         require 'spout/commands/images'
         argv = []
         argv << "--clean" if @clean
-        Spout::Commands::Images.new([], [], [], @version, argv, true, @url, @slug, @token)
+        Spout::Commands::Images.new([], [], [], @version, argv, true, @url, @slug, @token, @webserver_name)
         puts "\r     Image Generation: " + "DONE          ".colorize(:green)
       end
 

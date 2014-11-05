@@ -15,15 +15,17 @@ module Spout
   module Commands
     class Images
 
-      def initialize(types, variable_ids, sizes, standard_version, argv, deploy_mode = false, url = '', slug = '', token = '')
+      def initialize(types, variable_ids, sizes, standard_version, argv, deploy_mode = false, url = '', slug = '', token = '', webserver_name = '')
         @deploy_mode = deploy_mode
         @url = url
         @standard_version = standard_version
         @slug = slug
         @token = token
+        @webserver_name = webserver_name
 
 
-        @variable_files = Dir.glob('variables/**/*.json')
+        @dictionary_root = Dir.pwd
+        @variable_files = Dir.glob(File.join(@dictionary_root, 'variables', '**', '*.json'))
         @standard_version = standard_version
         @pretend = (argv.delete('--pretend') != nil)
         @clean = (argv.delete('--no-resume') != nil or argv.delete('--clean'))
@@ -74,27 +76,28 @@ module Spout
         variable_files_count = @variable_files.count
 
         @variable_files.each_with_index do |variable_file, file_index|
-          json = JSON.parse(File.read(variable_file)) rescue json = nil
-          next unless json
-          next unless @valid_ids.include?(json["id"].to_s.downcase) or @valid_ids.size == 0
-          next unless @types.include?(json["type"]) or @types.size == 0
-          next unless ["numeric", "integer", "choices"].include?(json["type"])
-          variable_name  = json['id'].to_s.downcase
-          next unless Spout::Models::Subject.method_defined?(variable_name)
+          variable = Spout::Models::Variable.new(variable_file, @dictionary_root)
+
+          next unless variable.errors.size == 0
+
+          next unless @valid_ids.include?(variable.id) or @valid_ids.size == 0
+          next unless @types.include?(variable.type) or @types.size == 0
+          next unless ["numeric", "integer", "choices"].include?(variable.type)
+          next unless Spout::Models::Subject.method_defined?(variable.id)
 
           if @deploy_mode
             print "\r     Image Generation: " + "#{"% 3d" % ((file_index+1)*100/variable_files_count)}% Uploaded".colorize(:white)
           else
-            puts "#{file_index+1} of #{variable_files_count}: #{variable_file.gsub(/(^variables\/|\.json$)/, '').gsub('/', ' / ')}"
+            puts "#{file_index+1} of #{variable_files_count}: #{variable.folder}#{variable.id}"
           end
 
-          @progress[variable_name] ||= {}
+          @progress[variable.id] ||= {}
+          @progress[variable.id]['uploaded'] ||= []
 
-          next if (not @deploy_mode and @progress[variable_name]['generated'] == true) or (@deploy_mode and @progress[variable_name]['uploaded'] == true)
+          next if (not @deploy_mode and @progress[variable.id]['generated'] == true) or (@deploy_mode and @progress[variable.id]['uploaded'].include?(@webserver_name))
 
           filtered_subjects = @subjects.select{ |s| s.send(@config.visit) != nil }
 
-          variable = Spout::Models::Variable.find_by_id variable_name
           graph = Spout::Models::Graphables.for(variable, chart_variable, nil, filtered_subjects)
 
           if graph.valid?
@@ -129,10 +132,12 @@ module Spout
                 }
               eos
             end
-            run_phantom_js(variable_name, "#{variable_name}-lg.png", 600, tmp_options_file) if @sizes.size == 0 or @sizes.include?('lg')
-            run_phantom_js(variable_name, "#{variable_name}.png",     75, tmp_options_file) if @sizes.size == 0 or @sizes.include?('sm')
+            run_phantom_js(variable, "#{variable.id}-lg.png", 600, tmp_options_file) if @sizes.size == 0 or @sizes.include?('lg')
+            run_phantom_js(variable, "#{variable.id}.png",     75, tmp_options_file) if @sizes.size == 0 or @sizes.include?('sm')
 
-            @progress[variable_name]['uploaded'] = (@deploy_mode and @progress[variable_name]['upload_failed'] != true)
+            @progress[variable.id]['uploaded'] << @webserver_name if @deploy_mode and @progress[variable.id]['upload_failed'] != true
+            @progress[variable.id].delete('uploaded_files')
+            @progress[variable.id].delete('upload_failed')
 
             save_current_progress
           end
@@ -141,9 +146,9 @@ module Spout
         File.delete(tmp_options_file) if File.exist?(tmp_options_file)
       end
 
-      def run_phantom_js(variable_name, png_name, width, tmp_options_file)
-        @progress[variable_name]['generated'] ||= []
-        @progress[variable_name]['uploaded_files'] ||= []
+      def run_phantom_js(variable, png_name, width, tmp_options_file)
+        @progress[variable.id]['generated'] ||= []
+        @progress[variable.id]['uploaded_files'] ||= []
 
         image_path = File.join(Dir.pwd, 'images', @standard_version, png_name)
         directory = File.join( File.dirname(__FILE__), '..', 'support', 'javascripts' )
@@ -159,18 +164,18 @@ module Spout
         if @pretend
           puts phantomjs_command
         else
-          if not @progress[variable_name]['generated'].include?(png_name) or not File.exist?(png_name) or (File.exist?(png_name) and File.size(png_name) == 0)
+          if not @progress[variable.id]['generated'].include?(png_name) or not File.exist?(png_name) or (File.exist?(png_name) and File.size(png_name) == 0)
             `#{phantomjs_command}`
-            @progress[variable_name]['generated'] << png_name
+            @progress[variable.id]['generated'] << png_name
           end
 
-          if @deploy_mode and not @progress[variable_name]['uploaded_files'].include?(png_name)
+          if @deploy_mode and not @progress[variable.id]['uploaded_files'].include?(png_name)
             response = send_to_server(image_path)
             if response.kind_of?(Hash) and response['upload'] == 'success'
-              @progress[variable_name]['uploaded_files'] << png_name
+              @progress[variable.id]['uploaded_files'] << png_name
             else
               puts "\nUPLOAD FAILED: ".colorize(:red) + File.basename(png_name)
-              @progress[variable_name]['upload_failed'] = true
+              @progress[variable.id]['upload_failed'] = true
             end
           end
         end
