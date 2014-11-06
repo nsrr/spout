@@ -67,6 +67,14 @@ module Spout
       end
 
       def compute_images
+        begin
+          iterate_through_variables
+        ensure
+          save_current_progress
+        end
+      end
+
+      def iterate_through_variables
 
         options_folder = "images/#{@standard_version}"
         FileUtils.mkpath( options_folder )
@@ -138,8 +146,6 @@ module Spout
             @progress[variable.id]['uploaded'] << @webserver_name if @deploy_mode and @progress[variable.id]['upload_failed'] != true
             @progress[variable.id].delete('uploaded_files')
             @progress[variable.id].delete('upload_failed')
-
-            save_current_progress
           end
 
         end

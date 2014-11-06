@@ -93,8 +93,20 @@ module Spout
       end
 
       def compute_tables_and_charts
-        variable_files_count = @variable_files.count
+        begin
+          iterate_through_variables
+        ensure
+          save_current_progress
+        end
+      end
 
+      def send_to_server(chart_json_file)
+        response = Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_graph.json", chart_json_file, @standard_version, @token)
+      end
+
+
+      def iterate_through_variables
+        variable_files_count = @variable_files.count
         @variable_files.each_with_index do |variable_file, file_index|
           variable = Spout::Models::Variable.new(variable_file, @dictionary_root)
 
@@ -159,15 +171,10 @@ module Spout
               puts "\nUPLOAD FAILED: ".colorize(:red) + File.basename(chart_json_file)
             end
           end
-
-          save_current_progress
-
         end
+
       end
 
-      def send_to_server(chart_json_file)
-        response = Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_graph.json", chart_json_file, @standard_version, @token)
-      end
 
     end
   end
