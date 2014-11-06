@@ -15,7 +15,7 @@ module Spout
   module Commands
     class Images
 
-      def initialize(types, variable_ids, sizes, standard_version, argv, deploy_mode = false, url = '', slug = '', token = '', webserver_name = '')
+      def initialize(types, variable_ids, sizes, standard_version, argv, deploy_mode = false, url = '', slug = '', token = '', webserver_name = '', subjects = nil)
         @deploy_mode = deploy_mode
         @url = url
         @standard_version = standard_version
@@ -42,10 +42,13 @@ module Spout
         @images_folder = File.join("images", @standard_version)
         FileUtils.mkpath @images_folder
 
-        @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, @valid_ids, @standard_version, @number_of_rows, @config.visit)
-
-        @subject_loader.load_subjects_from_csvs!
-        @subjects = @subject_loader.subjects
+        @subjects = if subjects
+          subjects
+        else
+          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, @valid_ids, @standard_version, @number_of_rows, @config.visit)
+          @subject_loader.load_subjects_from_csvs!
+          @subjects = @subject_loader.subjects
+        end
 
         load_current_progress
 

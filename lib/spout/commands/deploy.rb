@@ -2,6 +2,7 @@ require 'colorize'
 require 'net/http'
 require 'io/console'
 
+require 'spout/helpers/subject_loader'
 require 'spout/helpers/config_reader'
 require 'spout/helpers/quietly'
 require 'spout/helpers/send_file'
@@ -44,7 +45,7 @@ module Spout
       INDENT_LENGTH = 23
       INDENT = " "*INDENT_LENGTH
 
-      attr_accessor :token, :version, :slug, :url, :config, :environment, :webserver_name
+      attr_accessor :token, :version, :slug, :url, :config, :environment, :webserver_name, :subjects
 
       def initialize(argv, version)
         @environment = argv[1].to_s
@@ -71,6 +72,10 @@ module Spout
           version_check unless @skip_checks
           test_check unless @skip_checks
           user_authorization
+
+          load_subjects_from_csvs unless @skip_graphs and @skip_images
+
+
           graph_generation unless @skip_graphs
           image_generation unless @skip_images
           dataset_uploads
@@ -78,6 +83,15 @@ module Spout
           trigger_server_updates unless @skip_server_updates
         rescue DeployError
         end
+      end
+
+      def load_subjects_from_csvs
+        @dictionary_root = Dir.pwd
+        @variable_files = Dir.glob(File.join(@dictionary_root, 'variables', '**', '*.json'))
+
+        @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], @version, nil, @config.visit)
+        @subject_loader.load_subjects_from_csvs!
+        @subjects = @subject_loader.subjects
       end
 
       def config_file_load
@@ -201,7 +215,7 @@ module Spout
         require 'spout/commands/graphs'
         argv = []
         argv << "--clean" if @clean
-        Spout::Commands::Graphs.new(argv, @version, true, @url, @slug, @token, @webserver_name)
+        Spout::Commands::Graphs.new(argv, @version, true, @url, @slug, @token, @webserver_name, @subjects)
         puts "\r     Graph Generation: " + "DONE          ".colorize(:green)
       end
 
@@ -210,7 +224,7 @@ module Spout
         require 'spout/commands/images'
         argv = []
         argv << "--clean" if @clean
-        Spout::Commands::Images.new([], [], [], @version, argv, true, @url, @slug, @token, @webserver_name)
+        Spout::Commands::Images.new([], [], [], @version, argv, true, @url, @slug, @token, @webserver_name, @subjects)
         puts "\r     Image Generation: " + "DONE          ".colorize(:green)
       end
 

@@ -17,7 +17,7 @@ require 'spout/version'
 module Spout
   module Commands
     class Graphs
-      def initialize(variables, standard_version, deploy_mode = false, url = '', slug = '', token = '', webserver_name = '')
+      def initialize(variables, standard_version, deploy_mode = false, url = '', slug = '', token = '', webserver_name = '', subjects = nil)
         @deploy_mode = deploy_mode
         @url = url
         @standard_version = standard_version
@@ -67,10 +67,14 @@ module Spout
         @graphs_folder = File.join("graphs", @standard_version)
         FileUtils.mkpath @graphs_folder
 
-        @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, @valid_ids, @standard_version, @number_of_rows, @config.visit)
 
-        @subject_loader.load_subjects_from_csvs!
-        @subjects = @subject_loader.subjects
+        @subjects = if subjects
+          subjects
+        else
+          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, @valid_ids, @standard_version, @number_of_rows, @config.visit)
+          @subject_loader.load_subjects_from_csvs!
+          @subjects = @subject_loader.subjects
+        end
 
         load_current_progress
 
