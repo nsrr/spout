@@ -65,7 +65,7 @@ module Spout
 
       def save_current_progress
         File.open(@progress_file,"w") do |f|
-          f.write(@progress.to_json)
+          f.write(JSON.pretty_generate(@progress) + "\n")
         end
       end
 
