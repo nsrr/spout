@@ -1,4 +1,4 @@
-## 0.10.0
+## 0.10.0 (November 24, 2014)
 
 ### Enhancements
 - **Deploy Command**
