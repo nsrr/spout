@@ -16,7 +16,7 @@
   - Tests now include checks to assure that variable display_name fields don't exceed 255 length requirement
     - `include Spout::Tests::VariableDisplayNameLength`
 - **Gem Changes**
-  - Use of Ruby 2.1.4 is now recommended
+  - Use of Ruby 2.1.5 is now recommended
 
 ### Refactoring
 - Removing ChartTypes class in favor of a more modular Graph and Table class
