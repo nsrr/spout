@@ -1,4 +1,4 @@
-## 0.10.1
+## 0.10.1 (December 1, 2014)
 
 ### Bug Fix
 - Fixed an issue that prevented `spout deploy` from searching for non-annotated/lightweight tags
