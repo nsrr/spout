@@ -160,7 +160,7 @@ module Spout
         end
 
         stdout = quietly do
-          `git describe --exact-match HEAD`
+          `git describe --exact-match HEAD --tags`
         end
 
         print "        Version Check: "
