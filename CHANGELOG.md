@@ -1,4 +1,4 @@
-## 0.10.2
+## 0.10.2 (December 29, 2014)
 
 ### Bug Fix
 - Fixed an issue that flooded test output with uninitialized string class instance variable `@disable_colorization`
