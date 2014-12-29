@@ -95,3 +95,6 @@ module Spout
     include Spout::Tests::FormNameMatch
   end
 end
+
+# Initialize the String class `@disable_colorization` instance variable
+String.disable_colorization = false
