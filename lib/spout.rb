@@ -1,4 +1,4 @@
-require "spout/version"
+require 'spout/version'
 
 require 'spout/models/dictionary'
 
@@ -17,7 +17,7 @@ Spout::COMMANDS = {
 
 module Spout
   def self.launch(argv)
-    self.send((Spout::COMMANDS[argv.first.to_s.scan(/\w/).first] || :help), argv)
+    send((Spout::COMMANDS[argv.first.to_s.scan(/\w/).first] || :help), argv)
   end
 
   def self.new_project(argv)
@@ -38,7 +38,7 @@ module Spout
   def self.generate_charts_and_tables(argv)
     argv = argv.last(argv.size - 1)
     require 'spout/commands/graphs'
-    variables = argv.collect{|s| s.to_s.downcase}
+    variables = argv.collect { |s| s.to_s.downcase }
     Spout::Commands::Graphs.new(variables, standard_version)
   end
 
@@ -51,7 +51,7 @@ module Spout
     Spout::Commands::Images.new(types, variable_ids, sizes, standard_version, argv)
   end
 
-  def self.help(argv)
+  def self.help(_argv)
     puts <<-EOT
 
 Usage: spout COMMAND [ARGS]
@@ -98,29 +98,30 @@ EOT
     Spout::Commands::Outliers.new(standard_version, argv)
   end
 
-  def self.test(argv)
-    system "bundle exec rake"
+  def self.test(_argv)
+    system 'bundle exec rake'
     # require 'spout/commands/test_runner'
     # Spout::Commands::TestRunner.new(argv)
   end
 
-  def self.version(argv)
+  def self.version(_argv)
     puts "Spout #{Spout::VERSION::STRING}"
   end
 
   def self.standard_version
-    version = File.open('VERSION', &:readline).strip rescue ''
+    version = File.open('VERSION', &:readline).strip
     version == '' ? '1.0.0' : version
+  rescue
+    '1.0.0'
   end
 
   private
 
   def self.flag_values(flags, param)
-    flags.select{|f| f =~ /^--#{param}-/}.collect{|f| f[(param.size + 3)..-1]}
+    flags.select { |f| f =~ /^--#{param}-/ }.collect { |f| f[(param.size + 3)..-1] }
   end
 
   def self.non_flag_values(flags)
-    flags.reject{|f| f =~ /^--/}
+    flags.reject { |f| f =~ /^--/ }
   end
-
 end

@@ -37,11 +37,11 @@ module Minitest
       def record(test)
         super
         if !test.skipped? && test.failure
-          print "    "
+          print '    '
           print_colored_status(test)
           print "    #{test.name}"
           puts
-          print "             "
+          print '             '
           print test.failure.to_s.gsub("\n", "\n             ")
           puts
           puts
@@ -62,7 +62,6 @@ module Minitest
 end
 
 Minitest::Reporters.use! Minitest::Reporters::SpoutReporter.new
-
 
 require 'spout/tests/json_validation'
 require 'spout/tests/variable_type_validation'
