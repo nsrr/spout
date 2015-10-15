@@ -1,5 +1,9 @@
 ## 0.11.0
 
+### Enhancements
+- **Gem Changes**
+  - Use of Ruby 2.2.3 is now recommended
+
 ## 0.10.2 (December 29, 2014)
 
 ### Bug Fix
