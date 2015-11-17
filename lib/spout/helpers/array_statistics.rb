@@ -79,7 +79,7 @@ class Array
   end
 
   def outliers
-    array = self.compact.sort.select{|v| v.kind_of?(Numeric)}
+    array = self.compact.sort.select{|v| v.is_a?(Numeric)}
     q1 = (array.quartile_one + array.quartile_two).median
     q3 = (array.quartile_three + array.quartile_four).median
     return [] if q1 == nil or q3 == nil
@@ -92,7 +92,7 @@ class Array
   end
 
   def major_outliers
-    array = self.compact.sort.select{|v| v.kind_of?(Numeric)}
+    array = self.compact.sort.select{|v| v.is_a?(Numeric)}
     q1 = (array.quartile_one + array.quartile_two).median
     q3 = (array.quartile_three + array.quartile_four).median
     return [] if q1 == nil or q3 == nil

@@ -5,7 +5,7 @@ module Spout
   module Helpers
     class ChartTypes
       def self.get_bucket(buckets, value)
-        return nil if buckets.size == 0 or not value.kind_of?(Numeric)
+        return nil if buckets.size == 0 or not value.is_a?(Numeric)
         buckets.each do |b|
           return "#{b[0]} to #{b[1]}" if value >= b[0] and value <= b[1]
         end
@@ -17,7 +17,7 @@ module Spout
       end
 
       def self.continuous_buckets(values)
-        values.select!{|v| v.kind_of? Numeric}
+        values.select!{|v| v.is_a? Numeric}
         return [] if values.count == 0
         minimum_bucket = values.min
         maximum_bucket = values.max

@@ -51,7 +51,7 @@ module Spout
         else
           domain_file = Dir.glob("domains/**/#{@json['domain'].to_s.downcase}.json", File::FNM_CASEFOLD).first
           if domain_json = JSON.parse(File.read(domain_file)) rescue false
-            return domain_json.kind_of?(Array)
+            return domain_json.is_a?(Array)
           end
           false
         end

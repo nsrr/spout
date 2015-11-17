@@ -59,7 +59,7 @@ module Spout
       def load_current_progress
         @progress_file = File.join(@images_folder, ".progress.json")
         @progress = JSON.parse(File.read(@progress_file)) rescue @progress = {}
-        @progress = {} if !@progress.kind_of?(Hash) or @clean or @progress['SPOUT_VERSION'] != Spout::VERSION::STRING
+        @progress = {} if !@progress.is_a?(Hash) or @clean or @progress['SPOUT_VERSION'] != Spout::VERSION::STRING
         @progress['SPOUT_VERSION'] = Spout::VERSION::STRING
       end
 
@@ -180,7 +180,7 @@ module Spout
 
           if @deploy_mode and not @progress[variable.id]['uploaded_files'].include?(png_name)
             response = send_to_server(image_path)
-            if response.kind_of?(Hash) and response['upload'] == 'success'
+            if response.is_a?(Hash) and response['upload'] == 'success'
               @progress[variable.id]['uploaded_files'] << png_name
             else
               puts "\nUPLOAD FAILED: ".colorize(:red) + File.basename(png_name)

@@ -30,7 +30,7 @@ module Spout
           nil
         end
 
-        if json and json.kind_of? Array
+        if json and json.is_a? Array
           @id = file_name.to_s.gsub(/^(.*)\/|\.json$/, '').downcase
           @options = (json || []).collect do |option|
             Spout::Models::Option.new(option)

@@ -17,18 +17,18 @@ module Spout
       def parse_yaml_file
         spout_config = YAML.load_file('.spout.yml')
 
-        if spout_config.kind_of?(Hash)
+        if spout_config.is_a?(Hash)
           @slug = spout_config['slug'].to_s.strip
           @visit = spout_config['visit'].to_s.strip
 
-          @charts = if spout_config['charts'].kind_of?(Array)
-            spout_config['charts'].select{|c| c.kind_of?(Hash)}
+          @charts = if spout_config['charts'].is_a?(Array)
+            spout_config['charts'].select{|c| c.is_a?(Hash)}
           else
             []
           end
 
-          @webservers = if spout_config['webservers'].kind_of?(Array)
-            spout_config['webservers'].select{|c| c.kind_of?(Hash)}
+          @webservers = if spout_config['webservers'].is_a?(Array)
+            spout_config['webservers'].select{|c| c.is_a?(Hash)}
           else
             []
           end

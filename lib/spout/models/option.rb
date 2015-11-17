@@ -5,7 +5,7 @@ module Spout
 
       def initialize(option_hash)
         %w( display_name value description missing ).each do |method|
-          instance_variable_set("@#{method}", (option_hash.kind_of?(Hash) ? option_hash : {})[method])
+          instance_variable_set("@#{method}", (option_hash.is_a?(Hash) ? option_hash : {})[method])
         end
       end
 

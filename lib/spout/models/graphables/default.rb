@@ -71,7 +71,7 @@ module Spout
         private
 
         def continuous_buckets
-          values_numeric = @values.select{|v| v.kind_of? Numeric}
+          values_numeric = @values.select{|v| v.is_a? Numeric}
           return [] if values_numeric.count == 0
           minimum_bucket = values_numeric.min
           maximum_bucket = values_numeric.max
@@ -89,7 +89,7 @@ module Spout
         end
 
         def get_bucket(value)
-          return nil if @buckets.size == 0 or not value.kind_of?(Numeric)
+          return nil if @buckets.size == 0 or not value.is_a?(Numeric)
           @buckets.each do |b|
             return b.display_name if b.in_bucket?(value)
           end

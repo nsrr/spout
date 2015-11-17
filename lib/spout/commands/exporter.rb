@@ -45,7 +45,7 @@ module Spout
                   csv << [relative_folder, domain_name] + keys.collect{|key| hash[key]}
                 end
               else
-                csv << [relative_folder] + keys.collect{|key| json[key].kind_of?(Array) ? json[key].join(';') : json[key].to_s}
+                csv << [relative_folder] + keys.collect{|key| json[key].is_a?(Array) ? json[key].join(';') : json[key].to_s}
               end
             end
           end

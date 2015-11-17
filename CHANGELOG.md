@@ -4,6 +4,9 @@
 - **Gem Changes**
   - Use of Ruby 2.2.3 is now recommended
 
+### Refactoring
+- Started refactoring code base to better adhere to Rubocop style recommendations
+
 ## 0.10.2 (December 29, 2014)
 
 ### Bug Fix

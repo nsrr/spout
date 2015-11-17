@@ -28,7 +28,7 @@ module Spout
           nil
         end
 
-        if json and json.kind_of? Hash
+        if json and json.is_a? Hash
 
           %w( display_name description type units commonly_used calculation ).each do |method|
             instance_variable_set("@#{method}", json[method])

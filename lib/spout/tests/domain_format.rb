@@ -5,8 +5,8 @@ module Spout
       def assert_domain_format(item)
         result = begin
           json = JSON.parse(File.read(item))
-          if json.kind_of?(Array)
-            json.empty? or json.select{|o| not o.kind_of?(Hash)}.size == 0
+          if json.is_a?(Array)
+            json.empty? or json.select{|o| not o.is_a?(Hash)}.size == 0
           else
             false
           end

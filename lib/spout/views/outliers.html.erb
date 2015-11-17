@@ -149,7 +149,7 @@ tfoot td {
                 <td><%= outlier_result.method %></td>
                 <td><%= outlier_result.display_name.to_s[0..20] %></td>
                 <td>
-                  <% if outlier_result.median.kind_of?(Numeric) %>
+                  <% if outlier_result.median.is_a?(Numeric) %>
                     <code class="default"><%= number_with_delimiter(outlier_result.median.round(2)) %></code>
                   <% end %>
                   <%= outlier_result.units %>

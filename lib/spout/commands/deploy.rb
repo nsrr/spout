@@ -198,7 +198,7 @@ module Spout
 
         response = Spout::Helpers::JsonRequest.get("#{@url}/datasets/#{@slug}/a/#{@token}/editor.json")
 
-        if response.kind_of?(Hash) and response['editor']
+        if response.is_a?(Hash) and response['editor']
           puts "AUTHORIZED".colorize(:green)
         else
           puts "UNAUTHORIZED".colorize(:red)
@@ -264,13 +264,13 @@ module Spout
       def trigger_server_updates
         print "Launch Server Scripts: "
         response = Spout::Helpers::JsonRequest.get("#{@url}/datasets/#{@slug}/a/#{@token}/refresh_dictionary.json?version=#{@version}")
-        if response.kind_of?(Hash) and response['refresh'] == 'success'
+        if response.is_a?(Hash) and response['refresh'] == 'success'
           puts "DONE".colorize(:green)
-        elsif response.kind_of?(Hash) and response['refresh'] == 'notagfound'
+        elsif response.is_a?(Hash) and response['refresh'] == 'notagfound'
           puts "FAIL".colorize(:red)
           puts "#{INDENT}Tag not found in repository, resolve using: " + "git push --tags".colorize(:white)
           raise DeployError
-        elsif response.kind_of?(Hash) and response['refresh'] == 'gitrepodoesnotexist'
+        elsif response.is_a?(Hash) and response['refresh'] == 'gitrepodoesnotexist'
           puts "FAIL".colorize(:red)
           puts "#{INDENT}Dataset data dictionary git repository has not been cloned on the server. Contact server admin.".colorize(:white)
           raise DeployError

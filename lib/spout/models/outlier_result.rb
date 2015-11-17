@@ -22,9 +22,9 @@ module Spout
           2
         end
         variable = Spout::Helpers::JsonLoader::get_variable(method)
-        @units = (variable.kind_of?(Hash) ? variable['units'] : nil)
-        @display_name = (variable.kind_of?(Hash) ? variable['display_name'] : nil)
-        @variable_type = (variable.kind_of?(Hash) ? variable['type'] : nil)
+        @units = (variable.is_a?(Hash) ? variable['units'] : nil)
+        @display_name = (variable.is_a?(Hash) ? variable['display_name'] : nil)
+        @variable_type = (variable.is_a?(Hash) ? variable['type'] : nil)
         @median = @values.median
       end
 
