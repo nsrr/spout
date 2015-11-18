@@ -159,6 +159,7 @@ module Spout
           end
           run_phantom_js(variable, "#{variable.id}-lg.png", 600, tmp_options_file) if @sizes.size == 0 || @sizes.include?('lg')
           run_phantom_js(variable, "#{variable.id}.png", 75, tmp_options_file) if @sizes.size == 0 || @sizes.include?('sm')
+          # run_phantom_js(variable, "#{variable.id}.svg", 75, tmp_options_file)
 
           @progress[variable.id]['uploaded'] << @webserver_name if @deploy_mode && @progress[variable.id]['upload_failed'] != true
           @progress[variable.id].delete('uploaded_files')
