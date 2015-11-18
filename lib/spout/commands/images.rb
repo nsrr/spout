@@ -25,12 +25,16 @@ module Spout
         @dictionary_root = Dir.pwd
         @variable_files = Dir.glob(File.join(@dictionary_root, 'variables', '**', '*.json'))
         @standard_version = standard_version
-        @pretend = (argv.delete('--pretend') != nil)
-        @clean = (argv.delete('--no-resume') != nil or argv.delete('--clean'))
+        # puts "ARGV: #{argv.inspect}".colorize(:red)
+
+        @pretend = !argv.delete('--pretend').nil?
+        @clean = !(argv.delete('--no-resume').nil? && argv.delete('--clean').nil?)
+
+        # puts "CLEAN?: #{@clean}".colorize(:red)
 
         @types = flag_values(argv, 'type')
         @sizes = flag_values(argv, 'size')
-        @valid_ids  = non_flag_values(argv)
+        @valid_ids = non_flag_values(argv)
 
         # puts "@valid_ids: #{@valid_ids}".colorize(:red)
         # puts argv.inspect.colorize(:red)
@@ -44,7 +48,7 @@ module Spout
         @config = Spout::Helpers::ConfigReader.new
 
         t = Time.now
-        @images_folder = File.join("images", @standard_version)
+        @images_folder = File.join('images', @standard_version)
         FileUtils.mkpath @images_folder
 
         @subjects = if subjects
@@ -70,14 +74,14 @@ module Spout
       end
 
       def load_current_progress
-        @progress_file = File.join(@images_folder, ".progress.json")
+        @progress_file = File.join(@images_folder, '.progress.json')
         @progress = JSON.parse(File.read(@progress_file)) rescue @progress = {}
         @progress = {} if !@progress.is_a?(Hash) or @clean or @progress['SPOUT_VERSION'] != Spout::VERSION::STRING
         @progress['SPOUT_VERSION'] = Spout::VERSION::STRING
       end
 
       def save_current_progress
-        File.open(@progress_file,"w") do |f|
+        File.open(@progress_file, 'w') do |f|
           f.write(JSON.pretty_generate(@progress) + "\n")
         end
       end
@@ -103,63 +107,62 @@ module Spout
 
           next unless @valid_ids.include?(variable.id) or @valid_ids.size == 0
           next unless @types.include?(variable.type) or @types.size == 0
-          next unless ["numeric", "integer", "choices"].include?(variable.type)
+          next unless %w(numeric integer choices).include?(variable.type)
           next unless Spout::Models::Subject.method_defined?(variable.id)
 
           if @deploy_mode
-            print "\r     Image Generation: " + "#{"% 3d" % ((file_index+1)*100/variable_files_count)}% Uploaded".colorize(:white)
+            print "\r     Image Generation: " + "#{"% 3d" % ((file_index + 1) * 100 / variable_files_count)}% Uploaded".colorize(:white)
           else
-            puts "#{file_index+1} of #{variable_files_count}: #{variable.folder}#{variable.id}"
+            puts "#{file_index + 1} of #{variable_files_count}: #{variable.folder}#{variable.id}"
           end
 
           @progress[variable.id] ||= {}
           @progress[variable.id]['uploaded'] ||= []
 
-          next if (not @deploy_mode and @progress[variable.id]['generated'] == true) or (@deploy_mode and @progress[variable.id]['uploaded'].include?(@webserver_name))
+          next if (!@deploy_mode && @progress[variable.id]['generated'] == true) || (@deploy_mode && @progress[variable.id]['uploaded'].include?(@webserver_name))
 
-          filtered_subjects = @subjects.select{ |s| s.send(@config.visit) != nil }
+          filtered_subjects = @subjects.reject { |s| s.send(@config.visit).nil? || s.send(variable.id).nil? }
 
           graph = Spout::Models::Graphables.for(variable, chart_variable, nil, filtered_subjects)
 
-          if graph.valid?
-            File.open(tmp_options_file, "w") do |outfile|
-              outfile.puts <<-eos
-                {
-                  "credits": {
-                    "enabled": false
-                  },
-                  "chart": {
-                    "type": "column"
-                  },
+          next unless graph.valid?
+          File.open(tmp_options_file, 'w') do |outfile|
+            outfile.puts <<-eos
+              {
+                "credits": {
+                  "enabled": false
+                },
+                "chart": {
+                  "type": "column"
+                },
+                "title": {
+                  "text": ""
+                },
+                "xAxis": {
+                  "categories": #{graph.categories.to_json}
+                },
+                "yAxis": {
                   "title": {
-                    "text": ""
-                  },
-                  "xAxis": {
-                    "categories": #{graph.categories.to_json}
-                  },
-                  "yAxis": {
-                    "title": {
-                      "text": #{graph.units.to_json}
-                    }
-                  },
-                  "plotOptions": {
-                    "column": {
-                      "pointPadding": 0.2,
-                      "borderWidth": 0,
-                      "stacking": #{graph.stacking.to_json}
-                    }
-                  },
-                  "series": #{graph.series.to_json}
-                }
-              eos
-            end
-            run_phantom_js(variable, "#{variable.id}-lg.png", 600, tmp_options_file) if @sizes.size == 0 or @sizes.include?('lg')
-            run_phantom_js(variable, "#{variable.id}.png",     75, tmp_options_file) if @sizes.size == 0 or @sizes.include?('sm')
-
-            @progress[variable.id]['uploaded'] << @webserver_name if @deploy_mode and @progress[variable.id]['upload_failed'] != true
-            @progress[variable.id].delete('uploaded_files')
-            @progress[variable.id].delete('upload_failed')
+                    "text": #{graph.units.to_json}
+                  }
+                },
+                "plotOptions": {
+                  "column": {
+                    "pointPadding": 0.2,
+                    "borderWidth": 0,
+                    "stacking": #{graph.stacking.to_json}
+                  }
+                },
+                "series": #{graph.series.to_json}
+              }
+            eos
           end
+          run_phantom_js(variable, "#{variable.id}-lg.png", 600, tmp_options_file) if @sizes.size == 0 || @sizes.include?('lg')
+          run_phantom_js(variable, "#{variable.id}.png", 75, tmp_options_file) if @sizes.size == 0 || @sizes.include?('sm')
+
+          @progress[variable.id]['uploaded'] << @webserver_name if @deploy_mode && @progress[variable.id]['upload_failed'] != true
+          @progress[variable.id].delete('uploaded_files')
+          @progress[variable.id].delete('upload_failed')
         end
         File.delete(tmp_options_file) if File.exist?(tmp_options_file)
       end
@@ -171,25 +174,25 @@ module Spout
         image_path = File.join(Dir.pwd, 'images', @standard_version, png_name)
         directory = File.join( File.dirname(__FILE__), '..', 'support', 'javascripts' )
 
-        open_command = if RUBY_PLATFORM.match(/mingw/) != nil
-          'phantomjs.exe'
-        else
-          'phantomjs'
-        end
+        open_command = if RUBY_PLATFORM.match(/mingw/).nil?
+                         'phantomjs'
+                       else
+                         'phantomjs.exe'
+                       end
 
         phantomjs_command = "#{open_command} #{directory}/highcharts-convert.js -infile #{tmp_options_file} -outfile #{image_path} -scale 2.5 -width #{width} -constr Chart"
 
         if @pretend
           puts phantomjs_command
         else
-          if not @progress[variable.id]['generated'].include?(png_name) or not File.exist?(png_name) or (File.exist?(png_name) and File.size(png_name) == 0)
+          if !@progress[variable.id]['generated'].include?(png_name) || !File.exist?(png_name) || (File.exist?(png_name) && File.size(png_name) == 0)
             `#{phantomjs_command}`
             @progress[variable.id]['generated'] << png_name
           end
 
-          if @deploy_mode and not @progress[variable.id]['uploaded_files'].include?(png_name)
+          if @deploy_mode && !@progress[variable.id]['uploaded_files'].include?(png_name)
             response = send_to_server(image_path)
-            if response.is_a?(Hash) and response['upload'] == 'success'
+            if response.is_a?(Hash) && response['upload'] == 'success'
               @progress[variable.id]['uploaded_files'] << png_name
             else
               puts "\nUPLOAD FAILED: ".colorize(:red) + File.basename(png_name)
@@ -200,6 +203,7 @@ module Spout
       end
 
       def send_to_server(file)
+        # puts "SENDING FILE TO SERVER: #{file}".colorize(:red)
         Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_graph.json", file, @standard_version, @token, 'images')
       end
     end

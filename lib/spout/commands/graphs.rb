@@ -24,7 +24,9 @@ module Spout
         @slug = slug
         @token = token
         @webserver_name = webserver_name
+        # puts "ARGV: #{argv.inspect}".colorize(:red)
         @clean = !(argv.delete('--no-resume').nil? && argv.delete('--clean').nil?)
+        # puts "CLEAN?: #{@clean}".colorize(:red)
 
         @config = Spout::Helpers::ConfigReader.new
 

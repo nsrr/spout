@@ -71,7 +71,6 @@ module Spout
         # puts "@number_of_rows: #{@number_of_rows}".colorize(:red)
 
         @argv = argv
-        @argv << '--clean' if @clean
 
         begin
           run_all
@@ -222,6 +221,7 @@ module Spout
       def graph_generation
         # failure ''
         require 'spout/commands/graphs'
+        @argv << '--clean' if @clean
         Spout::Commands::Graphs.new(@argv, @version, true, @url, @slug, @token, @webserver_name, @subjects)
         puts "\r     Graph Generation: " + 'DONE          '.colorize(:green)
       end
@@ -229,6 +229,7 @@ module Spout
       def image_generation
         # failure ''
         require 'spout/commands/images'
+        @argv << '--clean' if @clean
         Spout::Commands::Images.new(@argv, @version, true, @url, @slug, @token, @webserver_name, @subjects)
         puts "\r     Image Generation: " + 'DONE          '.colorize(:green)
       end
