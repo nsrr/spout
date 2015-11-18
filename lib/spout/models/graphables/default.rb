@@ -80,8 +80,6 @@ module Spout
             return discrete_buckets
           end
 
-          puts "minimum_bucket #{minimum_bucket}".colorize(:red)
-          puts "maximum_bucket #{maximum_bucket}".colorize(:red)
           bucket_size = ((maximum_bucket - minimum_bucket) / max_buckets.to_f)
           precision = (bucket_size == 0 ? 0 : [-Math.log10(bucket_size).floor, 0].max)
 
