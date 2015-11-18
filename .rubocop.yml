@@ -3,7 +3,8 @@ AllCops:
 # Documentation:
 #   Enabled: false
 Metrics/LineLength:
-  Max: 120
+  # Max: 120
+  Enabled: false
 Metrics/MethodLength:
   Max: 5
 Style/ClassAndModuleChildren:

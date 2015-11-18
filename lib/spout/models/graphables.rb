@@ -5,11 +5,9 @@ require 'spout/models/graphables/choices_vs_choices'
 require 'spout/models/graphables/numeric_vs_numeric'
 require 'spout/models/graphables/choices_vs_numeric'
 
-
 module Spout
   module Models
     module Graphables
-
       DEFAULT_CLASS = Spout::Models::Graphables::Default
       GRAPHABLE_CLASSES = {
         'histogram' =>          Spout::Models::Graphables::Histogram,
@@ -25,7 +23,7 @@ module Spout
       end
 
       def self.get_graph_type(variable, chart_variable, stratification_variable)
-        if stratification_variable == nil
+        if stratification_variable.nil?
           'histogram'
         else
           "#{variable_to_graph_type(variable)}_vs_#{variable_to_graph_type(chart_variable)}"
@@ -34,13 +32,13 @@ module Spout
 
       def self.variable_to_graph_type(variable)
         variable_type = (variable ? variable.type : nil)
-        case variable_type when 'numeric', 'integer'
+        case variable_type
+        when 'numeric', 'integer'
           'numeric'
         else
           variable_type
         end
       end
-
     end
   end
 end

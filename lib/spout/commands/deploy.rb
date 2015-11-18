@@ -39,25 +39,39 @@ end
 module Spout
   module Commands
     class Deploy
-
       include Spout::Helpers::Quietly
 
       INDENT_LENGTH = 23
-      INDENT = " "*INDENT_LENGTH
+      INDENT = ' ' * INDENT_LENGTH
 
       attr_accessor :token, :version, :slug, :url, :config, :environment, :webserver_name, :subjects
 
       def initialize(argv, version)
-        @environment = argv[1].to_s
+        argv.shift # Remove 'download' command from argv list
+        @environment = argv.shift
         @version = version
-        @skip_checks = (argv.delete('--skip-checks') != nil or argv.delete('--no-checks') != nil)
+        @skip_checks = !(argv.delete('--skip-checks').nil? && argv.delete('--no-checks').nil?)
 
-        @skip_graphs = (argv.delete('--skip-graphs') != nil or argv.delete('--no-graphs') != nil)
-        @skip_images = (argv.delete('--skip-images') != nil or argv.delete('--no-images') != nil)
-        @clean = (argv.delete('--clean') != nil or argv.delete('--no-resume'))
-        @skip_server_updates = (argv.delete('--skip-server-updates') != nil or argv.delete('--no-server-updates') != nil)
+        @skip_graphs = !(argv.delete('--skip-graphs').nil? && argv.delete('--no-graphs').nil?)
+        @skip_images = !(argv.delete('--skip-images').nil? && argv.delete('--no-images').nil?)
+        @clean = !(argv.delete('--no-resume').nil? && argv.delete('--clean').nil?)
+        @skip_server_updates = !(argv.delete('--skip-server-updates').nil? && argv.delete('--no-server-updates').nil?)
 
-        @token = argv.select{|a| /^--token=/ =~ a}.collect{|a| a.gsub(/^--token=/, '')}.first
+        token_arg = argv.find { |arg| /^--token=/ =~ arg }
+        argv.delete(token_arg)
+        @token = token_arg.gsub(/^--token=/, '') if token_arg
+
+        rows_arg = argv.find { |arg| /^--rows=(\d*)/ =~ arg }
+        argv.delete(rows_arg)
+        @number_of_rows = rows_arg.gsub(/--rows=/, '').to_i if rows_arg
+
+        # puts "token_arg: #{token_arg}".colorize(:red)
+        # puts "@token: #{@token}".colorize(:red)
+        # puts "rows_arg: #{rows_arg}".colorize(:red)
+        # puts "@number_of_rows: #{@number_of_rows}".colorize(:red)
+
+        @argv = argv
+        @argv << '--clean' if @clean
 
         begin
           run_all
@@ -67,35 +81,31 @@ module Spout
       end
 
       def run_all
-        begin
-          config_file_load
-          version_check unless @skip_checks
-          test_check unless @skip_checks
-          user_authorization
-
-          load_subjects_from_csvs unless @skip_graphs and @skip_images
-
-
-          graph_generation unless @skip_graphs
-          image_generation unless @skip_images
-          dataset_uploads
-          data_dictionary_uploads
-          trigger_server_updates unless @skip_server_updates
-        rescue DeployError
-        end
+        config_file_load
+        version_check unless @skip_checks
+        test_check unless @skip_checks
+        user_authorization
+        load_subjects_from_csvs unless @skip_graphs && @skip_images
+        graph_generation unless @skip_graphs
+        image_generation unless @skip_images
+        dataset_uploads
+        data_dictionary_uploads
+        trigger_server_updates unless @skip_server_updates
+      rescue DeployError
+        # Nothing on Deploy Error
       end
 
       def load_subjects_from_csvs
         @dictionary_root = Dir.pwd
         @variable_files = Dir.glob(File.join(@dictionary_root, 'variables', '**', '*.json'))
 
-        @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], @version, nil, @config.visit)
+        @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], @version, @number_of_rows, @config.visit)
         @subject_loader.load_subjects_from_csvs!
         @subjects = @subject_loader.subjects
       end
 
       def config_file_load
-        print "   `.spout.yml` Check: "
+        print '   `.spout.yml` Check: '
         @config = Spout::Helpers::ConfigReader.new
 
         @slug = @config.slug
@@ -110,7 +120,7 @@ module Spout
           failure(message)
         end
 
-        matching_webservers = @config.webservers.select{|wh| /^#{@environment}/i =~ wh['name'].to_s.downcase}
+        matching_webservers = @config.webservers.select { |wh| /^#{@environment}/i =~ wh['name'].to_s.downcase }
         if matching_webservers.count == 0
           message = "#{INDENT}0 webservers match '#{@environment}'.".colorize(:red) + " The following webservers exist in your `.spout.yml` file:\n" + "#{INDENT}#{@config.webservers.collect{|wh| wh['name'].to_s.downcase}.join(', ')}".colorize(:white)
           failure(message)
@@ -127,9 +137,9 @@ module Spout
           failure(message)
         end
 
-        puts "PASS".colorize(:green)
-        puts "        Target Server: " + "#{@url}".colorize(:white)
-        puts "       Target Dataset: " + "#{@slug}".colorize(:white)
+        puts 'PASS'.colorize(:green)
+        puts '        Target Server: ' + "#{@url}".colorize(:white)
+        puts '       Target Dataset: ' + "#{@slug}".colorize(:white)
       end
 
       # - **Version Check**
@@ -141,9 +151,9 @@ module Spout
           `git status --porcelain`
         end
 
-        print "     Git Status Check: "
+        print '     Git Status Check: '
         if stdout.to_s.strip == ''
-          puts "PASS".colorize(:green) + " " + "nothing to commit, working directory clean".colorize(:white)
+          puts 'PASS'.colorize(:green) + ' ' + 'nothing to commit, working directory clean'.colorize(:white)
         else
           message = "#{INDENT}working directory contains uncomitted changes".colorize(:red)
           failure message
@@ -153,7 +163,7 @@ module Spout
         if changelog.match(/^## #{@version.split('.')[0..2].join('.')}/)
           puts "         CHANGELOG.md: " + "PASS".colorize(:green) + " " + changelog.colorize(:white)
         else
-          print "         CHANGELOG.md: "
+          print '         CHANGELOG.md: '
           message = "#{INDENT}Expected: ".colorize(:red) + "## #{@version}".colorize(:white) +
                   "\n#{INDENT}  Actual: ".colorize(:red) + changelog.colorize(:white)
           failure message
@@ -163,15 +173,14 @@ module Spout
           `git describe --exact-match HEAD --tags`
         end
 
-        print "        Version Check: "
+        print '        Version Check: '
         tag = stdout.to_s.strip
         if "v#{@version}" != tag
-          message = "#{INDENT}Version specified in `VERSION` file ".colorize(:red) + "'v#{@version}'".colorize(:white) + " does not match git tag on HEAD commit ".colorize(:red) + "'#{tag}'".colorize(:white)
+          message = "#{INDENT}Version specified in `VERSION` file ".colorize(:red) + "'v#{@version}'".colorize(:white) + ' does not match git tag on HEAD commit '.colorize(:red) + "'#{tag}'".colorize(:white)
           failure message
         else
-          puts   "PASS".colorize(:green) + " VERSION " + "'v#{@version}'".colorize(:white) + " matches git tag " + "'#{tag}'".colorize(:white)
+          puts 'PASS'.colorize(:green) + ' VERSION ' + "'v#{@version}'".colorize(:white) + ' matches git tag ' + "'#{tag}'".colorize(:white)
         end
-
       end
 
       def test_check
@@ -182,7 +191,7 @@ module Spout
         end
 
         if stdout.match(/[^\d]0 failures, 0 errors,/)
-          puts "PASS".colorize(:green)
+          puts 'PASS'.colorize(:green)
         else
           message = "#{INDENT}spout t".colorize(:white) + " had errors or failures".colorize(:red) + "\n#{INDENT}Please fix all errors and failures and then run spout deploy again."
           failure message
@@ -199,33 +208,29 @@ module Spout
         response = Spout::Helpers::JsonRequest.get("#{@url}/datasets/#{@slug}/a/#{@token}/editor.json")
 
         if response.is_a?(Hash) and response['editor']
-          puts "AUTHORIZED".colorize(:green)
+          puts 'AUTHORIZED'.colorize(:green)
         else
-          puts "UNAUTHORIZED".colorize(:red)
+          puts 'UNAUTHORIZED'.colorize(:red)
           puts "#{INDENT}You are not set as an editor on the #{@slug} dataset or you mistyped your token."
           raise DeployError
         end
 
         # failure ''
-        # puts "PASS".colorize(:green)
+        # puts 'PASS'.colorize(:green)
       end
 
       def graph_generation
         # failure ''
         require 'spout/commands/graphs'
-        argv = []
-        argv << "--clean" if @clean
-        Spout::Commands::Graphs.new(argv, @version, true, @url, @slug, @token, @webserver_name, @subjects)
-        puts "\r     Graph Generation: " + "DONE          ".colorize(:green)
+        Spout::Commands::Graphs.new(@argv, @version, true, @url, @slug, @token, @webserver_name, @subjects)
+        puts "\r     Graph Generation: " + 'DONE          '.colorize(:green)
       end
 
       def image_generation
         # failure ''
         require 'spout/commands/images'
-        argv = []
-        argv << "--clean" if @clean
-        Spout::Commands::Images.new([], [], [], @version, argv, true, @url, @slug, @token, @webserver_name, @subjects)
-        puts "\r     Image Generation: " + "DONE          ".colorize(:green)
+        Spout::Commands::Images.new(@argv, @version, true, @url, @slug, @token, @webserver_name, @subjects)
+        puts "\r     Image Generation: " + 'DONE          '.colorize(:green)
       end
 
       def dataset_uploads
@@ -248,7 +253,7 @@ module Spout
       end
 
       def data_dictionary_uploads
-        print   "   Dictionary Uploads:"
+        print   '   Dictionary Uploads:'
 
         require 'spout/commands/exporter'
         Spout::Commands::Exporter.new(@version, ['--quiet'])

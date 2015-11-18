@@ -4,6 +4,8 @@ require 'spout/models/form'
 
 module Spout
   module Models
+    # Creates a structure that contains a dictionaries variables, domains, and
+    # forms
     class Dictionary
       attr_accessor :variables, :domains, :forms
       attr_accessor :app_path
@@ -44,7 +46,7 @@ module Spout
       private
 
       def json_files(type)
-        Dir.glob(File.join(@app_path, type, "**", "*.json"))
+        Dir.glob(File.join(@app_path, type, '**', '*.json'))
       end
 
       def load_type!(method)

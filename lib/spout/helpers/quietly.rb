@@ -1,12 +1,11 @@
-
 module Spout
   module Helpers
+    # Silences output for tests
     module Quietly
-
       # From Rails: http://apidock.com/rails/v3.2.13/Kernel/silence_stream
       def silence_stream(stream)
         old_stream = stream.dup
-        stream.reopen(RbConfig::CONFIG['host_os'] =~ /mswin|mingw/ ? 'NUL:' : '/dev/null')
+        stream.reopen(/mswin|mingw/ =~ RbConfig::CONFIG['host_os'] ? 'NUL:' : '/dev/null')
         stream.sync = true
         yield
       ensure
@@ -21,7 +20,6 @@ module Spout
           end
         end
       end
-
     end
   end
 end

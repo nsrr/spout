@@ -17,16 +17,13 @@ require 'spout/version'
 module Spout
   module Commands
     class Graphs
-      def initialize(variables, standard_version, deploy_mode = false, url = '', slug = '', token = '', webserver_name = '', subjects = nil)
+      def initialize(argv, standard_version, deploy_mode = false, url = '', slug = '', token = '', webserver_name = '', subjects = nil)
         @deploy_mode = deploy_mode
         @url = url
         @standard_version = standard_version
         @slug = slug
         @token = token
         @webserver_name = webserver_name
-
-        argv = variables
-
         @clean = !(argv.delete('--no-resume').nil? && argv.delete('--clean').nil?)
 
         @config = Spout::Helpers::ConfigReader.new
@@ -48,16 +45,18 @@ module Spout
           return self
         end
 
-        argv_string = variables.join(',')
-        @number_of_rows = nil
+        # puts argv.inspect.colorize(:red)
 
-        match_data = argv_string.match(/-rows=(\d*)/)
-        if match_data
-          @number_of_rows = match_data[1].to_i
-          argv_string.gsub!(match_data[0], '')
-        end
+        rows_arg = argv.find { |arg| /^--rows=(\d*)/ =~ arg }
+        argv.delete(rows_arg)
+        @number_of_rows = rows_arg.gsub(/--rows=/, '').to_i if rows_arg
 
-        @valid_ids = argv_string.split(',').compact.reject { |s| s == '' }
+        # puts "rows_arg: #{rows_arg}".colorize(:red)
+        # puts "@number_of_rows: #{@number_of_rows}".colorize(:red)
+
+        @valid_ids = argv.collect { |s| s.to_s.downcase }.compact.reject { |s| s == '' }
+
+        # puts "@valid_ids: #{@valid_ids}".colorize(:red)
 
         @chart_variables = @config.charts.unshift({ 'chart' => @config.visit, 'title' => 'Histogram' })
 
@@ -138,8 +137,9 @@ module Spout
             chart_title = chart_type_hash['title'].downcase.gsub(' ', '-')
             chart_variable = Spout::Models::Variable.find_by_id(chart_type)
 
+            filtered_subjects = @subjects.reject { |s| s.send(chart_type).nil? || s.send(variable.id).nil? }
+
             if chart_type == @config.visit
-              filtered_subjects = @subjects.select { |s| !s.send(chart_type).nil? }
               if filtered_subjects.count > 0
                 graph = Spout::Models::Graphables.for(variable, chart_variable, nil, filtered_subjects)
                 stats[:charts][chart_title] = graph.to_hash
@@ -147,13 +147,12 @@ module Spout
                 stats[:tables][chart_title] = table.to_hash
               end
             else
-              filtered_subjects = @subjects.select { |s| !s.send(chart_type).nil? }
-              if filtered_subjects.collect(&variable.id.to_sym).compact.count > 0
+              if filtered_subjects.collect(&variable.id.to_sym).compact_empty.count > 0
                 graph = Spout::Models::Graphables.for(variable, chart_variable, @stratification_variable, filtered_subjects)
                 stats[:charts][chart_title] = graph.to_hash
                 stats[:tables][chart_title] = @stratification_variable.domain.options.collect do |option|
                   visit_subjects = filtered_subjects.select { |s| s._visit == option.value }
-                  unknown_subjects = visit_subjects.select { |s| s.send(variable.id).nil? }
+                  unknown_subjects = visit_subjects.select { |s| s.send(variable.id).is_a?(Spout::Models::Empty) }
                   table = Spout::Models::Tables.for(variable, chart_variable, visit_subjects, option.display_name)
                   (visit_subjects.count > 0 && visit_subjects.count != unknown_subjects.count) ? table.to_hash : nil
                 end.compact

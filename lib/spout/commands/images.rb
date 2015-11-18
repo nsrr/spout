@@ -14,8 +14,7 @@ require 'spout/helpers/send_file'
 module Spout
   module Commands
     class Images
-
-      def initialize(types, variable_ids, sizes, standard_version, argv, deploy_mode = false, url = '', slug = '', token = '', webserver_name = '', subjects = nil)
+      def initialize(argv, standard_version, deploy_mode = false, url = '', slug = '', token = '', webserver_name = '', subjects = nil)
         @deploy_mode = deploy_mode
         @url = url
         @standard_version = standard_version
@@ -23,18 +22,24 @@ module Spout
         @token = token
         @webserver_name = webserver_name
 
-
         @dictionary_root = Dir.pwd
         @variable_files = Dir.glob(File.join(@dictionary_root, 'variables', '**', '*.json'))
         @standard_version = standard_version
         @pretend = (argv.delete('--pretend') != nil)
         @clean = (argv.delete('--no-resume') != nil or argv.delete('--clean'))
-        @sizes = sizes
-        @types = types
 
-        @valid_ids = variable_ids
+        @types = flag_values(argv, 'type')
+        @sizes = flag_values(argv, 'size')
+        @valid_ids  = non_flag_values(argv)
 
-        @number_of_rows = nil
+        # puts "@valid_ids: #{@valid_ids}".colorize(:red)
+        # puts argv.inspect.colorize(:red)
+
+        rows_arg = argv.find { |arg| /^--rows=(\d*)/ =~ arg }
+        argv.delete(rows_arg)
+        @number_of_rows = rows_arg.gsub(/--rows=/, '').to_i if rows_arg
+        # puts "rows_arg: #{rows_arg}".colorize(:red)
+        # puts "@number_of_rows: #{@number_of_rows}".colorize(:red)
 
         @config = Spout::Helpers::ConfigReader.new
 
@@ -56,6 +61,14 @@ module Spout
         puts "Took #{Time.now - t} seconds." if @subjects.size > 0 and not @deploy_mode
       end
 
+      def flag_values(flags, param)
+        flags.select { |f| /^--#{param}-/ =~ f }.collect { |f| f[(param.size + 3)..-1] }
+      end
+
+      def non_flag_values(flags)
+        flags.reject { |f| /^--/ =~ f }
+      end
+
       def load_current_progress
         @progress_file = File.join(@images_folder, ".progress.json")
         @progress = JSON.parse(File.read(@progress_file)) rescue @progress = {}
@@ -70,15 +83,12 @@ module Spout
       end
 
       def compute_images
-        begin
-          iterate_through_variables
-        ensure
-          save_current_progress
-        end
+        iterate_through_variables
+      ensure
+        save_current_progress
       end
 
       def iterate_through_variables
-
         options_folder = "images/#{@standard_version}"
         FileUtils.mkpath( options_folder )
         tmp_options_file = File.join( options_folder, 'options.json' )
@@ -150,7 +160,6 @@ module Spout
             @progress[variable.id].delete('uploaded_files')
             @progress[variable.id].delete('upload_failed')
           end
-
         end
         File.delete(tmp_options_file) if File.exist?(tmp_options_file)
       end
@@ -193,7 +202,6 @@ module Spout
       def send_to_server(file)
         Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_graph.json", file, @standard_version, @token, 'images')
       end
-
     end
   end
 end

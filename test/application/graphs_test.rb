@@ -49,7 +49,7 @@ module ApplicationTests
       create_visit_variable_and_domain
 
       output, error = util_capture do
-        Dir.chdir(app_path) { Spout.launch ['graphs', '-rows=2'] }
+        Dir.chdir(app_path) { Spout.launch ['graphs', '--rows=2'] }
       end
 
       assert File.directory?(File.join(app_path, 'graphs', '1.0.0'))

@@ -5,7 +5,6 @@ module Spout
   module Models
     module Graphables
       class Default
-
         attr_reader :variable, :chart_variable, :stratification_variable, :subjects
 
         def initialize(variable, chart_variable, stratification_variable, subjects)
@@ -14,8 +13,7 @@ module Spout
           @stratification_variable = stratification_variable
           @subjects = subjects
 
-          @values = subjects.collect(&@variable.id.to_sym) rescue @values = []
-          @values_unique = @values.uniq
+          @values_unique = subjects.collect(&@variable.id.to_sym).uniq.reject { |a| a.is_a?(Spout::Models::Empty) } rescue @values_unique = []
 
           @buckets = continuous_buckets
         end
@@ -29,11 +27,11 @@ module Spout
         end
 
         def valid?
-          if @variable == nil or @chart_variable == nil or @values == []
+          if @variable.nil? || @chart_variable.nil? || @values_unique == []
             false
-          elsif @variable.type == 'choices' and @variable.domain.options == []
+          elsif @variable.type == 'choices' && @variable.domain.options == []
             false
-          elsif @chart_variable.type == 'choices' and @chart_variable.domain.options == []
+          elsif @chart_variable.type == 'choices' && @chart_variable.domain.options == []
             false
           else
             true
@@ -45,7 +43,7 @@ module Spout
         end
 
         def subtitle
-          "By Visit"
+          'By Visit'
         end
 
         def categories
@@ -71,11 +69,19 @@ module Spout
         private
 
         def continuous_buckets
-          values_numeric = @values.select{|v| v.is_a? Numeric}
+          values_numeric = @values_unique.select { |v| v.is_a? Numeric }
+
           return [] if values_numeric.count == 0
           minimum_bucket = values_numeric.min
           maximum_bucket = values_numeric.max
           max_buckets = 12
+          if all_integer?(values_numeric) && (maximum_bucket - minimum_bucket < max_buckets)
+            max_buckets = maximum_bucket - minimum_bucket
+            return discrete_buckets
+          end
+
+          puts "minimum_bucket #{minimum_bucket}".colorize(:red)
+          puts "maximum_bucket #{maximum_bucket}".colorize(:red)
           bucket_size = ((maximum_bucket - minimum_bucket) / max_buckets.to_f)
           precision = (bucket_size == 0 ? 0 : [-Math.log10(bucket_size).floor, 0].max)
 
@@ -88,8 +94,30 @@ module Spout
           buckets
         end
 
+        def discrete_buckets
+          values_numeric = @values_unique.select { |v| v.is_a? Numeric }
+          minimum_bucket = values_numeric.min
+          maximum_bucket = values_numeric.max
+          max_buckets = maximum_bucket - minimum_bucket + 1
+          bucket_size = 1
+          precision = 0
+
+          buckets = []
+          (0..(max_buckets-1)).to_a.each do |index|
+            start = (minimum_bucket + index * bucket_size)
+            stop = start
+            buckets << Spout::Models::Bucket.new(start.round(precision), stop.round(precision), discrete: true)
+          end
+          buckets
+        end
+
+        def all_integer?(values_numeric)
+          count = values_numeric.count { |v| Integer(format('%.0f', v)) == v }
+          count == values_numeric.size
+        end
+
         def get_bucket(value)
-          return nil if @buckets.size == 0 or not value.is_a?(Numeric)
+          return nil if @buckets.size == 0 || !value.is_a?(Numeric)
           @buckets.each do |b|
             return b.display_name if b.in_bucket?(value)
           end
@@ -105,10 +133,9 @@ module Spout
         # b) or are marked as missing codes but represented in the dataset
         def filtered_domain_options(variable)
           variable.domain.options.select do |o|
-            o.missing != true or (o.missing == true and @values_unique.include?(o.value))
+            o.missing != true || (o.missing == true && @values_unique.include?(o.value))
           end
         end
-
       end
     end
   end

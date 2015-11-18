@@ -38,17 +38,13 @@ module Spout
   def self.generate_charts_and_tables(argv)
     argv = argv.last(argv.size - 1)
     require 'spout/commands/graphs'
-    variables = argv.collect { |s| s.to_s.downcase }
-    Spout::Commands::Graphs.new(variables, standard_version)
+    Spout::Commands::Graphs.new(argv, standard_version)
   end
 
   def self.generate_images(argv)
     argv = argv.last(argv.size - 1)
     require 'spout/commands/images'
-    types         = flag_values(argv, 'type')
-    sizes         = flag_values(argv, 'size')
-    variable_ids  = non_flag_values(argv)
-    Spout::Commands::Images.new(types, variable_ids, sizes, standard_version, argv)
+    Spout::Commands::Images.new(argv, standard_version)
   end
 
   def self.help(_argv)
@@ -113,15 +109,5 @@ EOT
     version == '' ? '1.0.0' : version
   rescue
     '1.0.0'
-  end
-
-  private
-
-  def self.flag_values(flags, param)
-    flags.select { |f| f =~ /^--#{param}-/ }.collect { |f| f[(param.size + 3)..-1] }
-  end
-
-  def self.non_flag_values(flags)
-    flags.reject { |f| f =~ /^--/ }
   end
 end
