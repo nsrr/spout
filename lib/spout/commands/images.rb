@@ -94,8 +94,8 @@ module Spout
 
       def iterate_through_variables
         options_folder = "images/#{@standard_version}"
-        FileUtils.mkpath( options_folder )
-        tmp_options_file = File.join( options_folder, 'options.json' )
+        FileUtils.mkpath(options_folder)
+        tmp_options_file = File.join(options_folder, 'options.json')
 
         chart_variable = Spout::Models::Variable.find_by_id(@config.visit)
         variable_files_count = @variable_files.count
@@ -104,9 +104,8 @@ module Spout
           variable = Spout::Models::Variable.new(variable_file, @dictionary_root)
 
           next unless variable.errors.size == 0
-
-          next unless @valid_ids.include?(variable.id) or @valid_ids.size == 0
-          next unless @types.include?(variable.type) or @types.size == 0
+          next unless @valid_ids.include?(variable.id) || @valid_ids.size == 0
+          next unless @types.include?(variable.type) || @types.size == 0
           next unless %w(numeric integer choices).include?(variable.type)
           next unless Spout::Models::Subject.method_defined?(variable.id)
 

@@ -10,9 +10,7 @@ module Spout
         end
 
         def headers
-          [
-            [''] + Spout::Helpers::ArrayStatistics.calculations.collect { |calculation_label, _calculation_method| calculation_label } + ['Total']
-          ]
+          [[''] + Spout::Helpers::ArrayStatistics.calculations.collect(&:first) + ['Total']]
         end
 
         def footers

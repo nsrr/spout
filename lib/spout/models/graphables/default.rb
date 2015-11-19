@@ -12,18 +12,12 @@ module Spout
           @chart_variable = chart_variable
           @stratification_variable = stratification_variable
           @subjects = subjects
-
-          @values_unique = subjects.collect(&@variable.id.to_sym).uniq.reject { |a| a.is_a?(Spout::Models::Empty) } rescue @values_unique = []
-
+          @values_unique = subjects.collect(&@variable.id.to_sym).reject { |a| a.is_a?(Spout::Models::Empty) }.uniq
           @buckets = continuous_buckets
         end
 
         def to_hash
-          if valid?
-            { title: title, subtitle: subtitle, categories: categories, units: units, series: series, stacking: stacking, x_axis_title: x_axis_title }
-          else
-            nil
-          end
+          { title: title, subtitle: subtitle, categories: categories, units: units, series: series, stacking: stacking, x_axis_title: x_axis_title } if valid?
         end
 
         def valid?

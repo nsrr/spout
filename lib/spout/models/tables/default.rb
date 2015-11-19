@@ -11,22 +11,12 @@ module Spout
           @variable = variable
           @chart_variable = chart_variable
           @subtitle = subtitle
-
-          @filtered_subjects = subjects.reject { |s| s.send(@chart_variable.id).nil? } rescue @filtered_subjects = []
-          @filtered_both_variables_subjects = subjects.reject { |s| s.send(@variable.id).nil? || s.send(@chart_variable.id).nil? }.sort_by(&@chart_variable.id.to_sym) rescue @filtered_both_variables_subjects = []
-
-          @values_unique = @filtered_subjects.collect(&@variable.id.to_sym).uniq rescue @values_unique = []
-
-          @values_both_variables = @filtered_both_variables_subjects.collect(&@variable.id.to_sym).uniq rescue @values_both_variables = []
-          @values_both_variables_unique = @values_both_variables.uniq
+          @filtered_subjects = subjects.reject { |s| s.send(@chart_variable.id).is_a?(Spout::Models::Empty) }.sort_by(&@chart_variable.id.to_sym)
+          @values_unique = @filtered_subjects.collect(&@variable.id.to_sym).reject { |a| a.is_a?(Spout::Models::Empty) }.uniq
         end
 
         def to_hash
-          if valid?
-            { title: title, subtitle: @subtitle, headers: headers, footers: footers, rows: rows }
-          else
-            nil
-          end
+          { title: title, subtitle: @subtitle, headers: headers, footers: footers, rows: rows } if valid?
         end
 
         # TODO: Same as graphables/default.rb REFACTOR
@@ -66,12 +56,6 @@ module Spout
         def filtered_domain_options(variable)
           variable.domain.options.select do |o|
             o.missing != true || (o.missing == true && @values_unique.include?(o.value))
-          end
-        end
-
-        def filtered_both_variables_domain_options(variable)
-          variable.domain.options.select do |o|
-            o.missing != true || (o.missing == true && @values_both_variables_unique.include?(o.value))
           end
         end
       end
