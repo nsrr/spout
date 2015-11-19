@@ -41,7 +41,10 @@ module Spout
       # 12412423.42252525 ->  '12,412,423.4'
       # Input (Numeric)   -> Output (String)
       def self.format_decimal(number, format)
-        number = number_with_delimiter(number.round(1))
+        precision = 1
+        precision = -Math.log10(number.abs).floor if number.abs < 1.0 && number != 0
+
+        number = number_with_delimiter(number.round(precision))
         number = format % number if format
         number
       end

@@ -9,6 +9,7 @@
   - Tables no longer include unknown values for variables that don't exist across other CSVs with the same subject and visit
   - Tables still track unknown values if the CSV contains a column for the variable, but the cell for subject is blank
   - Histograms of variables that only contain a small range (less than 12) of integers now use discrete buckets of size 1 instead of creating fractional buckets
+  - Numbers less than one now respect the precision of the number when computing means and related statistics
 - **Image Command**
   - The image command now correctly filters specified variables
     - ex: `spout p var1` would only generate an image for `var1` variable
