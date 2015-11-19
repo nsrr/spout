@@ -15,9 +15,9 @@ module Spout
         'choices_vs_numeric' => Spout::Models::Tables::ChoicesVsNumeric
       }
 
-      def self.for(variable, chart_variable, subjects, subtitle)
+      def self.for(variable, chart_variable, subjects, subtitle, totals: true)
         table_type = get_table_type(variable, chart_variable)
-        (GRAPHABLE_CLASSES[table_type] || DEFAULT_CLASS).new(variable, chart_variable, subjects, subtitle)
+        (GRAPHABLE_CLASSES[table_type] || DEFAULT_CLASS).new(variable, chart_variable, subjects, subtitle, totals)
       end
 
       def self.get_table_type(variable, chart_variable)

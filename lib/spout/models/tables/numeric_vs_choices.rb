@@ -14,6 +14,7 @@ module Spout
         end
 
         def footers
+          return [] unless @totals
           total_values = Spout::Helpers::ArrayStatistics.calculations.collect do |_calculation_label, calculation_method, calculation_type, calculation_format|
             total_count = @filtered_subjects.collect(&@variable.id.to_sym).send(calculation_method)
             { text: Spout::Helpers::TableFormatting.format_number(total_count, calculation_type, calculation_format), style: 'font-weight:bold' }

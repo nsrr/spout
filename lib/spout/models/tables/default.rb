@@ -5,12 +5,13 @@ module Spout
   module Models
     module Tables
       class Default
-        attr_reader :variable, :chart_variable, :subjects, :subtitle
+        attr_reader :variable, :chart_variable, :subjects, :subtitle, :totals
 
-        def initialize(variable, chart_variable, subjects, subtitle)
+        def initialize(variable, chart_variable, subjects, subtitle, totals)
           @variable = variable
           @chart_variable = chart_variable
           @subtitle = subtitle
+          @totals = totals
           begin
             @filtered_subjects = subjects.reject { |s| s.send(@chart_variable.id).is_a?(Spout::Models::Empty) }.sort_by(&@chart_variable.id.to_sym)
           rescue

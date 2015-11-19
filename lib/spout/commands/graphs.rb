@@ -24,9 +24,7 @@ module Spout
         @slug = slug
         @token = token
         @webserver_name = webserver_name
-        # puts "ARGV: #{argv.inspect}".colorize(:red)
         @clean = !(argv.delete('--no-resume').nil? && argv.delete('--clean').nil?)
-        # puts "CLEAN?: #{@clean}".colorize(:red)
 
         @config = Spout::Helpers::ConfigReader.new
 
@@ -47,20 +45,13 @@ module Spout
           return self
         end
 
-        # puts argv.inspect.colorize(:red)
-
         rows_arg = argv.find { |arg| /^--rows=(\d*)/ =~ arg }
         argv.delete(rows_arg)
         @number_of_rows = rows_arg.gsub(/--rows=/, '').to_i if rows_arg
 
-        # puts "rows_arg: #{rows_arg}".colorize(:red)
-        # puts "@number_of_rows: #{@number_of_rows}".colorize(:red)
-
         @valid_ids = argv.collect { |s| s.to_s.downcase }.compact.reject { |s| s == '' }
 
-        # puts "@valid_ids: #{@valid_ids}".colorize(:red)
-
-        @chart_variables = @config.charts.unshift({ 'chart' => @config.visit, 'title' => 'Histogram' })
+        @chart_variables = @config.charts.unshift('chart' => @config.visit, 'title' => 'Histogram')
 
         @dictionary_root = Dir.pwd
         @variable_files = Dir.glob(File.join(@dictionary_root, 'variables', '**', '*.json'))
@@ -145,7 +136,7 @@ module Spout
             if chart_type == @config.visit
               graph = Spout::Models::Graphables.for(variable, chart_variable, nil, filtered_subjects)
               stats[:charts][chart_title] = graph.to_hash
-              table = Spout::Models::Tables.for(variable, chart_variable, filtered_subjects, nil)
+              table = Spout::Models::Tables.for(variable, chart_variable, filtered_subjects, nil, totals: false)
               stats[:tables][chart_title] = table.to_hash
             else
               graph = Spout::Models::Graphables.for(variable, chart_variable, @stratification_variable, filtered_subjects)
