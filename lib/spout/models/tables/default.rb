@@ -12,7 +12,7 @@ module Spout
           @chart_variable = chart_variable
           @subtitle = subtitle
           @filtered_subjects = subjects.reject { |s| s.send(@chart_variable.id).is_a?(Spout::Models::Empty) }.sort_by(&@chart_variable.id.to_sym)
-          @values_unique = @filtered_subjects.collect(&@variable.id.to_sym).reject { |a| a.is_a?(Spout::Models::Empty) }.uniq
+          @values_unique = @filtered_subjects.collect(&@variable.id.to_sym).uniq
         end
 
         def to_hash

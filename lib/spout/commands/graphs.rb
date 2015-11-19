@@ -141,24 +141,19 @@ module Spout
 
             filtered_subjects = @subjects.reject { |s| s.send(chart_type).nil? || s.send(variable.id).nil? }
 
+            next if filtered_subjects.collect(&variable.id.to_sym).compact_empty.count == 0
             if chart_type == @config.visit
-              if filtered_subjects.count > 0
-                graph = Spout::Models::Graphables.for(variable, chart_variable, nil, filtered_subjects)
-                stats[:charts][chart_title] = graph.to_hash
-                table = Spout::Models::Tables.for(variable, chart_variable, filtered_subjects, nil)
-                stats[:tables][chart_title] = table.to_hash
-              end
+              graph = Spout::Models::Graphables.for(variable, chart_variable, nil, filtered_subjects)
+              stats[:charts][chart_title] = graph.to_hash
+              table = Spout::Models::Tables.for(variable, chart_variable, filtered_subjects, nil)
+              stats[:tables][chart_title] = table.to_hash
             else
-              if filtered_subjects.collect(&variable.id.to_sym).compact_empty.count > 0
-                graph = Spout::Models::Graphables.for(variable, chart_variable, @stratification_variable, filtered_subjects)
-                stats[:charts][chart_title] = graph.to_hash
-                stats[:tables][chart_title] = @stratification_variable.domain.options.collect do |option|
-                  visit_subjects = filtered_subjects.select { |s| s._visit == option.value }
-                  unknown_subjects = visit_subjects.select { |s| s.send(variable.id).is_a?(Spout::Models::Empty) }
-                  table = Spout::Models::Tables.for(variable, chart_variable, visit_subjects, option.display_name)
-                  (visit_subjects.count > 0 && visit_subjects.count != unknown_subjects.count) ? table.to_hash : nil
-                end.compact
-              end
+              graph = Spout::Models::Graphables.for(variable, chart_variable, @stratification_variable, filtered_subjects)
+              stats[:charts][chart_title] = graph.to_hash
+              stats[:tables][chart_title] = @stratification_variable.domain.options.collect do |option|
+                visit_subjects = filtered_subjects.select { |s| s._visit == option.value }
+                Spout::Models::Tables.for(variable, chart_variable, visit_subjects, option.display_name).to_hash
+              end.compact
             end
           end
 

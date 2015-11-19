@@ -4,11 +4,9 @@ require 'spout/models/tables/choices_vs_choices'
 require 'spout/models/tables/numeric_vs_numeric'
 require 'spout/models/tables/choices_vs_numeric'
 
-
 module Spout
   module Models
     module Tables
-
       DEFAULT_CLASS = Spout::Models::Tables::Default
       GRAPHABLE_CLASSES = {
         'numeric_vs_choices' => Spout::Models::Tables::NumericVsChoices,
@@ -29,13 +27,13 @@ module Spout
       # Identical to graphables, TODO: Refactor
       def self.variable_to_table_type(variable)
         variable_type = (variable ? variable.type : nil)
-        case variable_type when 'numeric', 'integer'
+        case variable_type
+        when 'numeric', 'integer'
           'numeric'
         else
           variable_type
         end
       end
-
     end
   end
 end
