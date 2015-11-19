@@ -11,8 +11,16 @@ module Spout
           @variable = variable
           @chart_variable = chart_variable
           @subtitle = subtitle
-          @filtered_subjects = subjects.reject { |s| s.send(@chart_variable.id).is_a?(Spout::Models::Empty) }.sort_by(&@chart_variable.id.to_sym)
-          @values_unique = @filtered_subjects.collect(&@variable.id.to_sym).uniq
+          begin
+            @filtered_subjects = subjects.reject { |s| s.send(@chart_variable.id).is_a?(Spout::Models::Empty) }.sort_by(&@chart_variable.id.to_sym)
+          rescue
+            @filtered_subjects = []
+          end
+          begin
+            @values_unique = @filtered_subjects.collect(&@variable.id.to_sym).uniq
+          rescue
+            @values_unique = []
+          end
         end
 
         def to_hash

@@ -12,7 +12,11 @@ module Spout
           @chart_variable = chart_variable
           @stratification_variable = stratification_variable
           @subjects = subjects
-          @values_unique = subjects.collect(&@variable.id.to_sym).reject { |a| a.is_a?(Spout::Models::Empty) }.uniq
+          begin
+            @values_unique = subjects.collect(&@variable.id.to_sym).reject { |a| a.is_a?(Spout::Models::Empty) }.uniq
+          rescue
+            @values_unique = []
+          end
           @buckets = continuous_buckets
         end
 

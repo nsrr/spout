@@ -7,7 +7,6 @@ require 'spout/helpers/subject_loader'
 
 module ApplicationTests
   class GraphablesTest < SandboxTest
-
     include TestHelpers::Capture
 
     def setup
@@ -329,17 +328,17 @@ visit,age_at_visit,gender,bmi
 
           assert_equal 'Body Mass Index by Age at Visit', graph.title
           assert_equal 'By Visit', graph.subtitle
-          assert_equal ["Quartile One", "Quartile Two", "Quartile Three", "Quartile Four"], graph.categories
+          assert_equal ['Quartile One', 'Quartile Two', 'Quartile Three', 'Quartile Four'], graph.categories
           assert_equal 'kilograms per square meter', graph.units
-          assert_equal [{ name: "Visit One", data: [{ y: 19.0, stddev: "5.3", median: "17.0", min: "15.0", max: "25.0", n: 3 },
-                                                    { y: 23.0, stddev: "3.6", median: "22.0", min: "20.0", max: "27.0", n: 3 },
-                                                    { y: 23.5, stddev: "2.1", median: "23.5", min: "22.0", max: "25.0", n: 2 },
-                                                    { y: 24.5, stddev: "7.8", median: "24.5", min: "19.0", max: "30.0", n: 2 }
+          assert_equal [{ name: "Visit One", data: [{ y: 19.0, stddev: '5.3', median: '17.0', min: '15.0', max: '25.0', n: 3 },
+                                                    { y: 23.0, stddev: '3.6', median: '22.0', min: '20.0', max: '27.0', n: 3 },
+                                                    { y: 23.5, stddev: '2.1', median: '23.5', min: '22.0', max: '25.0', n: 2 },
+                                                    { y: 24.5, stddev: '7.8', median: '24.5', min: '19.0', max: '30.0', n: 2 }
                                                    ]},
-                        { name: "Visit Two", data: [{ y: 17.5, stddev: "3.5", median: "17.5", min: "15.0", max: "20.0", n: 2 },
-                                                    { y: 19.5, stddev: "3.5", median: "19.5", min: "17.0", max: "22.0", n: 2 },
-                                                    { y: 17.0, stddev: "2.8", median: "17.0", min: "15.0", max: "19.0", n: 2 },
-                                                    { y: 19.0, stddev: "1.4", median: "19.0", min: "18.0", max: "20.0", n: 2 }] }], graph.series
+                        { name: "Visit Two", data: [{ y: 17.5, stddev: '3.5', median: '17.5', min: '15.0', max: '20.0', n: 2 },
+                                                    { y: 19.5, stddev: '3.5', median: '19.5', min: '17.0', max: '22.0', n: 2 },
+                                                    { y: 17.0, stddev: '2.8', median: '17.0', min: '15.0', max: '19.0', n: 2 },
+                                                    { y: 19.0, stddev: '1.4', median: '19.0', min: '18.0', max: '20.0', n: 2 }] }], graph.series
           assert_equal nil, graph.stacking
           assert_equal nil, graph.x_axis_title
           assert_equal Hash, graph.to_hash.class
@@ -382,7 +381,5 @@ visit,age_at_visit,gender,bmi
         end
       end
     end
-
-
   end
 end
