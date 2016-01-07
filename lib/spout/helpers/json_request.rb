@@ -41,5 +41,3 @@ module Spout
     end
   end
 end
-
-

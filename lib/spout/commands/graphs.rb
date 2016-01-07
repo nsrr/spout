@@ -12,6 +12,7 @@ require 'spout/models/graphables'
 require 'spout/models/tables'
 require 'spout/helpers/config_reader'
 require 'spout/helpers/send_file'
+require 'spout/helpers/json_request_generic'
 require 'spout/version'
 
 module Spout
@@ -154,13 +155,31 @@ module Spout
           @progress[variable.id]['generated'] = true
 
           if @deploy_mode && !@progress[variable.id]['uploaded'].include?(@webserver_name)
-            response = send_to_server(chart_json_file)
-            if response.is_a?(Hash) && response['upload'] == 'success'
-              @progress[variable.id]['uploaded'] << @webserver_name
-            else
-              puts "\nUPLOAD FAILED: ".colorize(:red) + File.basename(chart_json_file)
-            end
+
+            # response = send_to_server(chart_json_file)
+            # if response.is_a?(Hash) && response['upload'] == 'success'
+            #   @progress[variable.id]['uploaded'] << @webserver_name
+            # else
+            #   puts "\nUPLOAD FAILED: ".colorize(:red) + File.basename(chart_json_file)
+            # end
+
+            send_variable_params_to_server(variable)
+
           end
+        end
+      end
+
+      def send_variable_params_to_server(variable)
+        puts "send_variable_params_to_server".colorize(:red)
+        params = { dataset: @slug, version: @standard_version, variable: variable.deploy_params, auth_token: @token }
+        # chart_json_file
+        puts "params: #{params}".colorize(:red)
+        (response, status) = Spout::Helpers::JsonRequestGeneric.post("#{@url}/api/v1/variables.json", params)
+        puts "STATUS: #{status.inspect}"
+        if response.is_a?(Hash) && status.is_a?(Net::HTTPSuccess)
+          @progress[variable.id]['uploaded'] << @webserver_name
+        else
+          puts "\nUPLOAD FAILED: ".colorize(:red) + variable.id
         end
       end
     end

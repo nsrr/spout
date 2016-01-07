@@ -55,6 +55,17 @@ module Spout
         File.join(@folder, "#{@id}.json")
       end
 
+      def deploy_params
+        { folder: folder.to_s.gsub(/\/$/, ''),
+          name: id, display_name: display_name,
+          description: description, variable_type: type,
+          units: units,
+          calculation: calculation,
+          commonly_used: commonly_used,
+          labels: labels
+        }
+      end
+
     end
   end
 end

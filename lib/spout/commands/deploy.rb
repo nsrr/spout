@@ -54,6 +54,7 @@ module Spout
 
         @skip_graphs = !(argv.delete('--skip-graphs').nil? && argv.delete('--no-graphs').nil?)
         @skip_images = !(argv.delete('--skip-images').nil? && argv.delete('--no-images').nil?)
+        @skip_csvs = !(argv.delete('--skip-csvs').nil? && argv.delete('--no-csvs').nil?)
         @clean = !(argv.delete('--no-resume').nil? && argv.delete('--clean').nil?)
         @skip_server_updates = !(argv.delete('--skip-server-updates').nil? && argv.delete('--no-server-updates').nil?)
 
@@ -87,8 +88,8 @@ module Spout
         load_subjects_from_csvs unless @skip_graphs && @skip_images
         graph_generation unless @skip_graphs
         image_generation unless @skip_images
-        dataset_uploads
-        data_dictionary_uploads
+        dataset_uploads unless @skip_csvs
+        data_dictionary_uploads unless @skip_csvs
         trigger_server_updates unless @skip_server_updates
       rescue DeployError
         # Nothing on Deploy Error
@@ -154,7 +155,7 @@ module Spout
         if stdout.to_s.strip == ''
           puts 'PASS'.colorize(:green) + ' ' + 'nothing to commit, working directory clean'.colorize(:white)
         else
-          message = "#{INDENT}working directory contains uncomitted changes".colorize(:red)
+          message = "#{INDENT}working directory contains uncomitted changes\n#{INDENT}use `".colorize(:red) + '--skip-checks'.colorize(:white) + '` to ignore this step'.colorize(:red)
           failure message
         end
 
