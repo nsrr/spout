@@ -14,7 +14,7 @@
   - The image command now correctly filters specified variables
     - ex: `spout p var1` would only generate an image for `var1` variable
 - **Gem Changes**
-  - Use of Ruby 2.2.3 is now recommended
+  - Updated to Ruby 2.3.0
 
 ### Refactoring
 - Started refactoring code base to better adhere to Rubocop style recommendations
