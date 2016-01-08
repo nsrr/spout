@@ -1,6 +1,7 @@
 require 'openssl'
 require 'net/http'
 require 'json'
+require 'cgi'
 
 module Spout
   module Helpers
@@ -36,7 +37,7 @@ module Spout
 
       def get
         full_path = @url.path
-        query = ([@url.query] + @params).compact.join('&')
+        query = ([@url.query] + @params).flatten.compact.join('&')
         full_path += "?#{query}" if query.to_s != ''
         response = @http.start do |http|
           http.get(full_path)
@@ -48,7 +49,7 @@ module Spout
 
       def post
         response = @http.start do |http|
-          http.post(@url.path, @params.join('&'))
+          http.post(@url.path, @params.flatten.compact.join('&'))
         end
         [JSON.parse(response.body), response]
       rescue => e
@@ -57,7 +58,7 @@ module Spout
       end
 
       def patch
-        @params.merge({'_method' => 'patch'})
+        @params << '_method=patch'
         post
       end
 
@@ -78,7 +79,7 @@ module Spout
             key_value_to_string('', v, current_scope)
           end
         else
-          "#{current_scope}=#{value}"
+          "#{current_scope}=#{CGI.escape(value.to_s)}"
         end
       end
     end
