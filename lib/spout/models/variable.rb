@@ -13,6 +13,7 @@ module Spout
       attr_accessor :id, :folder, :display_name, :description, :type, :units, :labels, :commonly_used, :calculation
       attr_accessor :domain_name, :form_names
       attr_accessor :domain, :forms
+      attr_accessor :n, :mean, :stddev, :median, :min, :max, :unknown, :total
       attr_reader :errors
 
       def initialize(file_name, dictionary_root)
@@ -57,7 +58,10 @@ module Spout
         { name: id, display_name: display_name, variable_type: type,
           folder: folder.to_s.gsub(%r{/$}, ''), description: description,
           units: units, calculation: calculation, commonly_used: commonly_used,
-          labels: labels
+          labels: labels,
+          stats_n: n, stats_mean: mean, stats_stddev: stddev,
+          stats_median: median, stats_min: min, stats_max: max,
+          stats_unknown: unknown, stats_total: total
         }
       end
     end

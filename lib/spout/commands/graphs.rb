@@ -162,8 +162,18 @@ module Spout
             #   puts "\nUPLOAD FAILED: ".colorize(:red) + File.basename(chart_json_file)
             # end
 
+            values = @subjects.collect(&variable.id.to_sym).compact_empty
+            variable.n = values.n
+            variable.unknown = values.unknown
+            variable.total = values.count
+            if %w(numeric integer).include?(variable.type)
+              variable.mean = values.mean
+              variable.stddev = values.standard_deviation
+              variable.median = values.median
+              variable.min = values.min
+              variable.max = values.max
+            end
             send_variable_params_to_server(variable, stats)
-
           end
         end
       end
