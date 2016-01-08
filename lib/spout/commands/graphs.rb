@@ -170,7 +170,10 @@ module Spout
       end
 
       def send_variable_params_to_server(variable)
-        params = { dataset: @slug, version: @standard_version, variable: variable.deploy_params, auth_token: @token }
+        params = { auth_token: @token, version: @standard_version,
+                   dataset: @slug, variable: variable.deploy_params,
+                   domain: (variable.domain ? variable.domain.deploy_params : nil),
+                   forms: variable.forms.collect(&:deploy_params) }
         # chart_json_file
         (response, status) = Spout::Helpers::JsonRequestGeneric.post("#{@url}/api/v1/variables/create_or_update.json", params)
         if response.is_a?(Hash) && status.is_a?(Net::HTTPSuccess)
@@ -178,7 +181,7 @@ module Spout
           @progress[variable.id]['uploaded'] << @webserver_name
         else
           puts "\nUPLOAD FAILED: ".colorize(:red) + variable.id
-          puts "- Error: #{response[:error]}"
+          puts "- Error: #{response.inspect}"
         end
       end
     end

@@ -32,6 +32,7 @@ module Spout
           %w(display_name description type units commonly_used calculation).each do |method|
             instance_variable_set("@#{method}", json[method])
           end
+          @commonly_used = false if @commonly_used.nil?
           @errors << "'id': #{json['id'].inspect} does not match filename #{@id.inspect}" if @id != json['id']
           @domain_name  = json['domain'] # Spout::Models::Domain.new(json['domain'], dictionary_root)
           @labels       = (json['labels'] || [])

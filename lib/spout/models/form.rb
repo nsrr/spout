@@ -9,8 +9,7 @@ require 'spout/models/record'
 module Spout
   module Models
     class Form < Spout::Models::Record
-
-      attr_accessor :id, :display_name, :code_book
+      attr_accessor :id, :folder, :display_name, :code_book
       attr_accessor :errors
 
       def initialize(file_name, dictionary_root)
@@ -26,8 +25,8 @@ module Spout
           nil
         end
 
-        if json and json.is_a? Hash
-          %w( display_name code_book ).each do |method|
+        if json.is_a? Hash
+          %w(display_name code_book).each do |method|
             instance_variable_set("@#{method}", json[method])
           end
 
@@ -35,9 +34,12 @@ module Spout
         elsif json
           @errors << "Form must be a valid hash in the following format: {\n\"id\": \"FORM_ID\",\n  \"display_name\": \"FORM DISPLAY NAME\",\n  \"code_book\": \"FORMPDF.pdf\"\n}"
         end
-
       end
 
+      def deploy_params
+        { name: id, folder: folder.to_s.gsub(%r{/$}, ''),
+          display_name: display_name, code_book: code_book }
+      end
     end
   end
 end

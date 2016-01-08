@@ -28,7 +28,7 @@ module Spout
           nil
         end
 
-        if json && json.is_a?(Array)
+        if json.is_a? Array
           @id = file_name.to_s.gsub(/^(.*)\/|\.json$/, '').downcase
           @options = (json || []).collect do |option|
             Spout::Models::Option.new(option)
@@ -36,6 +36,11 @@ module Spout
         elsif json
           @errors << "Domain must be a valid array in the following format: [\n  {\n    \"value\": \"1\",\n    \"display_name\": \"First Choice\",\n    \"description\": \"First Description\"\n  },\n  {\n    \"value\": \"2\",\n    \"display_name\": \"Second Choice\",\n    \"description\": \"Second Description\"\n  }\n]"
         end
+      end
+
+      def deploy_params
+        { name: id, folder: folder.to_s.gsub(%r{/$}, ''),
+          options: options.collect(&:deploy_params) }
       end
     end
   end
