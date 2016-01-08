@@ -149,9 +149,9 @@ module Spout
             end
           end
 
-          # chart_json_file = File.join(@graphs_folder, "#{variable.id}.json")
-          # File.open(chart_json_file, 'w') { |file| file.write(JSON.pretty_generate(stats) + "\n") }
-          # @progress[variable.id]['generated'] = true
+          chart_json_file = File.join(@graphs_folder, "#{variable.id}.json")
+          File.open(chart_json_file, 'w') { |file| file.write(JSON.pretty_generate(stats) + "\n") }
+          @progress[variable.id]['generated'] = true
 
           if @deploy_mode && !@progress[variable.id]['uploaded'].include?(@webserver_name)
 
