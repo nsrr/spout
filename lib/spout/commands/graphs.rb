@@ -183,7 +183,7 @@ module Spout
                    dataset: @slug, variable: variable.deploy_params,
                    domain: (variable.domain ? variable.domain.deploy_params : nil),
                    forms: variable.forms.collect(&:deploy_params) }
-        params[:variable][:spout_stats] = stats
+        params[:variable][:spout_stats] = stats.to_json
         (response, status) = Spout::Helpers::JsonRequestGeneric.post("#{@url}/api/v1/variables/create_or_update.json", params)
         if response.is_a?(Hash) && status.is_a?(Net::HTTPSuccess)
           # puts "response: #{response}".colorize(:blue)
