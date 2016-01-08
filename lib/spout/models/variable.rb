@@ -17,25 +17,22 @@ module Spout
 
       def initialize(file_name, dictionary_root)
         @errors = []
-        @id     = file_name.to_s.gsub(/^(.*)\/|\.json$/, '').downcase
-        @folder = file_name.to_s.gsub(/^#{dictionary_root}\/variables\/|#{@id}\.json$/, '')
+        @id     = file_name.to_s.gsub(%r{^(.*)/|\.json$}, '').downcase
+        @folder = file_name.to_s.gsub(%r{^#{dictionary_root}/variables/|#{@id}\.json$}, '')
         @form_names = []
 
         json = begin
-          JSON.parse(File.read(file_name))
-        rescue => e
-          error = e.message
-          nil
-        end
+                 JSON.parse(File.read(file_name))
+               rescue => e
+                 error = e.message
+                 nil
+               end
 
-        if json and json.is_a? Hash
-
-          %w( display_name description type units commonly_used calculation ).each do |method|
+        if json.is_a? Hash
+          %w(display_name description type units commonly_used calculation).each do |method|
             instance_variable_set("@#{method}", json[method])
           end
-
           @errors << "'id': #{json['id'].inspect} does not match filename #{@id.inspect}" if @id != json['id']
-
           @domain_name  = json['domain'] # Spout::Models::Domain.new(json['domain'], dictionary_root)
           @labels       = (json['labels'] || [])
           @form_names   = (json['forms'] || []).collect do |form_name|
@@ -48,7 +45,7 @@ module Spout
         @errors = (@errors + [error]).compact
 
         @domain = Spout::Models::Domain.find_by_id(@domain_name)
-        @forms = @form_names.collect{|form_name| Spout::Models::Form.find_by_id(form_name)}.compact
+        @forms = @form_names.collect { |form_name| Spout::Models::Form.find_by_id(form_name) }.compact
       end
 
       def path
@@ -56,16 +53,12 @@ module Spout
       end
 
       def deploy_params
-        { folder: folder.to_s.gsub(/\/$/, ''),
-          name: id, display_name: display_name,
-          description: description, variable_type: type,
-          units: units,
-          calculation: calculation,
-          commonly_used: commonly_used,
+        { name: id, display_name: display_name, variable_type: type,
+          folder: folder.to_s.gsub(%r{/$}, ''), description: description,
+          units: units, calculation: calculation, commonly_used: commonly_used,
           labels: labels
         }
       end
-
     end
   end
 end

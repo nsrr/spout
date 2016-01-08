@@ -2,6 +2,7 @@ require 'openssl'
 require 'net/http'
 require 'json'
 
+# TODO: Deprecated, use JsonRequestGeneric instead
 module Spout
   module Helpers
     class JsonRequest

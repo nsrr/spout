@@ -6,6 +6,10 @@ module Spout
   module Helpers
     class JsonRequestGeneric
       class << self
+        def get(url, *args)
+          new(url, *args).get
+        end
+
         def post(url, *args)
           new(url, *args).post
         end
@@ -17,7 +21,7 @@ module Spout
 
       attr_reader :url
 
-      def initialize(url, args)
+      def initialize(url, args = {})
         @params = nested_hash_to_params(args)
         @url = URI.parse(url)
 
@@ -28,6 +32,18 @@ module Spout
         end
       rescue => e
         puts "Error sending JsonRequestGeneric: #{e}".colorize(:red)
+      end
+
+      def get
+        full_path = @url.path
+        query = ([@url.query] + @params).compact.join('&')
+        full_path += "?#{query}" if query.to_s != ''
+        response = @http.start do |http|
+          http.get(full_path)
+        end
+        [JSON.parse(response.body), response]
+      rescue => e
+        puts "GET Error: #{e}".colorize(:red)
       end
 
       def post
