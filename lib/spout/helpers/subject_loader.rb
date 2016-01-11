@@ -39,14 +39,28 @@ module Spout
 
         @csv_directory = @semantic.selected_folder
 
-        @csv_files = Dir.glob("csvs/#{@csv_directory}/**/*.csv")
+        csv_root = File.join('csvs', @csv_directory)
+        @csv_files = Dir.glob("#{csv_root}/**/*.csv").sort
+
+        if @csv_directory != @standard_version
+          puts "\n#{@csv_files.size == 0 ? 'No CSVs found' : 'Parsing files' } in " + "#{csv_root}".colorize(:white) + ' for dictionary version ' + @standard_version.to_s.colorize(:green) + "\n"
+        else
+          puts "\n#{@csv_files.size == 0 ? 'No CSVs found' : 'Parsing files' } in " + "#{csv_root}".colorize(:white) + "\n"
+        end
+
+        last_folder = nil
         @csv_files.each do |csv_file|
+          relative_path = csv_file.gsub(%r{^#{csv_root}}, '')
+          current_file = File.basename(relative_path)
+          current_folder = relative_path.gsub(/#{current_file}$/, '')
           count = 1 # Includes counting the header row
-          print "\nParsing #{csv_file}"
+          puts "  #{current_folder}".colorize(:white) if current_folder.to_s != '' && current_folder != last_folder
+          print "    #{current_file}"
+          last_folder = current_folder
           CSV.parse(File.open(csv_file, 'r:iso-8859-1:utf-8'){ |f| f.read }, headers: true, header_converters: lambda { |h| h.to_s.downcase }) do |line|
             row = line.to_hash
             count += 1
-            print "\rParsing #{csv_file} - Row ##{count}" if (count % 10 == 0)
+            print "\r    #{current_file} " + "##{count}".colorize(:yellow) if (count % 10 == 0)
             @subjects << Spout::Models::Subject.create do |t|
               t._visit = row[@visit]
               t._csv = File.basename(csv_file)
@@ -72,14 +86,8 @@ module Spout
             break if !@number_of_rows.nil? && count - 1 >= @number_of_rows
           end
 
-          print "\rParsing #{csv_file} - Row ##{count}"
+          print "\r    #{current_file} " + "##{count}".colorize(:green)
           puts "\n"
-        end
-
-        if @csv_directory != @standard_version
-          puts "#{@csv_files.size == 0 ? 'No CSVs found' : 'Using dataset' } in " + "csvs/#{@csv_directory}/".colorize( :green ) + " for dictionary version " + @standard_version.to_s.colorize( :green ) + "\n\n"
-        else
-          puts "#{@csv_files.size == 0 ? 'No CSVs found' : 'Using dataset' } in " + "csvs/#{@standard_version}/".colorize( :green ) + "\n\n"
         end
       end
 

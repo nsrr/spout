@@ -3,7 +3,6 @@ require 'test_helpers/capture'
 
 module ApplicationTests
   class CoverageTest < SandboxTest
-
     include TestHelpers::Capture
 
     def setup
@@ -65,7 +64,7 @@ module ApplicationTests
         Dir.chdir(app_path) { Spout.launch(['coverage', '--console']) }
       end
 
-      assert_match /Parsing csvs\/1\.0\.0\/dataset\.csv/, output
+      assert_match /Parsing files in csvs\/1\.0\.0/, output.uncolorize
 
       assert_equal [".", "..", "dataset.csv"].sort, Dir.entries(File.join(app_path, 'csvs', '1.0.0')).sort
 
@@ -80,6 +79,5 @@ module ApplicationTests
       remove_visit_variable_and_domain
       remove_basic_info
     end
-
   end
 end
