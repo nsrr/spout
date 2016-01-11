@@ -21,10 +21,6 @@ require 'spout/helpers/json_request'
 # - **Graph Generation**
 #   - `spout g` is run
 #   - Graphs are pushed to server
-# - **Image Generation**
-#   - `spout p` is run
-#   - `optipng` is run on image then uploaded to server
-#   - Images are pushed to server
 # - **Dataset Uploads**
 #   - Dataset CSV data dictionary is generated (variables, domains, forms)
 #   - Dataset and data dictionary CSVs uploaded to files section of dataset
@@ -53,7 +49,6 @@ module Spout
         @skip_checks = !(argv.delete('--skip-checks').nil? && argv.delete('--no-checks').nil?)
 
         @skip_graphs = !(argv.delete('--skip-graphs').nil? && argv.delete('--no-graphs').nil?)
-        @skip_images = !(argv.delete('--skip-images').nil? && argv.delete('--no-images').nil?)
         @skip_csvs = !(argv.delete('--skip-csvs').nil? && argv.delete('--no-csvs').nil?)
         @clean = !(argv.delete('--no-resume').nil? && argv.delete('--clean').nil?)
         @skip_server_updates = !(argv.delete('--skip-server-updates').nil? && argv.delete('--no-server-updates').nil?)
@@ -85,9 +80,8 @@ module Spout
         version_check unless @skip_checks
         test_check unless @skip_checks
         user_authorization
-        load_subjects_from_csvs unless @skip_graphs && @skip_images
+        load_subjects_from_csvs unless @skip_graphs
         graph_generation unless @skip_graphs
-        image_generation unless @skip_images
         dataset_uploads unless @skip_csvs
         data_dictionary_uploads unless @skip_csvs
         markdown_uploads unless @skip_csvs
@@ -226,14 +220,6 @@ module Spout
         @argv << '--clean' if @clean
         Spout::Commands::Graphs.new(@argv, @version, true, @url, @slug, @token, @webserver_name, @subjects)
         puts "\r     Graph Generation: " + 'DONE          '.colorize(:green)
-      end
-
-      def image_generation
-        # failure ''
-        require 'spout/commands/images'
-        @argv << '--clean' if @clean
-        Spout::Commands::Images.new(@argv, @version, true, @url, @slug, @token, @webserver_name, @subjects)
-        puts "\r     Image Generation: " + 'DONE          '.colorize(:green)
       end
 
       def dataset_uploads

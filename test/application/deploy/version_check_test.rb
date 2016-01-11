@@ -7,7 +7,6 @@ require 'test_helpers/nsrr'
 module ApplicationTests
   module DeployTests
     class VersionCheckTest < SandboxTest
-
       include TestHelpers::Capture
       include TestHelpers::Nsrr
 
@@ -36,7 +35,7 @@ slug: myrepo
 
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--no-graphs', '--no-images', '--no-server-updates'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--no-graphs', '--no-server-updates'] }
           end
           assert_match "CHANGELOG.md: PASS ## 1.0.0", output.uncolorize
         end
@@ -45,7 +44,7 @@ slug: myrepo
       def test_changelog_version_does_not_match
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--no-graphs', '--no-images', '--no-server-updates'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--no-graphs', '--no-server-updates'] }
           end
           assert_match "Expected: ## 1.0.0", output.uncolorize
           assert_match "Actual: ", output.uncolorize
@@ -65,7 +64,7 @@ slug: myrepo
               `git add .`
               `git commit -m "Initial commit"`
               `git tag -a "v1.0.0" -m "v1.0.0"`
-              Spout.launch ['deploy', 't', '--token=1-abcd', '--no-graphs', '--no-images', '--no-server-updates']
+              Spout.launch ['deploy', 't', '--token=1-abcd', '--no-graphs', '--no-server-updates']
             end
           end
           assert_match "CHANGELOG.md: PASS ## 1.0.0", output.uncolorize
@@ -84,7 +83,7 @@ slug: myrepo
               initialize_git_repository!
               `git add .`
               `git commit -m "Initial commit"`
-              Spout.launch ['deploy', 't', '--token=1-abcd', '--no-graphs', '--no-images', '--no-server-updates']
+              Spout.launch ['deploy', 't', '--token=1-abcd', '--no-graphs', '--no-server-updates']
             end
           end
           assert_match "Version specified in `VERSION` file 'v1.0.0' does not match git tag on HEAD commit ''", output.uncolorize
@@ -96,7 +95,7 @@ slug: myrepo
           output, error = util_capture do
             Dir.chdir(app_path) do
               initialize_git_repository!
-              Spout.launch ['deploy', 't', '--token=1-abcd', '--no-graphs', '--no-images', '--no-server-updates']
+              Spout.launch ['deploy', 't', '--token=1-abcd', '--no-graphs', '--no-server-updates']
             end
           end
           assert_match "Git Status Check: FAIL", output.uncolorize
@@ -111,7 +110,6 @@ slug: myrepo
         end
         `git init`
       end
-
     end
   end
 end

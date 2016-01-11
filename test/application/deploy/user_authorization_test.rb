@@ -7,7 +7,6 @@ require 'test_helpers/nsrr'
 module ApplicationTests
   module DeployTests
     class UserAuthorizationTest < SandboxTest
-
       include TestHelpers::Capture
       include TestHelpers::Nsrr
 
@@ -31,7 +30,7 @@ slug: myrepo
       def test_editor_approved_access
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--no-checks', '--no-graphs', '--no-images', '--no-server-updates'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--no-checks', '--no-graphs', '--no-server-updates'] }
           end
           assert_match "     Enter your token: AUTHORIZED", output.uncolorize
         end
@@ -40,7 +39,7 @@ slug: myrepo
       def test_view_unauthorized_access
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=2-efgh', '--no-checks', '--no-graphs', '--no-images', '--no-server-updates'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=2-efgh', '--no-checks', '--no-graphs', '--no-server-updates'] }
           end
           assert_match "     Enter your token: UNAUTHORIZED", output.uncolorize
         end
@@ -49,12 +48,11 @@ slug: myrepo
       def test_anonymous_unauthorized_access
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=_', '--no-checks', '--no-graphs', '--no-images', '--no-server-updates'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=_', '--no-checks', '--no-graphs', '--no-server-updates'] }
           end
           assert_match "     Enter your token: UNAUTHORIZED", output.uncolorize
         end
       end
-
     end
   end
 end

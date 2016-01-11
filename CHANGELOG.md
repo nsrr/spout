@@ -1,5 +1,9 @@
 ## 0.11.0
 
+### Deprecations
+- **Image Command**
+  - Spout variable graphs are no longer required as images by the NSRR webserver and have been removed
+
 ### Enhancements
 - **Deploy Command**
   - The deploy command can now accept flags and arguments that modify and scope graphs and images
@@ -16,9 +20,6 @@
   - Tables still track unknown values if the CSV contains a column for the variable, but the cell for subject is blank
   - Histograms of variables that only contain a small range (less than 12) of integers now use discrete buckets of size 1 instead of creating fractional buckets
   - Numbers less than one now respect the precision of the number when computing means and related statistics
-- **Image Command**
-  - The image command now correctly filters specified variables
-    - ex: `spout p var1` would only generate an image for `var1` variable
 - **Export Command**
   - Commonly Used attribute is now included in data dictionary exports
 - **Tests Added**

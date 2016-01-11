@@ -212,31 +212,6 @@ You can optionally provide a version string
 spout export [1.0.0]
 ```
 
-### Generate images for data in your dataset
-
-Spout lets you generate images for each variable defined in your dataset. Make sure to run `spout coverage` first to validate that your data dictionary and dataset match.
-
-This command will take some time, and requires [PhantomJS](http://phantomjs.org/) to be installed on your system.
-
-```
-spout pngs
-```
-
-The following flags can be passed to the `spout pngs` command:
-
-- `spout p --type-numeric`
-- `spout p --type-integer`
-- `spout p --type-choices`
-- `spout p --size-lg`
-- `spout p --size-sm`
-- `spout p --type-numeric --size-sm`
-
-For specific variables the following can be used:
-  - `spout p <variable_id>`
-
-Generated images are placed in: `./images/`
-
-
 ### Generate charts and tables for data in your dataset
 
 ```
@@ -369,13 +344,11 @@ The following steps are run:
 - **Graph Generation**
   - `spout g` is run
   - Graphs are pushed to server
-- **Image Generation**
-  - `spout p` is run
-  - `optipng` is run on image then uploaded to server
-  - Images are pushed to server
 - **Dataset Uploads**
   - Dataset CSV data dictionary is generated (variables, domains, forms)
   - Dataset and data dictionary CSVs uploaded to files section of dataset
+- **Documentation Uploads**
+  - `README.md` and `KNOWNISSUES.md` are uploaded
 - **Server-Side Updates**
   - Server checks out branch of specified tag
   - Server runs `load_data_dictionary!` for specified dataset slug

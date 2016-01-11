@@ -9,7 +9,6 @@ Spout::COMMANDS = {
   'i' => :importer,
   'e' => :exporter,
   'c' => :coverage_report,
-  'p' => :generate_images,
   'g' => :generate_charts_and_tables,
   'o' => :outliers_report,
   'd' => :deploy
@@ -41,12 +40,6 @@ module Spout
     Spout::Commands::Graphs.new(argv, standard_version)
   end
 
-  def self.generate_images(argv)
-    argv = argv.last(argv.size - 1)
-    require 'spout/commands/images'
-    Spout::Commands::Images.new(argv, standard_version)
-  end
-
   def self.help(_argv)
     puts <<-EOT
 
@@ -63,9 +56,6 @@ The most common spout commands are:
                     in `<project_name>/csvs/<version>`
   [o]utliers        Outlier report, requires dataset CSVs
                     in `<project_name>/csvs/<version>`
-  [p]ngs            Generates images for each variable in a
-                    dataset and places them
-                    in `<project_name>/images/<version>/`
   [g]raphs          Generates JSON graphs for each variable
                     in a dataset and places them
                     in `<project_name>/graphs/<version>/`

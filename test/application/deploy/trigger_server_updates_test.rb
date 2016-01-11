@@ -31,7 +31,7 @@ slug: myrepo
       def test_editor_approved_access
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--no-checks', '--no-graphs', '--no-images'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--no-checks', '--no-graphs'] }
           end
 
           assert_match 'Launch Server Scripts: DONE', output.uncolorize
@@ -41,7 +41,7 @@ slug: myrepo
       def test_trigger_update_failure
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=3-ijkl', '--no-checks', '--no-graphs', '--no-images'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=3-ijkl', '--no-checks', '--no-graphs'] }
           end
 
           assert_match 'Launch Server Scripts: FAIL', output.uncolorize
@@ -51,7 +51,7 @@ slug: myrepo
       def test_server_message_tag_checkout_error
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=4-mnop', '--no-checks', '--no-graphs', '--no-images'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=4-mnop', '--no-checks', '--no-graphs'] }
           end
 
           assert_match 'Launch Server Scripts: FAIL', output.uncolorize
@@ -62,7 +62,7 @@ slug: myrepo
       def test_server_message_data_dictionary_git_repo_does_not_exist
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=5-qrst', '--no-checks', '--no-graphs', '--no-images'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=5-qrst', '--no-checks', '--no-graphs'] }
           end
 
           assert_match 'Launch Server Scripts: FAIL', output.uncolorize
