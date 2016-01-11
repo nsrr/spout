@@ -61,7 +61,8 @@ module Spout
           labels: labels,
           stats_n: n, stats_mean: mean, stats_stddev: stddev,
           stats_median: median, stats_min: min, stats_max: max,
-          stats_unknown: unknown, stats_total: total
+          stats_unknown: unknown, stats_total: total,
+          spout_version: Spout::VERSION::STRING
         }
       end
     end

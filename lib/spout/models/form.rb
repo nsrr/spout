@@ -38,7 +38,8 @@ module Spout
 
       def deploy_params
         { name: id, folder: folder.to_s.gsub(%r{/$}, ''),
-          display_name: display_name, code_book: code_book }
+          display_name: display_name, code_book: code_book,
+          spout_version: Spout::VERSION::STRING }
       end
     end
   end
