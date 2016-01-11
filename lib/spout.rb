@@ -40,33 +40,9 @@ module Spout
     Spout::Commands::Graphs.new(argv, standard_version)
   end
 
-  def self.help(_argv)
-    puts <<-EOT
-
-Usage: spout COMMAND [ARGS]
-
-The most common spout commands are:
-  [n]ew             Create a new Spout dictionary.
-                    `spout new <project_name>` creates a new
-                    data dictionary in `./<project_name>`
-  [t]est            Run tests and show failing tests
-  [i]mport          Import a CSV file into the JSON dictionary
-  [e]xport [1.0.0]  Export the JSON dictionary to CSV format
-  [c]overage        Coverage report, requires dataset CSVs
-                    in `<project_name>/csvs/<version>`
-  [o]utliers        Outlier report, requires dataset CSVs
-                    in `<project_name>/csvs/<version>`
-  [g]raphs          Generates JSON graphs for each variable
-                    in a dataset and places them
-                    in `<project_name>/graphs/<version>/`
-  [d]eploy NAME     Push dataset and data dictionary to a
-                    webserver specified in `.spout.yml`
-  [v]ersion         Returns the version of Spout
-
-Commands can be referenced by the first letter:
-  Ex: `spout t`, for test
-
-EOT
+  def self.help(argv)
+    require 'spout/commands/help'
+    Spout::Commands::Help.new(argv)
   end
 
   def self.deploy(argv)

@@ -24,6 +24,9 @@
   - Commonly Used attribute is now included in data dictionary exports
 - **Tests Added**
   - New tests were added to check the format of variable names, form names, and domain names
+- **Help Command**
+  - The help command now allows users to learn more about individual commands
+    - ex: `spout help deploy`
 - **Gem Changes**
   - Updated to Ruby 2.3.0
   - Bundler is now a required dependency
