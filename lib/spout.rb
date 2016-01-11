@@ -27,6 +27,8 @@ module Spout
   def self.coverage_report(argv)
     require 'spout/commands/coverage'
     Spout::Commands::Coverage.new(standard_version, argv)
+  rescue NoMemoryError
+    puts "[NoMemoryError] You made Spout cry... Spout doesn't run on potatoes :'-("
   end
 
   def self.exporter(argv)
