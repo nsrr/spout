@@ -6,6 +6,10 @@
     - ex: `spout deploy WEBSERVER var1 var2 --rows=100 --clean`
     - This pushes a clean version of graphs and images based on the first 100 rows in the CSVs for var1 and var2
   - Spout now provides detailed information when deploying variables, forms, and domains
+  - CSVs can now be grouped into subfolders within their version folders, ex:
+    - `<project_name>/csvs/<VERSION>/dataset-main.csv`
+    - `<project_name>/csvs/<VERSION>/subfolder/dataset-extra-a.csv`
+    - `<project_name>/csvs/<VERSION>/subfolder/dataset-extra-b.csv`
 - **Graph Command**
   - Tables no longer include unknown values for variables that don't exist across other CSVs with the same subject and visit
   - Tables still track unknown values if the CSV contains a column for the variable, but the cell for subject is blank

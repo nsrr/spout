@@ -97,10 +97,6 @@ module Spout
         end
       end
 
-      def send_to_server(chart_json_file)
-        response = Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_graph.json", chart_json_file, @standard_version, @token)
-      end
-
       def iterate_through_variables
         variable_files_count = @variable_files.count
         @variable_files.each_with_index do |variable_file, file_index|
@@ -154,14 +150,6 @@ module Spout
           @progress[variable.id]['generated'] = true
 
           if @deploy_mode && !@progress[variable.id]['uploaded'].include?(@webserver_name)
-
-            # response = send_to_server(chart_json_file)
-            # if response.is_a?(Hash) && response['upload'] == 'success'
-            #   @progress[variable.id]['uploaded'] << @webserver_name
-            # else
-            #   puts "\nUPLOAD FAILED: ".colorize(:red) + File.basename(chart_json_file)
-            # end
-
             values = @subjects.collect(&variable.id.to_sym).compact_empty
             variable.n = values.n
             variable.unknown = values.unknown

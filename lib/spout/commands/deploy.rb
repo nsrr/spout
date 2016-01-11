@@ -236,7 +236,7 @@ module Spout
       end
 
       def dataset_uploads
-        available_folders = (Dir.exist?('csvs') ? Dir.entries('csvs').select{|e| File.directory? File.join('csvs', e) }.reject{|e| [".",".."].include?(e)}.sort : [])
+        available_folders = (Dir.exist?('csvs') ? Dir.entries('csvs').select { |e| File.directory? File.join('csvs', e) }.reject { |e| ['.', '..'].include?(e) }.sort : [])
         semantic = Spout::Helpers::Semantic.new(@version, available_folders)
         csv_directory = semantic.selected_folder
 
@@ -245,11 +245,11 @@ module Spout
           return
         end
 
-        csv_files = Dir.glob("csvs/#{csv_directory}/*.csv")
+        csv_files = Dir.glob("csvs/#{csv_directory}/**/*.csv")
 
         csv_files.each_with_index do |csv_file, index|
           print "\r      Dataset Uploads: " + "#{index + 1} of #{csv_files.count}".colorize(:green)
-          response = Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_dataset_csv.json", csv_file, @version, @token)
+          response = Spout::Helpers::SendFile.post("#{@url}/api/v1/dictionary/upload_dataset_csv.json", csv_file, @version, @token, @slug)
         end
         puts "\r      Dataset Uploads: " + "DONE          ".colorize(:green)
       end
@@ -263,32 +263,32 @@ module Spout
         csv_files = Dir.glob("dd/#{@version}/*.csv")
         csv_files.each_with_index do |csv_file, index|
           print "\r   Dictionary Uploads: " + "#{index + 1} of #{csv_files.count}".colorize(:green)
-          response = Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_dataset_csv.json", csv_file, @version, @token)
+          response = Spout::Helpers::SendFile.post("#{@url}/api/v1/dictionary/upload_dataset_csv.json", csv_file, @version, @token, @slug)
         end
-        puts "\r   Dictionary Uploads: " + "DONE          ".colorize(:green)
+        puts "\r   Dictionary Uploads: " + 'DONE          '.colorize(:green)
       end
 
       def trigger_server_updates
-        print "Launch Server Scripts: "
+        print 'Launch Server Scripts: '
         response = Spout::Helpers::JsonRequest.get("#{@url}/datasets/#{@slug}/a/#{@token}/refresh_dictionary.json?version=#{@version}")
-        if response.is_a?(Hash) and response['refresh'] == 'success'
-          puts "DONE".colorize(:green)
-        elsif response.is_a?(Hash) and response['refresh'] == 'notagfound'
-          puts "FAIL".colorize(:red)
-          puts "#{INDENT}Tag not found in repository, resolve using: " + "git push --tags".colorize(:white)
+        if response.is_a?(Hash) && response['refresh'] == 'success'
+          puts 'DONE'.colorize(:green)
+        elsif response.is_a?(Hash) && response['refresh'] == 'notagfound'
+          puts 'FAIL'.colorize(:red)
+          puts "#{INDENT}Tag not found in repository, resolve using: " + 'git push --tags'.colorize(:white)
           raise DeployError
-        elsif response.is_a?(Hash) and response['refresh'] == 'gitrepodoesnotexist'
-          puts "FAIL".colorize(:red)
+        elsif response.is_a?(Hash) && response['refresh'] == 'gitrepodoesnotexist'
+          puts 'FAIL'.colorize(:red)
           puts "#{INDENT}Dataset data dictionary git repository has not been cloned on the server. Contact server admin.".colorize(:white)
           raise DeployError
         else
-          puts "FAIL".colorize(:red)
+          puts 'FAIL'.colorize(:red)
           raise DeployError
         end
       end
 
       def failure(message)
-        puts "FAIL".colorize(:red)
+        puts 'FAIL'.colorize(:red)
         puts message
         raise DeployError
       end

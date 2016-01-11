@@ -13,15 +13,15 @@ module Spout
 
       attr_reader :url
 
-      def initialize(url, filename, version, token, type = nil)
-
+      def initialize(url, filename, version, token, slug, type = nil)
         @params = {}
-        @params["version"] = version
-        @params["auth_token"] = token if token
-        @params["type"] = type if type
+        @params['version'] = version
+        @params['auth_token'] = token if token
+        @params['dataset'] = slug if slug
+        @params['type'] = type if type
         begin
-          file = File.open(filename, "rb")
-          @params["file"] = file
+          file = File.open(filename, 'rb')
+          @params['file'] = file
 
           mp = Multipart::MultipartPost.new
           @query, @headers = mp.prepare_query(@params)
@@ -42,36 +42,33 @@ module Spout
       end
 
       def post
-        begin
-          response = @http.start do |http|
-            http.post(@url.path, @query, @headers)
-          end
-          JSON.parse(response.body)
-        rescue
-          nil
+        response = @http.start do |http|
+          http.post(@url.path, @query, @headers)
         end
+        JSON.parse(response.body)
+      rescue
+        nil
       end
     end
   end
 end
 
-
 module Multipart
   class Param
     attr_accessor :k, :v
-    def initialize( k, v )
+    def initialize(k, v)
       @k = k
       @v = v
     end
 
     def to_multipart
-      return "Content-Disposition: form-data; name=\"#{k}\"\r\n\r\n#{v}\r\n"
+      "Content-Disposition: form-data; name=\"#{k}\"\r\n\r\n#{v}\r\n"
     end
   end
 
   class FileParam
     attr_accessor :k, :filename, :content
-    def initialize( k, filename, content )
+    def initialize(k, filename, content)
       @k = k
       @filename = filename
       @content = content
@@ -79,23 +76,24 @@ module Multipart
 
     def to_multipart
       mime_type = 'application/octet-stream'
-      return "Content-Disposition: form-data; name=\"#{k}\"; filename=\"#{filename}\"\r\n" + "Content-Transfer-Encoding: binary\r\n" + "Content-Type: #{mime_type}\r\n\r\n" + content + "\r\n"
+      "Content-Disposition: form-data; name=\"#{k}\"; filename=\"#{filename}\"\r\n" + "Content-Transfer-Encoding: binary\r\n" + "Content-Type: #{mime_type}\r\n\r\n" + content + "\r\n"
     end
   end
+
   class MultipartPost
     BOUNDARY = 'a#41-93r1-^&#213-rule0000'
-    HEADER = {"Content-type" => "multipart/form-data, boundary=" + BOUNDARY + " "}
+    HEADER = { 'Content-type' => "multipart/form-data, boundary=#{BOUNDARY} " }
 
-    def prepare_query (params)
+    def prepare_query(params)
       fp = []
-      params.each {|k,v|
+      params.each do |k, v|
         if v.respond_to?(:read)
           fp.push(FileParam.new(k, v.path, v.read))
         else
-          fp.push(Param.new(k,v))
+          fp.push(Param.new(k, v))
         end
-      }
-      query = fp.collect {|p| "--" + BOUNDARY + "\r\n" + p.to_multipart }.join("") + "--" + BOUNDARY + "--"
+      end
+      query = fp.collect { |p| "--#{BOUNDARY}\r\n" + p.to_multipart }.join('') + "--#{BOUNDARY}--"
       return query, HEADER
     end
   end

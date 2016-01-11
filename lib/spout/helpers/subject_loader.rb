@@ -39,7 +39,7 @@ module Spout
 
         @csv_directory = @semantic.selected_folder
 
-        @csv_files = Dir.glob("csvs/#{@csv_directory}/*.csv")
+        @csv_files = Dir.glob("csvs/#{@csv_directory}/**/*.csv")
         @csv_files.each do |csv_file|
           count = 1 # Includes counting the header row
           print "\nParsing #{csv_file}"

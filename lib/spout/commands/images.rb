@@ -191,20 +191,15 @@ module Spout
           end
 
           if @deploy_mode && !@progress[variable.id]['uploaded_files'].include?(png_name)
-            response = send_to_server(image_path)
-            if response.is_a?(Hash) && response['upload'] == 'success'
-              @progress[variable.id]['uploaded_files'] << png_name
-            else
-              puts "\nUPLOAD FAILED: ".colorize(:red) + File.basename(png_name)
-              @progress[variable.id]['upload_failed'] = true
-            end
+            # response = send_to_server(image_path)
+            # if response.is_a?(Hash) && response['upload'] == 'success'
+            #   @progress[variable.id]['uploaded_files'] << png_name
+            # else
+            #   puts "\nUPLOAD FAILED: ".colorize(:red) + File.basename(png_name)
+            #   @progress[variable.id]['upload_failed'] = true
+            # end
           end
         end
-      end
-
-      def send_to_server(file)
-        # puts "SENDING FILE TO SERVER: #{file}".colorize(:red)
-        Spout::Helpers::SendFile.post("#{@url}/datasets/#{@slug}/upload_graph.json", file, @standard_version, @token, 'images')
       end
     end
   end
