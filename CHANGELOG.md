@@ -22,6 +22,7 @@
   - New tests were added to check the format of variable names, form names, and domain names
 - **Gem Changes**
   - Updated to Ruby 2.3.0
+  - Bundler is now a required dependency
 
 ### Refactoring
 - Started refactoring code base to better adhere to RuboCop style recommendations
