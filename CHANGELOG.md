@@ -18,11 +18,13 @@
 - **Image Command**
   - The image command now correctly filters specified variables
     - ex: `spout p var1` would only generate an image for `var1` variable
+- **Tests Added**
+  - New tests were added to check the format of variable names, form names, and domain names
 - **Gem Changes**
   - Updated to Ruby 2.3.0
 
 ### Refactoring
-- Started refactoring code base to better adhere to Rubocop style recommendations
+- Started refactoring code base to better adhere to RuboCop style recommendations
 
 ## 0.10.2 (December 29, 2014)
 

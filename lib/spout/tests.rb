@@ -64,34 +64,40 @@ end
 Minitest::Reporters.use! Minitest::Reporters::SpoutReporter.new
 
 require 'spout/tests/json_validation'
-require 'spout/tests/variable_type_validation'
-require 'spout/tests/variable_name_uniqueness'
-require 'spout/tests/variable_name_match'
-require 'spout/tests/variable_display_name_length'
 require 'spout/tests/domain_existence_validation'
 require 'spout/tests/domain_format'
+require 'spout/tests/domain_name_format'
 require 'spout/tests/domain_name_uniqueness'
 require 'spout/tests/domain_specified'
 require 'spout/tests/form_existence_validation'
-require 'spout/tests/form_name_uniqueness'
+require 'spout/tests/form_name_format'
 require 'spout/tests/form_name_match'
+require 'spout/tests/form_name_uniqueness'
+require 'spout/tests/variable_display_name_length'
+require 'spout/tests/variable_name_format'
+require 'spout/tests/variable_name_match'
+require 'spout/tests/variable_name_uniqueness'
+require 'spout/tests/variable_type_validation'
 
 require 'spout/helpers/iterators'
 
 module Spout
   module Tests
     include Spout::Tests::JsonValidation
-    include Spout::Tests::VariableTypeValidation
-    include Spout::Tests::VariableNameUniqueness
-    include Spout::Tests::VariableNameMatch
-    include Spout::Tests::VariableDisplayNameLength
     include Spout::Tests::DomainExistenceValidation
     include Spout::Tests::DomainFormat
+    include Spout::Tests::DomainNameFormat
     include Spout::Tests::DomainNameUniqueness
     include Spout::Tests::DomainSpecified
     include Spout::Tests::FormExistenceValidation
-    include Spout::Tests::FormNameUniqueness
+    include Spout::Tests::FormNameFormat
     include Spout::Tests::FormNameMatch
+    include Spout::Tests::FormNameUniqueness
+    include Spout::Tests::VariableDisplayNameLength
+    include Spout::Tests::VariableNameFormat
+    include Spout::Tests::VariableNameMatch
+    include Spout::Tests::VariableNameUniqueness
+    include Spout::Tests::VariableTypeValidation
   end
 end
 
