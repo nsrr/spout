@@ -6,6 +6,7 @@ require 'spout/helpers/subject_loader'
 require 'spout/models/coverage_result'
 require 'spout/helpers/number_helper'
 require 'spout/helpers/config_reader'
+require 'spout/helpers/array_statistics'
 
 module Spout
   module Commands
@@ -35,7 +36,7 @@ module Spout
         @matching_results = []
 
         @subject_loader.all_methods.each do |method, csv_files|
-          scr = Spout::Models::CoverageResult.new(method, @subjects.collect(&method.to_sym).uniq)
+          scr = Spout::Models::CoverageResult.new(method, @subjects.collect(&method.to_sym).compact_empty.uniq)
           @matching_results << [ csv_files, method, scr ]
         end
 

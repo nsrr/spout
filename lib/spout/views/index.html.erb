@@ -262,7 +262,7 @@ tfoot td {
                   <% end %>
                 </td>
                 <td>
-                  <% if scr.json['type'] == 'choices' and scr.file_name_test %>
+                  <% if scr.json['type'] == 'choices' && scr.file_name_test %>
                     <% if scr.domain_test or scr.json['domain'].to_s.strip == '' %>
                       <code class="<%= 'success' if scr.domain_test %>">"domain": <%= scr.json['domain'].inspect %></code>
                     <% else %>
@@ -273,7 +273,7 @@ tfoot td {
                 <td style="white-space:nowrap">
                   <% if scr.json['type'] == 'choices' %>
                     <% unused_values = scr.valid_values - scr.csv_values %>
-                    <% if scr.values_test and unused_values.size == 0 %>
+                    <% if scr.values_test && unused_values.size == 0 %>
                       <div class="text-success" style="text-align:center"><span class="glyphicon glyphicon-ok"></span></div>
                     <% else %>
                       <% (scr.valid_values + scr.csv_values.compact.sort).uniq.each do |value| %>
