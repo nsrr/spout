@@ -54,6 +54,33 @@ module Spout
         File.join(@folder, "#{@id}.json")
       end
 
+      def known_issues
+        line_found = false
+        lines = []
+        known_issues_file = 'KNOWNISSUES.md'
+        if File.exist?(known_issues_file) && File.file?(known_issues_file)
+          IO.foreach(known_issues_file) do |line|
+            if line_found && Variable.starts_with?(line, '  - ')
+              lines << line
+            elsif Variable.partial_match?(line, "\\[#{id}\\]")
+              line_found = true
+              lines << line
+            else
+              line_found = false
+            end
+          end
+        end
+        lines.join("\n")
+      end
+
+      def self.starts_with?(string, term)
+        !(/^#{term.to_s.downcase}/ =~ string.to_s.downcase).nil?
+      end
+
+      def self.partial_match?(string, term)
+        !(/#{term.to_s.downcase}/ =~ string.to_s.downcase).nil?
+      end
+
       def deploy_params
         { name: id, display_name: display_name, variable_type: type,
           folder: folder.to_s.gsub(%r{/$}, ''), description: description,
@@ -62,6 +89,7 @@ module Spout
           stats_n: n, stats_mean: mean, stats_stddev: stddev,
           stats_median: median, stats_min: min, stats_max: max,
           stats_unknown: unknown, stats_total: total,
+          known_issues: known_issues,
           spout_version: Spout::VERSION::STRING
         }
       end
