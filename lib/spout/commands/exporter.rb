@@ -22,7 +22,7 @@ module Spout
         puts "      create".colorize( :green ) + "  #{folder}" unless @quiet
         FileUtils.mkpath folder
 
-        generic_export(folder, 'variables', %w(id display_name description type units domain labels calculation))
+        generic_export(folder, 'variables', %w(id display_name description type units domain labels calculation commonly_used))
         generic_export(folder, 'domains', %w(value display_name description), true)
         generic_export(folder, 'forms', %w(id display_name code_book))
       end
@@ -67,7 +67,6 @@ module Spout
       def extract_domain_name(file)
         file.gsub(/domains\//, '').split('/').last.to_s.gsub(/.json/, '')
       end
-
     end
   end
 end

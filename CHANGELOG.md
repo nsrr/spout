@@ -18,6 +18,8 @@
 - **Image Command**
   - The image command now correctly filters specified variables
     - ex: `spout p var1` would only generate an image for `var1` variable
+- **Export Command**
+  - Commonly Used attribute is now included in data dictionary exports
 - **Tests Added**
   - New tests were added to check the format of variable names, form names, and domain names
 - **Gem Changes**

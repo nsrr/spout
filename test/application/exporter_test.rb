@@ -18,9 +18,9 @@ module ApplicationTests
 
     def test_exports
       variable_csv = <<-CSV
-folder,id,display_name,description,type,units,domain,labels,calculation
-"",age_at_visit,Age at Visit,Age at time of visit.,numeric,years,"",age_at_visit,""
-"",gender,Gender,Gender as reported by Parent Cohort,choices,"",gdomain,gender,""
+folder,id,display_name,description,type,units,domain,labels,calculation,commonly_used
+"",age_at_visit,Age at Visit,Age at time of visit.,numeric,years,"",age_at_visit,"",true
+"",gender,Gender,Gender as reported by Parent Cohort,choices,"",gdomain,gender,"",true
       CSV
 
       domain_csv = <<-CSV
@@ -53,9 +53,9 @@ charts:
       YML
 
       variable_csv = <<-CSV
-folder,id,display_name,description,type,units,domain,labels,calculation
-"",age_at_visit,Age at Visit,Age at time of visit.,numeric,years,"",age_at_visit,""
-"",gender,Gender,Gender as reported by Parent Cohort,choices,"",gdomain,gender,""
+folder,id,display_name,description,type,units,domain,labels,calculation,commonly_used
+"",age_at_visit,Age at Visit,Age at time of visit.,numeric,years,"",age_at_visit,"",true
+"",gender,Gender,Gender as reported by Parent Cohort,choices,"",gdomain,gender,"",true
       CSV
 
       domain_csv = <<-CSV
