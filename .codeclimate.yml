@@ -39,7 +39,6 @@ ratings:
 # exclude_paths key.
 
 exclude_paths:
-- lib/spout/support/**/*
 - lib/spout/templates/**/*
 - lib/spout/views/**/*
 - Gemfile
