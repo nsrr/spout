@@ -249,7 +249,8 @@ module Spout
 
         csv_files.each_with_index do |csv_file, index|
           print "\r      Dataset Uploads: " + "#{index + 1} of #{csv_files.count}".colorize(:green)
-          response = Spout::Helpers::SendFile.post("#{@url}/api/v1/dictionary/upload_dataset_csv.json", csv_file, @version, @token, @slug)
+          folder = csv_file.gsub(/^csvs/, '').gsub(/#{File.basename(csv_file)}$/, '')
+          response = Spout::Helpers::SendFile.post("#{@url}/api/v1/dictionary/upload_dataset_csv.json", csv_file, @version, @token, @slug, folder)
         end
         puts "\r      Dataset Uploads: " + "DONE          ".colorize(:green)
       end
@@ -263,7 +264,7 @@ module Spout
         csv_files = Dir.glob("dd/#{@version}/*.csv")
         csv_files.each_with_index do |csv_file, index|
           print "\r   Dictionary Uploads: " + "#{index + 1} of #{csv_files.count}".colorize(:green)
-          response = Spout::Helpers::SendFile.post("#{@url}/api/v1/dictionary/upload_dataset_csv.json", csv_file, @version, @token, @slug)
+          response = Spout::Helpers::SendFile.post("#{@url}/api/v1/dictionary/upload_dataset_csv.json", csv_file, @version, @token, @slug, nil)
         end
         puts "\r   Dictionary Uploads: " + 'DONE          '.colorize(:green)
       end
