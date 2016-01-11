@@ -90,6 +90,7 @@ module Spout
         image_generation unless @skip_images
         dataset_uploads unless @skip_csvs
         data_dictionary_uploads unless @skip_csvs
+        markdown_uploads unless @skip_csvs
         trigger_server_updates unless @skip_server_updates
       rescue DeployError
         # Nothing on Deploy Error
@@ -267,6 +268,16 @@ module Spout
           response = Spout::Helpers::SendFile.post("#{@url}/api/v1/dictionary/upload_dataset_csv.json", csv_file, @version, @token, @slug, nil)
         end
         puts "\r   Dictionary Uploads: " + 'DONE          '.colorize(:green)
+      end
+
+      def markdown_uploads
+        print   'Documentation Uploads:'
+        markdown_files = Dir.glob(%w(CHANGELOG.md KNOWNISSUES.md))
+        markdown_files.each_with_index do |markdown_file, index|
+          print "\rDocumentation Uploads: " + "#{index + 1} of #{markdown_files.count}".colorize(:green)
+          Spout::Helpers::SendFile.post("#{@url}/api/v1/dictionary/upload_dataset_csv.json", markdown_file, @version, @token, @slug, nil)
+        end
+        puts "\rDocumentation Uploads: " + 'DONE          '.colorize(:green)
       end
 
       def trigger_server_updates

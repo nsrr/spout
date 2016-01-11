@@ -10,6 +10,7 @@
     - `<project_name>/csvs/<VERSION>/dataset-main.csv`
     - `<project_name>/csvs/<VERSION>/subfolder/dataset-extra-a.csv`
     - `<project_name>/csvs/<VERSION>/subfolder/dataset-extra-b.csv`
+  - `CHANGELOG.md` and `KNOWNISSUES.md` are now uploaded alongside datasets during a deploy
 - **Graph Command**
   - Tables no longer include unknown values for variables that don't exist across other CSVs with the same subject and visit
   - Tables still track unknown values if the CSV contains a column for the variable, but the cell for subject is blank

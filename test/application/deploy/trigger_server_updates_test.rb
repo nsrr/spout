@@ -34,7 +34,7 @@ slug: myrepo
             Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--no-checks', '--no-graphs', '--no-images'] }
           end
 
-          assert_match "Launch Server Scripts: DONE", output.uncolorize
+          assert_match 'Launch Server Scripts: DONE', output.uncolorize
         end
       end
 
@@ -44,7 +44,7 @@ slug: myrepo
             Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=3-ijkl', '--no-checks', '--no-graphs', '--no-images'] }
           end
 
-          assert_match "Launch Server Scripts: FAIL", output.uncolorize
+          assert_match 'Launch Server Scripts: FAIL', output.uncolorize
         end
       end
 
@@ -54,8 +54,8 @@ slug: myrepo
             Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=4-mnop', '--no-checks', '--no-graphs', '--no-images'] }
           end
 
-          assert_match "Launch Server Scripts: FAIL", output.uncolorize
-          assert_match "Tag not found in repository, resolve using: git push --tags", output.uncolorize
+          assert_match 'Launch Server Scripts: FAIL', output.uncolorize
+          assert_match 'Tag not found in repository, resolve using: git push --tags', output.uncolorize
         end
       end
 
@@ -65,11 +65,10 @@ slug: myrepo
             Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=5-qrst', '--no-checks', '--no-graphs', '--no-images'] }
           end
 
-          assert_match "Launch Server Scripts: FAIL", output.uncolorize
-          assert_match "Dataset data dictionary git repository has not been cloned on the server. Contact server admin.", output.uncolorize
+          assert_match 'Launch Server Scripts: FAIL', output.uncolorize
+          assert_match 'Dataset data dictionary git repository has not been cloned on the server. Contact server admin.', output.uncolorize
         end
       end
-
     end
   end
 end
