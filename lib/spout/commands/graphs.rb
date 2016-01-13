@@ -108,7 +108,7 @@ module Spout
           next unless Spout::Models::Subject.method_defined?(variable.id)
 
           if @deploy_mode
-            print "\r     Graph Generation: " + "#{"% 3d" % ((file_index+1)*100/variable_files_count)}% Uploaded".colorize(:white)
+            print "\r     Upload Variables: " + "#{"% 3d" % ((file_index+1)*100/variable_files_count)}% Uploaded".colorize(:white)
           else
             puts "#{file_index + 1} of #{variable_files_count}: #{variable.folder}#{variable.id}"
           end

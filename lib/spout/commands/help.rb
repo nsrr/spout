@@ -132,17 +132,24 @@ Usage: spout deploy NAME
 
 NAME is the name of the webserver listed in `.spout.yml` file
 Optional Flags:
-  --clean         Regenerate all variables (default is to resume
-                  where command last left off)
-  --rows=N        Limit the number of rows read from CSVs to a
-                  maximum of N rows
-  <variable>      Only deploy specified variable(s)
-                  Ex: spout deploy production age gender
-  --skip-checks   Skips Spout checks
-  --skip-graphs   Skip generation of variable graphs
-  --skip-csvs     Skip upload of Data Dictionary and Dataset CSVs
-  --token=TOKEN   Provide token via command-line for automated
-                  processes
+  --clean               Regenerate all variables (default is to
+                        resume where command last left off)
+  --rows=N              Limit the number of rows read from CSVs
+                        to a maximum of N rows
+  <variable>            Only deploy specified variable(s)
+                        Ex: spout deploy production age gender
+  --skip-checks         Skip Spout checks
+  --skip-variables      Skip upload of dataset variables
+  --skip-dataset        Skip upload of dataset CSVs
+  --skip-dictionary     Skip upload of data dictionary
+  --skip-documentation  Skip upload of CHANGELOG.md and
+                        KNOWNISSUES.md
+  --skip-server-scripts Skips server refreshing datasets folder
+                        to list newly uploaded files
+  --archive-only        Only upload files to the datasets/archive
+                        folder and not in the root datasets folder
+  --token=TOKEN         Provide token via command-line for
+                        automated processes
 
 More information here:
 
