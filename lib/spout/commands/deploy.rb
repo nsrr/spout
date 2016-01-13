@@ -8,6 +8,7 @@ require 'spout/helpers/quietly'
 require 'spout/helpers/send_file'
 require 'spout/helpers/semantic'
 require 'spout/helpers/json_request'
+require 'spout/helpers/json_request_generic'
 
 # - **User Authorization**
 #   - User authenticates via token, the user must be a dataset editor
@@ -83,6 +84,7 @@ module Spout
         data_dictionary_uploads
         markdown_uploads
         trigger_server_updates
+        set_default_dataset_version
       rescue DeployError
         # Nothing on Deploy Error
       end
@@ -305,6 +307,22 @@ module Spout
         else
           puts 'FAIL'.colorize(:red)
           fail DeployError
+        end
+      end
+
+      def set_default_dataset_version
+        if @archive_only
+          puts '  Set Default Version: ' + 'SKIP'.colorize(:blue)
+          return
+        end
+
+        print '  Set Default Version: '
+        params = { auth_token: @token, dataset: @slug, version: @version }
+        (response, status) = Spout::Helpers::JsonRequestGeneric.post("#{@url}/api/v1/dictionary/update_default_version.json", params)
+        if response.is_a?(Hash) && response['version_update'] == 'success'
+          puts @version.to_s.colorize(:green)
+        else
+          failure("#{INDENT}Unable to set default version\n#{INDENT}to " + @version.to_s.colorize(:white) + ' for ' + @slug.to_s.colorize(:white) + ' dataset.')
         end
       end
 
