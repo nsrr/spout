@@ -19,7 +19,6 @@ module TestHelpers
         when '/datasets/myrepo/a/_/editor.json?'
           [200, { 'Content-Type' => 'application/json' }, [{ editor: false, user_id: nil }.to_json]]
         else
-          puts "env['PATH_INFO'] + env['QUERY_STRING']: #{env['PATH_INFO'] + env['QUERY_STRING']}"
           [200, { 'Content-Type' => 'application/json' }, []]
         end
       end

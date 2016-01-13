@@ -67,6 +67,8 @@ module Spout
 
         @argv = argv
 
+        @created_folders = []
+
         begin
           run_all
         rescue Interrupt
@@ -252,8 +254,13 @@ module Spout
 
         csv_files.each_with_index do |csv_file, index|
           print "\r      Dataset Uploads: " + "#{index + 1} of #{csv_files.count}".colorize(:green)
-          upload_file(csv_file, 'datasets') unless @archive_only
-          upload_file(csv_file, "datasets/archive/#{@version}")
+          folder = csv_file.gsub(%r{^csvs/#{csv_directory}}, '').gsub(/#{File.basename(csv_file)}$/, '')
+          folder = folder.gsub(%r{/$}, '')
+          @created_folders << "datasets#{folder}"
+          @created_folders << 'datasets/archive'
+          @created_folders << "datasets/archive/#{@version}#{folder}"
+          upload_file(csv_file, "datasets#{folder}") unless @archive_only
+          upload_file(csv_file, "datasets/archive/#{@version}#{folder}")
         end
         puts "\r      Dataset Uploads: " + 'DONE          '.colorize(:green)
       end
@@ -272,6 +279,9 @@ module Spout
         csv_files = Dir.glob("dd/#{@version}/*.csv")
         csv_files.each_with_index do |csv_file, index|
           print "\r   Dictionary Uploads: " + "#{index + 1} of #{csv_files.count}".colorize(:green)
+          @created_folders << 'datasets'
+          @created_folders << 'datasets/archive'
+          @created_folders << "datasets/archive/#{@version}"
           upload_file(csv_file, 'datasets') unless @archive_only
           upload_file(csv_file, "datasets/archive/#{@version}")
         end
@@ -288,6 +298,9 @@ module Spout
         markdown_files = Dir.glob(%w(CHANGELOG.md KNOWNISSUES.md))
         markdown_files.each_with_index do |markdown_file, index|
           print "\rDocumentation Uploads: " + "#{index + 1} of #{markdown_files.count}".colorize(:green)
+          @created_folders << 'datasets'
+          @created_folders << 'datasets/archive'
+          @created_folders << "datasets/archive/#{@version}"
           upload_file(markdown_file, 'datasets') unless @archive_only
           upload_file(markdown_file, "datasets/archive/#{@version}")
         end
@@ -301,7 +314,8 @@ module Spout
         end
 
         print 'Launch Server Scripts: '
-        response = Spout::Helpers::JsonRequest.get("#{@url}/api/v1/dictionary/refresh.json?auth_token=#{@token}&dataset=#{@slug}&version=#{@version}&folders[]=datasets&folders[]=datasets/archive&folders[]=datasets/archive/#{@version}")
+        params = { auth_token: @token, dataset: @slug, version: @version, folders: @created_folders.compact.uniq }
+        (response, status) = Spout::Helpers::JsonRequestGeneric.post("#{@url}/api/v1/dictionary/refresh.json", params)
         if response.is_a?(Hash) && response['refresh'] == 'success'
           puts 'DONE'.colorize(:green)
         else
