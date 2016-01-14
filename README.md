@@ -339,8 +339,9 @@ The following steps are run:
   - `CHANGELOG.md` top line should include version, ex: `## 0.1.0`
   - Git Repo should have zero uncommitted changes
 - **Tests Pass**
-  - `spout t` passes for RC and FINAL versions (Include .rc, does not include .beta)
-  - `spout c` passes for RC and FINAL versions (Include .rc, does not include .beta)
+  - `spout t` passes for RC and FINAL versions
+- **Dataset Coverage Check**
+  - `spout c` passes for RC and FINAL versions
 - **Graph Generation**
   - `spout g` is run
   - Graphs are pushed to server
@@ -350,6 +351,4 @@ The following steps are run:
 - **Documentation Uploads**
   - `README.md` and `KNOWNISSUES.md` are uploaded
 - **Server-Side Updates**
-  - Server checks out branch of specified tag
-  - Server runs `load_data_dictionary!` for specified dataset slug
   - Server refreshes dataset folder to reflect new dataset and data dictionaries
