@@ -4,9 +4,13 @@
 [![Dependency Status](https://gemnasium.com/sleepepi/spout.svg)](https://gemnasium.com/sleepepi/spout)
 [![Code Climate](https://codeclimate.com/github/sleepepi/spout/badges/gpa.svg)](https://codeclimate.com/github/sleepepi/spout)
 
-Turn your CSV data dictionary into a JSON repository. Collaborate with others to update the data dictionary in JSON format. Generate new Data Dictionary from the JSON repository. Test and validate your data dictionary using built-in tests, or add your own tests and validations.
+Turn your CSV data dictionary into a JSON repository. Collaborate with others to
+update the data dictionary in JSON format. Generate new Data Dictionary from the
+JSON repository. Test and validate your data dictionary using built-in tests, or
+add your own tests and validations.
 
-Spout has been used extensively to curate and clean datasets available on the [National Sleep Research Resource](https://sleepdata.org).
+Spout has been used extensively to curate and clean datasets available on the
+[National Sleep Research Resource](https://sleepdata.org).
 
 ## Installation
 
@@ -36,13 +40,19 @@ spout import data_dictionary.csv
 
 The CSV should contain at minimal the two column headers:
 
-`id`: This column will give the variable its name, and also be used to name the file, i.e. `<id>.json`
+`id`: This column will give the variable its name, and also be used to name the
+file, i.e. `<id>.json`
 
-`folder`: This can be blank, however it is used to place variables into a folder hiearchy. The folder column can contain forward slashes `/` to place a variable into a subfolder. An example may be, `id`: `myvarid`, `folder`: `Demographics/Subfolder` would create a file `variables/Demographics/Subfolder/myvarid.json`
+`folder`: This can be blank, however it is used to place variables into a folder
+hiearchy. The folder column can contain forward slashes `/` to place a variable
+into a subfolder. An example may be, `id`: `myvarid`,
+`folder`: `Demographics/Subfolder` would create a file
+`variables/Demographics/Subfolder/myvarid.json`
 
 Other columns that will be interpreted include:
 
-`display_name`: The variable name as it is presented to the user. The display name should be fit on a single line.
+`display_name`: The variable name as it is presented to the user. The display
+name should be fit on a single line.
 
 `description`: A longer description of the variable.
 
@@ -58,13 +68,19 @@ Other columns that will be interpreted include:
   - `datetime`
   - `file`
 
-`domain`: The name of the domain that is associated with the variable. Typically, only variable of type `choices` have domains.  These domains then reside in `domains` folder.
+`domain`: The name of the domain that is associated with the variable.
+Typically, only variable of type `choices` have domains. These domains then
+reside in `domains` folder.
 
-`units`: A string of the associated that are appended to variable values, or added to coordinates in graphs representing the variable.
+`units`: A string of the associated that are appended to variable values, or
+added to coordinates in graphs representing the variable.
 
-`calculation`: A calculation represented using algebraic expressions along with `id` of other variables.
+`calculation`: A calculation represented using algebraic expressions along with
+`id` of other variables.
 
-`labels`: A series of different names for the variable that are semi-colon `;` separated. These labels are commonly synonyms, or related terms used primarily for searching.
+`labels`: A series of different names for the variable that are semi-colon `;`
+separated. These labels are commonly synonyms, or related terms used primarily
+for searching.
 
 All other columns get grouped into a hash labeled `other`.
 
@@ -91,13 +107,15 @@ Other columns that are imported include:
 
 ### Test your repository
 
-If you created your data dictionary repository using `spout new`, you can go ahead and test using:
+If you created your data dictionary repository using `spout new`, you can go
+ahead and test using:
 
 ```
 spout test
 ```
 
-If not, you can add the following to your `test` directory to include all Spout tests, or just a subset of Spout tests.
+If not, you can add the following to your `test` directory to include all Spout
+tests, or just a subset of Spout tests.
 
 `test/dictionary_test.rb`
 
@@ -129,9 +147,11 @@ end
 
 Then run either `spout test` or `bundle exec rake` to run your tests.
 
-You can also use Spout iterators to create custom tests for variables, forms, and domains in your data dictionary.
+You can also use Spout iterators to create custom tests for variables, forms,
+and domains in your data dictionary.
 
-**Example Custom Test 1:** Test that `integer` and `numeric` variables have a valid unit type
+**Example Custom Test 1:** Test that `integer` and `numeric` variables have a
+valid unit type
 
 ```ruby
 class DictionaryTest < Minitest::Test
@@ -176,31 +196,41 @@ end
 
 ### Test your data dictionary coverage of your dataset
 
-Spout lets you generate a nice visual coverage report that displays how well the data dictionary covers your dataset. Place your dataset csvs into `./csvs/<version>/` and then run the following Spout command:
+Spout lets you generate a nice visual coverage report that displays how well the
+data dictionary covers your dataset. Place your dataset csvs into
+`./csvs/<version>/` and then run the following Spout command:
 
 ```
 spout coverage
 ```
 
-This will generate an `index.html` file that can be opened and viewed in any browser.
+This will generate an `index.html` file that can be opened and viewed in any
+browser.
 
-Spout coverage validates that values stored in your dataset match up with variables and domains defined in your data dictionary.
+Spout coverage validates that values stored in your dataset match up with
+variables and domains defined in your data dictionary.
 
 ### Identify outliers in your dataset
 
-Spout lets you generate detect outliers in your underlying datasets. Place your dataset csvs into `./csvs/<version>/` and then run the following Spout command:
+Spout lets you generate detect outliers in your underlying datasets. Place your
+dataset csvs into `./csvs/<version>/` and then run the following Spout command:
 
 ```
 spout outliers
 ```
 
-This will generate an `outliers.html` file that can be opened and viewed in any browser.
+This will generate an `outliers.html` file that can be opened and viewed in any
+browser.
 
-Spout outliers computes the [inner and outer fences](http://www.wikihow.com/Calculate-Outliers) to identify minor and major outliers in the dataset.
+Spout outliers computes the
+[inner and outer fences](http://www.wikihow.com/Calculate-Outliers) to identify
+minor and major outliers in the dataset.
 
 ### Create a CSV Data Dictionary from your JSON repository
 
-Provide an optional version parameter to name the folder the CSVs will be generated in, defaults to what is in `VERSION` file, or if that does not exist `1.0.0`.
+Provide an optional version parameter to name the folder the CSVs will be
+generated in, defaults to what is in `VERSION` file, or if that does not
+exist `1.0.0`.
 
 ```
 spout export
@@ -220,7 +250,8 @@ spout graphs
 
 This command generates JSON charts and tables of each variable in a dataset
 
-Requires a Spout YAML configuration file, `.spout.yml`, in the root of the data dictionary that defines the variables used to create the charts:
+Requires a Spout YAML configuration file, `.spout.yml`, in the root of the data
+dictionary that defines the variables used to create the charts:
 
 - `visit`: This variable is used to separate subject encounters in a histogram
 - `charts`: Array of choices, numeric, or integer variables for charts
@@ -238,15 +269,18 @@ charts:
   title: Race
 ```
 
-To only generate graphs for a few select variables, add the variable names after the `spout graphs` command.
+To only generate graphs for a few select variables, add the variable names after
+the `spout graphs` command.
 
-For example, the command below will only generate graphs for the two variables `ahi` and `bmi`.
+For example, the command below will only generate graphs for the two variables
+`ahi` and `bmi`.
 
 ```
 spout g ahi bmi
 ```
 
-You can also specify a limit to the amount of rows to read in from the CSV files by specifying the `-rows` flag
+You can also specify a limit to the amount of rows to read in from the CSV files
+by specifying the `-rows` flag.
 
 ```
 spout g --rows=10 ahi
@@ -255,7 +289,8 @@ spout g --rows=10 ahi
 This will generate a graph for ahi for the first 10 rows of each dataset CSV.
 
 
-This will generate charts and tables for each variable in the dataset plotted against the variables listed under `charts`.
+This will generate charts and tables for each variable in the dataset plotted
+against the variables listed under `charts`.
 
 ### Example Variable that references a Domain and a Form
 
@@ -308,7 +343,8 @@ This will generate charts and tables for each variable in the dataset plotted ag
 spout deploy NAME
 ```
 
-This command pushes a tagged version of the data dictionary to a webserver specified in the `.spout.yml` file.
+This command pushes a tagged version of the data dictionary to a webserver
+specified in the `.spout.yml` file.
 
 ```
 webservers:
