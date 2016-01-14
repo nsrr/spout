@@ -1,6 +1,7 @@
 require 'test_helper'
 require 'spout/helpers/table_formatting'
 
+# Tests formatting numbers for tables
 class TableFormattingTest < Minitest::Test
   def setup
     # @table_formatting = Spout::Helpers::TableFormatting.new
