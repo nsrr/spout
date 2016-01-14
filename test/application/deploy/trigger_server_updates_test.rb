@@ -31,7 +31,7 @@ slug: myrepo
         skip
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--skip-checks', '--skip-variables'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--skip-checks', '--skip-tests', '--skip-coverage', '--skip-variables'] }
           end
           assert_match 'Launch Server Scripts: DONE', output.uncolorize
         end
@@ -41,7 +41,7 @@ slug: myrepo
         skip
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=3-ijkl', '--skip-checks', '--skip-variables'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=3-ijkl', '--skip-checks', '--skip-tests', '--skip-coverage', '--skip-variables'] }
           end
           assert_match 'Launch Server Scripts: FAIL', output.uncolorize
         end

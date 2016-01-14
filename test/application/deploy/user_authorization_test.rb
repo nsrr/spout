@@ -30,7 +30,7 @@ slug: myrepo
       def test_editor_approved_access
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--skip-checks', '--skip-variables', '--skip-server-scripts'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--skip-checks', '--skip-tests', '--skip-coverage', '--skip-variables', '--skip-server-scripts'] }
           end
           assert_match "     Enter your token: AUTHORIZED", output.uncolorize
         end
@@ -39,7 +39,7 @@ slug: myrepo
       def test_view_unauthorized_access
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=2-efgh', '--skip-checks', '--skip-variables', '--skip-server-scripts'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=2-efgh', '--skip-checks', '--skip-tests', '--skip-coverage', '--skip-variables', '--skip-server-scripts'] }
           end
           assert_match "     Enter your token: UNAUTHORIZED", output.uncolorize
         end
@@ -48,7 +48,7 @@ slug: myrepo
       def test_anonymous_unauthorized_access
         Artifice.activate_with(app) do
           output, error = util_capture do
-            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=_', '--skip-checks', '--skip-variables', '--skip-server-scripts'] }
+            Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=_', '--skip-checks', '--skip-tests', '--skip-coverage', '--skip-variables', '--skip-server-scripts'] }
           end
           assert_match "     Enter your token: UNAUTHORIZED", output.uncolorize
         end
