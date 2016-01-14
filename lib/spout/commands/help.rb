@@ -138,7 +138,9 @@ Optional Flags:
                         to a maximum of N rows
   <variable>            Only deploy specified variable(s)
                         Ex: spout deploy production age gender
-  --skip-checks         Skip Spout checks
+  --skip-checks         Skip git tag and version checks
+  --skip-tests          Skip data dictionary tests
+  --skip-coverage       Skip dataset coverage check
   --skip-variables      Skip upload of dataset variables
   --skip-dataset        Skip upload of dataset CSVs
   --skip-dictionary     Skip upload of data dictionary

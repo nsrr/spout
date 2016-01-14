@@ -49,6 +49,9 @@ module Spout
         @version = version
         @skip_checks = !(argv.delete('--skip-checks').nil? && argv.delete('--no-checks').nil?)
 
+        @skip_tests = !(argv.delete('--skip-tests').nil? && argv.delete('--no-tests').nil?)
+        @skip_coverage = !(argv.delete('--skip-coverage').nil? && argv.delete('--no-coverage').nil?)
+
         @skip_variables = !(argv.delete('--skip-variables').nil? && argv.delete('--no-variables').nil?)
         @skip_dataset = !(argv.delete('--skip-dataset').nil? && argv.delete('--no-dataset').nil?)
         @skip_dictionary = !(argv.delete('--skip-dictionary').nil? && argv.delete('--no-dictionary').nil?)
@@ -80,6 +83,7 @@ module Spout
         config_file_load
         version_check
         test_check
+        coverage_check
         user_authorization
         upload_variables
         dataset_uploads
@@ -176,12 +180,12 @@ module Spout
       end
 
       def test_check
-        if @skip_checks
+        if @skip_tests
           puts '          Spout Tests: ' + 'SKIP'.colorize(:blue)
           return
         end
 
-        print "          Spout Tests: "
+        print '          Spout Tests: '
 
         stdout = quietly do
           `spout t`
@@ -193,8 +197,15 @@ module Spout
           message = "#{INDENT}spout t".colorize(:white) + " had errors or failures".colorize(:red) + "\n#{INDENT}Please fix all errors and failures and then run spout deploy again."
           failure message
         end
+      end
 
-        puts '       Spout Coverage: ' + 'SKIP'.colorize(:blue)
+      def coverage_check
+        if @skip_coverage
+          puts '     Dataset Coverage: ' + 'SKIP'.colorize(:blue)
+          return
+        end
+
+        puts '     Dataset Coverage: ' + 'NOT IMPLEMENTED'.colorize(:yellow)
       end
 
       def user_authorization
