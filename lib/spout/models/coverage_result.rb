@@ -17,7 +17,7 @@ module Spout
 
       def load_json(column)
         file = Dir.glob("variables/**/#{column.to_s.downcase}.json", File::FNM_CASEFOLD).first
-        @file_name_test = (file != nil)
+        @file_name_test = !file.nil?
         @json = JSON.parse(File.read(file)) rescue @json = {}
         @json_id_test = (@json['id'].to_s.downcase == column)
       end
