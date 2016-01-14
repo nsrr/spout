@@ -3,18 +3,16 @@ require 'json'
 
 require 'minitest/autorun'
 require 'minitest/reporters'
-require 'ansi/code'
 require 'colorize'
 
 module Minitest
   module Reporters
     class SpoutReporter < BaseReporter
-      include ANSI::Code
       include RelativePosition
 
       def start
         super
-        print(white { 'Loaded Suite test' })
+        print 'Loaded Suite test'.colorize(:white)
         puts
         puts
         puts 'Started'
@@ -23,13 +21,13 @@ module Minitest
 
       def report
         super
-        puts 'Finished in %.5f seconds.' % total_time
+        puts format('Finished in %.5f seconds.', total_time)
         puts
-        print(white { '%d tests' } % count)
-        print(', %d assertions, ' % assertions)
+        print format('%d tests', count).colorize(:white)
+        print format(', %d assertions, ', assertions)
         color = failures.zero? && errors.zero? ? :green : :red
-        print(send(color) { '%d failures, %d errors, ' } % [failures, errors])
-        print(yellow { '%d skips' } % skips)
+        print format('%d failures, %d errors, ', failures, errors).colorize(color)
+        print format('%d skips', skips).colorize(:yellow)
         puts
         puts
       end
@@ -49,6 +47,17 @@ module Minitest
       end
 
       protected
+
+      def print_colored_status(test)
+        color = if test.passed?
+                  :green
+                elsif test.skipped?
+                  :yellow
+                else
+                  :red
+                end
+        print pad_mark(result(test).to_s.upcase).colorize(color)
+      end
 
       def before_suite(suite)
         puts suite

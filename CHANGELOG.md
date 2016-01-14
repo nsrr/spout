@@ -33,6 +33,7 @@
 
 ### Refactoring
 - Started refactoring code base to better adhere to RuboCop style recommendations
+- Replaced dependency on `ansi/code` with colorize for better compatibility with Windows
 
 ## 0.10.2 (December 29, 2014)
 
