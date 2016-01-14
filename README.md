@@ -144,8 +144,8 @@ class DictionaryTest < Minitest::Test
 
   VALID_UNITS = ['minutes', 'hours']
 
-  @variables.select{|v| v.type == 'numeric' or v.type == 'integer'}.each do |variable|
-    define_method("test_valid_units: "+variable.path) do
+  @variables.select { |v| %w(numeric integer).include?(v.type) }.each do |variable|
+    define_method("test_units: #{variable.path}") do
       puts variable.class
       # => Spout::Models::Variable
       assert VALID_UNITS.include?(variable.units)
@@ -165,8 +165,8 @@ class DictionaryTest < Minitest::Test
   # iterators that can be used to write custom tests
   include Spout::Helpers::Iterators
 
-  @variables.select{|v| ['numeric','integer'].include?(v.type)}.each do |variable|
-    define_method("test_at_least_two_labels: "+variable.path) do
+  @variables.select { |v| %w(numeric integer).include?(v.type) }.each do |variable|
+    define_method("test_at_least_two_labels: #{variable.path}") do
       assert_operator 2, :<=, variable.labels.size
     end
   end
