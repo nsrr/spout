@@ -1,4 +1,4 @@
-## 0.11.0
+## 0.11.0 (January 19, 2016)
 
 ### Deprecations
 - **Image Command**
