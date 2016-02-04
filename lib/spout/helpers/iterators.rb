@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spout/models/dictionary'
 
 module Spout

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spout/models/graphables/default'
 require 'spout/models/graphables/histogram'
 require 'spout/models/graphables/numeric_vs_choices'

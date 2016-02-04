@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Spout
   module Models
     # Used for empty values, these values exist in that the column is defined

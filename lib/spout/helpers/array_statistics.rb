@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Extensions to the Array class to calculate quartiles, outliers, and statistics
 class Array
   def compact_empty

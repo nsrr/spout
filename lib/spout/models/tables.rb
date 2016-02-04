@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spout/models/tables/default'
 require 'spout/models/tables/numeric_vs_choices'
 require 'spout/models/tables/choices_vs_choices'

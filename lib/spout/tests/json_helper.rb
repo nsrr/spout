@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 
 def json_value(file, key)

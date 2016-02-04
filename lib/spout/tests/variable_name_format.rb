@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Spout
   module Tests
     # Tests to assure that the variable name starts with a lowercase letter

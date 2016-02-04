@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spout/tests/variable_type_validation'
 
 module Spout

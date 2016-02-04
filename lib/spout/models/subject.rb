@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Spout
   module Models
     # Subject encapsulates records for individuals specified by an identifier

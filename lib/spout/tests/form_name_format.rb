@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Spout
   module Tests
     # Tests to assure that the domain name starts with a lowercase letter

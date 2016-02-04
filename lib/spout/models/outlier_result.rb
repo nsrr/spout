@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spout/helpers/array_statistics'
 require 'spout/helpers/json_loader'
 

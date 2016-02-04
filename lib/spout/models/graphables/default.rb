@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spout/models/variable'
 require 'spout/models/bucket'
 

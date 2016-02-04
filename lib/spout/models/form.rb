@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # {
 #   "id": "intake_questionnaire",
 #   "display_name": "Intake Questionnaire at Baseline Visit",

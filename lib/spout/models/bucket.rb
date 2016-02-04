@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Spout
   module Models
     # Defines a continuous or discrete bucket for tables and graphs

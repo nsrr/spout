@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Spout
   module Helpers
     # Helps to sort semantically versioned numbers to match versions that are

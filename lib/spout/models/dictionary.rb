@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spout/models/variable'
 require 'spout/models/domain'
 require 'spout/models/form'

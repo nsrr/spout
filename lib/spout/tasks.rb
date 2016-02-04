@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Load Spout rakefile extensions
 %w(
   engine

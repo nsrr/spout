@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helper'
 
 # Launches default Spout tests and custom tests for specific to this dictionary
