@@ -1,3 +1,5 @@
+## 0.11.1
+
 ## 0.11.0 (January 19, 2016)
 
 ### Deprecations
