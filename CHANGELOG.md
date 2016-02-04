@@ -1,4 +1,4 @@
-## 0.11.1
+## 0.11.1 (February 4, 2016)
 
 ### Bug Fix
 - Fixed a bug that prevented variables without graphs from being pushed to server
