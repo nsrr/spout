@@ -106,7 +106,6 @@ module Spout
 
           next unless variable.errors.size == 0
           next unless @valid_ids.include?(variable.id) || @valid_ids.size == 0
-          next unless %w(numeric integer choices).include?(variable.type)
           next unless Spout::Models::Subject.method_defined?(variable.id)
 
           if @deploy_mode
@@ -119,37 +118,7 @@ module Spout
           @progress[variable.id]['uploaded'] ||= []
           next if (!@deploy_mode && @progress[variable.id]['generated'] == true) || (@deploy_mode && @progress[variable.id]['uploaded'].include?(@webserver_name))
 
-          stats = {
-            charts: {},
-            tables: {}
-          }
-
-          @chart_variables.each do |chart_type_hash|
-            chart_type = chart_type_hash['chart']
-            chart_title = chart_type_hash['title'].downcase.gsub(' ', '-')
-            chart_variable = Spout::Models::Variable.find_by_id(chart_type)
-
-            filtered_subjects = @subjects.reject { |s| s.send(chart_type).nil? || s.send(variable.id).nil? }
-
-            next if filtered_subjects.collect(&variable.id.to_sym).compact_empty.count == 0
-            if chart_type == @config.visit
-              graph = Spout::Models::Graphables.for(variable, chart_variable, nil, filtered_subjects)
-              stats[:charts][chart_title] = graph.to_hash
-              table = Spout::Models::Tables.for(variable, chart_variable, filtered_subjects, nil, totals: false)
-              stats[:tables][chart_title] = table.to_hash
-            else
-              graph = Spout::Models::Graphables.for(variable, chart_variable, @stratification_variable, filtered_subjects)
-              stats[:charts][chart_title] = graph.to_hash
-              stats[:tables][chart_title] = @stratification_variable.domain.options.collect do |option|
-                visit_subjects = filtered_subjects.select { |s| s._visit == option.value }
-                Spout::Models::Tables.for(variable, chart_variable, visit_subjects, option.display_name).to_hash
-              end.compact
-            end
-          end
-
-          chart_json_file = File.join(@graphs_folder, "#{variable.id}.json")
-          File.open(chart_json_file, 'w') { |file| file.write(JSON.pretty_generate(stats) + "\n") }
-          @progress[variable.id]['generated'] = true
+          stats = compute_stats(variable)
 
           if @deploy_mode && !@progress[variable.id]['uploaded'].include?(@webserver_name)
             values = @subjects.collect(&variable.id.to_sym).compact_empty
@@ -168,6 +137,39 @@ module Spout
         end
       end
 
+      def compute_stats(variable)
+        stats = { charts: {}, tables: {} }
+        return stats unless %w(numeric integer choices).include?(variable.type)
+
+        @chart_variables.each do |chart_type_hash|
+          chart_type = chart_type_hash['chart']
+          chart_title = chart_type_hash['title'].downcase.tr(' ', '-')
+          chart_variable = Spout::Models::Variable.find_by_id(chart_type)
+
+          filtered_subjects = @subjects.reject { |s| s.send(chart_type).nil? || s.send(variable.id).nil? }
+
+          next if filtered_subjects.collect(&variable.id.to_sym).compact_empty.count == 0
+          if chart_type == @config.visit
+            graph = Spout::Models::Graphables.for(variable, chart_variable, nil, filtered_subjects)
+            stats[:charts][chart_title] = graph.to_hash
+            table = Spout::Models::Tables.for(variable, chart_variable, filtered_subjects, nil, totals: false)
+            stats[:tables][chart_title] = table.to_hash
+          else
+            graph = Spout::Models::Graphables.for(variable, chart_variable, @stratification_variable, filtered_subjects)
+            stats[:charts][chart_title] = graph.to_hash
+            stats[:tables][chart_title] = @stratification_variable.domain.options.collect do |option|
+              visit_subjects = filtered_subjects.select { |s| s._visit == option.value }
+              Spout::Models::Tables.for(variable, chart_variable, visit_subjects, option.display_name).to_hash
+            end.compact
+          end
+        end
+
+        chart_json_file = File.join(@graphs_folder, "#{variable.id}.json")
+        File.open(chart_json_file, 'w') { |file| file.write(JSON.pretty_generate(stats) + "\n") }
+        @progress[variable.id]['generated'] = true
+        stats
+      end
+
       def send_variable_params_to_server(variable, stats)
         params = { auth_token: @token, version: @standard_version,
                    dataset: @slug, variable: variable.deploy_params,
@@ -176,7 +178,6 @@ module Spout
         params[:variable][:spout_stats] = stats.to_json
         (response, status) = Spout::Helpers::JsonRequestGeneric.post("#{@url}/api/v1/variables/create_or_update.json", params)
         if response.is_a?(Hash) && status.is_a?(Net::HTTPSuccess)
-          # puts "response: #{response}".colorize(:blue)
           @progress[variable.id]['uploaded'] << @webserver_name
         else
           puts "\nUPLOAD FAILED: ".colorize(:red) + variable.id
