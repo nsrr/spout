@@ -1,6 +1,6 @@
 # Compiling the Gem
 # gem build spout.gemspec
-# gem install ./spout-x.x.x.gem --no-ri --no-rdoc --local
+# gem install ./spout-x.x.x.gem --no-document --local
 #
 # gem push spout-x.x.x.gem
 # gem list -r spout
