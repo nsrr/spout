@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Compiling the Gem
 # gem build spout.gemspec
 # gem install ./spout-x.x.x.gem --no-document --local
@@ -6,7 +8,6 @@
 # gem list -r spout
 # gem install spout
 
-# coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'spout/version'
