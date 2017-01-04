@@ -1,5 +1,11 @@
 ## 0.12.0
 
+### Enhancements
+- **Gem Changes**
+  - Updated to bundler 1.13
+  - Updated to colorize 0.8.1
+  - Updated to simplecov 0.12.0
+
 ## 0.11.1 (February 4, 2016)
 
 ### Bug Fix
