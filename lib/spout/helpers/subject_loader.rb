@@ -67,8 +67,12 @@ module Spout
               t._visit = row[@visit]
               t._csv = File.basename(csv_file)
 
-              row.each do |key, value|
-                method = key.to_s.downcase
+              row.each_with_index do |(key, value), index|
+                method = key.to_s.downcase.strip
+                if method == ''
+                  puts "\nSkipping column #{index + 1} due to blank header.".colorize(:red) if count == 2
+                  next
+                end
                 next unless @valid_ids.include?(method) || @valid_ids.size == 0
                 unless t.respond_to?(method)
                   t.class.send(:define_method, "#{method}") { instance_variable_get("@#{method}") }

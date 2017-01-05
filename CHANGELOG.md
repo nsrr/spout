@@ -1,6 +1,8 @@
 ## 0.12.0
 
 ### Enhancements
+- **General Changes**
+  - Spout now provides a warning and skips columns in CSVs with blank headers
 - **Gem Changes**
   - Updated to Ruby 2.4.0
   - Updated to bundler 1.13
