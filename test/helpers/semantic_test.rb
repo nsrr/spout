@@ -10,7 +10,7 @@ module HelperTests
       assert_equal "0", @semantic.major
       assert_equal "1", @semantic.minor
       assert_equal "0", @semantic.tiny
-      assert_equal nil, @semantic.build
+      assert_nil @semantic.build
       assert_equal [], @semantic.valid_versions.collect(&:string)
       assert_equal "0.1.0", @semantic.selected_folder
     end
@@ -21,7 +21,7 @@ module HelperTests
       assert_equal "0", @semantic.major
       assert_equal "2", @semantic.minor
       assert_equal "0", @semantic.tiny
-      assert_equal nil, @semantic.build
+      assert_nil @semantic.build
       assert_equal ["0.2.0"], @semantic.valid_versions.collect(&:string)
       assert_equal "0.2.0", @semantic.selected_folder
     end
@@ -51,10 +51,10 @@ module HelperTests
     def test_nil_version
       @semantic = Spout::Helpers::Semantic.new(nil, [])
       assert_equal "", @semantic.version
-      assert_equal nil, @semantic.major
-      assert_equal nil, @semantic.minor
-      assert_equal nil, @semantic.tiny
-      assert_equal nil, @semantic.build
+      assert_nil @semantic.major
+      assert_nil @semantic.minor
+      assert_nil @semantic.tiny
+      assert_nil @semantic.build
       assert_equal [], @semantic.valid_versions.collect(&:string)
       assert_equal "", @semantic.selected_folder
     end
@@ -62,10 +62,10 @@ module HelperTests
     def test_blank_version
       @semantic = Spout::Helpers::Semantic.new("", [])
       assert_equal "", @semantic.version
-      assert_equal nil, @semantic.major
-      assert_equal nil, @semantic.minor
-      assert_equal nil, @semantic.tiny
-      assert_equal nil, @semantic.build
+      assert_nil @semantic.major
+      assert_nil @semantic.minor
+      assert_nil @semantic.tiny
+      assert_nil @semantic.build
       assert_equal [], @semantic.valid_versions.collect(&:string)
       assert_equal "", @semantic.selected_folder
     end

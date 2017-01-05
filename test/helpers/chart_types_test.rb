@@ -21,7 +21,7 @@ module HelperTests
     end
 
     def test_get_bucket_with_empty_buckets
-      assert_equal nil, Spout::Helpers::ChartTypes::get_bucket([], 1)
+      assert_nil Spout::Helpers::ChartTypes::get_bucket([], 1)
     end
 
     def test_get_bucket_labels
@@ -48,9 +48,9 @@ module HelperTests
 
     def test_get_bucket_for_nil_or_non_number_value
       buckets = [[0.1, 0.2], [0.2, 0.3], [0.3, 0.4], [0.4, 0.5], [0.5, 0.6], [0.6, 0.7], [0.7, 0.8], [0.8, 0.9], [0.9, 1.0], [1.0, 1.1], [1.1, 1.2], [1.2, 1.3]]
-      assert_equal nil, Spout::Helpers::ChartTypes::get_bucket(buckets, nil)
-      assert_equal nil, Spout::Helpers::ChartTypes::get_bucket(buckets, "m")
-      assert_equal nil, Spout::Helpers::ChartTypes::get_bucket(buckets, "1")
+      assert_nil Spout::Helpers::ChartTypes::get_bucket(buckets, nil)
+      assert_nil Spout::Helpers::ChartTypes::get_bucket(buckets, "m")
+      assert_nil Spout::Helpers::ChartTypes::get_bucket(buckets, "1")
     end
 
   end

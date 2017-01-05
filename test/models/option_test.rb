@@ -13,9 +13,9 @@ module ApplicationTests
     def test_invalid_option
       option = Spout::Models::Option.new([])
 
-      assert_equal nil, option.value
-      assert_equal nil, option.display_name
-      assert_equal nil, option.description
+      assert_nil option.value
+      assert_nil option.display_name
+      assert_nil option.description
 
       # assert_equal 1, option.errors
       # assert_equal "Option is not correct format", option.errors.first
@@ -24,9 +24,9 @@ module ApplicationTests
     def test_empty_option
       option = Spout::Models::Option.new({})
 
-      assert_equal nil, option.value
-      assert_equal nil, option.display_name
-      assert_equal nil, option.description
+      assert_nil option.value
+      assert_nil option.display_name
+      assert_nil option.description
     end
 
     def test_blank_display_name
@@ -46,7 +46,7 @@ module ApplicationTests
       option = Spout::Models::Option.new({ "value" => "1", "description" => "First Option Description" })
 
       assert_equal "1", option.value
-      assert_equal nil, option.display_name
+      assert_nil option.display_name
       assert_equal "First Option Description", option.description
 
       assert_equal 1, option.errors
@@ -69,7 +69,7 @@ module ApplicationTests
       skip
       option = Spout::Models::Option.new({ "display_name" => "First Option", "description" => "First Option Description" })
 
-      assert_equal nil, option.value
+      assert_nil option.value
       assert_equal "First Option", option.display_name
       assert_equal "First Option Description", option.description
 

@@ -35,7 +35,7 @@ module ApplicationTests
       assert_equal "Age at time of visit.", variable.description
       assert_equal "numeric",           variable.type
       assert_equal "years",             variable.units
-      assert_equal nil,                 variable.domain_name
+      assert_nil                 variable.domain_name
       assert_equal [ "age_at_visit" ],  variable.labels
       assert_equal true,                variable.commonly_used
     end

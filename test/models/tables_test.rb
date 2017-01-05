@@ -110,7 +110,7 @@ visit,age_at_visit,gender,race
           table = Spout::Models::Tables.for(variable, chart_variable, @subject_loader.subjects, nil)
 
           assert_equal 'Gender vs Race', table.title
-          assert_equal nil, table.subtitle
+          assert_nil table.subtitle
           assert_equal [["", "White", "Black", "Total"]], table.headers
           assert_equal [[{ text: "Total", style: "font-weight:bold" },
                          { text: "10",    style: "font-weight:bold" },
@@ -167,7 +167,7 @@ visit,age_at_visit,gender,bmi
           table = Spout::Models::Tables.for(variable, chart_variable, @subject_loader.subjects, nil)
 
           assert_equal 'Age at Visit vs Body Mass Index', table.title
-          assert_equal nil, table.subtitle
+          assert_nil table.subtitle
           assert_equal [["", "N", "Mean", "StdDev", "Median", "Min", "Max", "Unknown", "Total"]], table.headers
           assert_equal [[{ text: "Total", style: "font-weight:bold" },
                          { text: "18",    style: "font-weight:bold" },
@@ -200,7 +200,7 @@ visit,age_at_visit,gender,bmi
           table = Spout::Models::Tables.for(variable, chart_variable, @subject_loader.subjects, nil)
 
           assert_equal 'Gender vs Age at Visit', table.title
-          assert_equal nil, table.subtitle
+          assert_nil table.subtitle
           assert_equal [["", "22.0 to 30.0 years", "33.0 to 40.0 years", "42.0 to 47.0 years", "48.0 to 53.0 years", "Total"]], table.headers
           assert_equal [[{ text: "Total", style: "font-weight:bold" },
                          { text: "5",     style: "font-weight:bold" },

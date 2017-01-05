@@ -49,7 +49,7 @@ module ApplicationTests
           assert_equal ["22 to 25", "25 to 27", "27 to 30", "30 to 32", "32 to 35", "35 to 38", "38 to 40", "40 to 43", "43 to 45", "45 to 48", "48 to 50", "50 to 53"], graph.categories
           assert_equal 'Subjects', graph.units
           assert_equal [{ name: "Visit One", data: [1, nil, 3, nil, 1, nil, 1, 1, 1, 1, nil, 1] }, { name: "Visit Two", data: [nil, 1, nil, nil, 2, nil, 1, nil, 1, 1, 1, 1] }], graph.series
-          assert_equal nil, graph.stacking
+          assert_nil graph.stacking
           assert_equal 'years', graph.x_axis_title
           assert_equal Hash, graph.to_hash.class
         end
@@ -73,8 +73,8 @@ module ApplicationTests
           assert_equal ['Male', 'Female'], graph.categories
           assert_equal 'Subjects', graph.units
           assert_equal [{ name: "Visit One", data: [5, 5] }, { name: "Visit Two", data: [4, 4] }], graph.series
-          assert_equal nil, graph.stacking
-          assert_equal nil, graph.x_axis_title
+          assert_nil graph.stacking
+          assert_nil graph.x_axis_title
           assert_equal Hash, graph.to_hash.class
         end
       end
@@ -122,7 +122,7 @@ visit,age_at_visit,gender,nodomain
           chart_variable = Spout::Models::Variable.find_by_id 'visit'
           graph = Spout::Models::Graphables.for(variable, chart_variable, nil, subject_loader.subjects)
 
-          assert_equal nil, graph.to_hash
+          assert_nil graph.to_hash
         end
       end
     end
@@ -147,7 +147,7 @@ visit,age_at_visit,gender,nodomain
           chart_variable = Spout::Models::Variable.find_by_id 'visit'
           graph = Spout::Models::Graphables.for(variable, chart_variable, nil, subject_loader.subjects)
 
-          assert_equal nil, graph.to_hash
+          assert_nil graph.to_hash
         end
       end
     end
@@ -182,8 +182,8 @@ visit,age_at_visit,gender,nodomain
           assert_equal ['Visit One', 'Visit Two'], graph.categories
           assert_equal 'years', graph.units
           assert_equal [{ name: "Male", data: [37.6, 44.5] }, { name: "Female", data: [36.6, 37.5] }], graph.series
-          assert_equal nil, graph.stacking
-          assert_equal nil, graph.x_axis_title
+          assert_nil graph.stacking
+          assert_nil graph.x_axis_title
           assert_equal Hash, graph.to_hash.class
         end
       end
@@ -251,7 +251,7 @@ visit,age_at_visit,gender,race
           assert_equal 'percent', graph.units
           assert_equal [{ name: "Male", data: [3, 6] }, { name: "Female", data: [7, 2] }], graph.series
           assert_equal 'percent', graph.stacking
-          assert_equal nil, graph.x_axis_title
+          assert_nil graph.x_axis_title
           assert_equal Hash, graph.to_hash.class
         end
       end
@@ -276,7 +276,7 @@ visit,age_at_visit,gender,race
           assert_equal 'percent', graph.units
           assert_equal [{ name: "Male", data: [2, 2, 3, 2] }, { name: "Female", data: [3, 3, 1, 2] }], graph.series
           assert_equal 'percent', graph.stacking
-          assert_equal nil, graph.x_axis_title
+          assert_nil graph.x_axis_title
           assert_equal Hash, graph.to_hash.class
         end
       end
@@ -339,8 +339,8 @@ visit,age_at_visit,gender,bmi
                                                     { y: 19.5, stddev: '3.5', median: '19.5', min: '17.0', max: '22.0', n: 2 },
                                                     { y: 17.0, stddev: '2.8', median: '17.0', min: '15.0', max: '19.0', n: 2 },
                                                     { y: 19.0, stddev: '1.4', median: '19.0', min: '18.0', max: '20.0', n: 2 }] }], graph.series
-          assert_equal nil, graph.stacking
-          assert_equal nil, graph.x_axis_title
+          assert_nil graph.stacking
+          assert_nil graph.x_axis_title
           assert_equal Hash, graph.to_hash.class
         end
       end
@@ -359,7 +359,7 @@ visit,age_at_visit,gender,bmi
           stratification_variable = Spout::Models::Variable.find_by_id 'visit'
           graph = Spout::Models::Graphables.for(variable, chart_variable, stratification_variable, subject_loader.subjects)
 
-          assert_equal nil, graph.to_hash
+          assert_nil graph.to_hash
         end
       end
     end
@@ -377,7 +377,7 @@ visit,age_at_visit,gender,bmi
           stratification_variable = Spout::Models::Variable.find_by_id 'visit'
           graph = Spout::Models::Graphables.for(variable, chart_variable, stratification_variable, subject_loader.subjects)
 
-          assert_equal nil, graph.to_hash
+          assert_nil graph.to_hash
         end
       end
     end
