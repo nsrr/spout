@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'test_helpers/sandbox'
 
 module ApplicationTests
+  # Tests to assure domains are formatted correctly.
   class DomainTest < SandboxTest
-
     def setup
       build_app
       basic_info
@@ -40,7 +42,7 @@ module ApplicationTests
       assert_equal 'does_not_exist', domain.id
       assert_equal [], domain.options
       assert_equal 1, domain.errors.count
-      assert_equal "No corresponding does_not_exist.json file found.", domain.errors.first
+      assert_equal 'No corresponding does_not_exist.json file found.', domain.errors.first
     end
 
     def test_for_parsing_error_trailing_comma
@@ -58,7 +60,7 @@ module ApplicationTests
       assert_equal [], domain.options
       assert_equal 1, domain.errors.count
       assert_equal "trailing-comma", domain.id
-      assert_match /Parsing error found in trailing-comma\.json: /, domain.errors.first
+      assert_match(/Parsing error found in trailing-comma\.json: /, domain.errors.first)
 
       delete_app_file 'domains/trailing-comma.json'
     end
@@ -72,10 +74,9 @@ module ApplicationTests
 
       assert_equal 'hash', domain.id
       assert_equal 1, domain.errors.size
-      assert_match /Domain must be a valid array in the following format:/, domain.errors.first
+      assert_match(/Domain must be a valid array in the following format:/, domain.errors.first)
 
       delete_app_file 'domains/hash.json'
     end
-
   end
 end

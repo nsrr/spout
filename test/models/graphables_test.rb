@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helpers/sandbox'
 require 'test_helpers/capture'
 
@@ -6,6 +8,7 @@ require 'spout/helpers/config_reader'
 require 'spout/helpers/subject_loader'
 
 module ApplicationTests
+  # Tests to assure graphs are generated correctly.
   class GraphablesTest < SandboxTest
     include TestHelpers::Capture
 
@@ -34,7 +37,7 @@ module ApplicationTests
 
     def test_histogram_numeric_graph
       Dir.chdir(app_path) do
-        output, error = util_capture do
+        util_capture do
           variable_files = Dir.glob('variables/**/*.json')
           config = Spout::Helpers::ConfigReader.new
           subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
@@ -58,7 +61,7 @@ module ApplicationTests
 
     def test_histogram_choices_graph
       Dir.chdir(app_path) do
-        output, error = util_capture do
+        util_capture do
           variable_files = Dir.glob('variables/**/*.json')
           config = Spout::Helpers::ConfigReader.new
           subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
@@ -112,7 +115,7 @@ visit,age_at_visit,gender,nodomain
       CSV
 
       Dir.chdir(app_path) do
-        output, error = util_capture do
+        util_capture do
           variable_files = Dir.glob('variables/**/*.json')
           config = Spout::Helpers::ConfigReader.new
           subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
@@ -137,7 +140,7 @@ visit,age_at_visit,gender,nodomain
       JSON
 
       Dir.chdir(app_path) do
-        output, error = util_capture do
+        util_capture do
           variable_files = Dir.glob('variables/**/*.json')
           config = Spout::Helpers::ConfigReader.new
           subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
@@ -166,7 +169,7 @@ visit,age_at_visit,gender,nodomain
 
     def test_numeric_vs_choices_graph
       Dir.chdir(app_path) do
-        output, error = util_capture do
+        util_capture do
           variable_files = Dir.glob('variables/**/*.json')
           config = Spout::Helpers::ConfigReader.new
           subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
@@ -234,7 +237,7 @@ visit,age_at_visit,gender,race
       JSON
 
       Dir.chdir(app_path) do
-        output, error = util_capture do
+        util_capture do
           variable_files = Dir.glob('variables/**/*.json')
           config = Spout::Helpers::ConfigReader.new
           subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
@@ -259,7 +262,7 @@ visit,age_at_visit,gender,race
 
     def test_choices_vs_numeric_graph
       Dir.chdir(app_path) do
-        output, error = util_capture do
+        util_capture do
           variable_files = Dir.glob('variables/**/*.json')
           config = Spout::Helpers::ConfigReader.new
           subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
@@ -315,7 +318,7 @@ visit,age_at_visit,gender,bmi
       JSON
 
       Dir.chdir(app_path) do
-        output, error = util_capture do
+        util_capture do
           variable_files = Dir.glob('variables/**/*.json')
           config = Spout::Helpers::ConfigReader.new
           subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
@@ -348,7 +351,7 @@ visit,age_at_visit,gender,bmi
 
     def test_graph_creation_for_non_existent_primary_variable_do_not_exist
       Dir.chdir(app_path) do
-        output, error = util_capture do
+        util_capture do
           variable_files = Dir.glob('variables/**/*.json')
           config = Spout::Helpers::ConfigReader.new
           subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)
@@ -366,7 +369,7 @@ visit,age_at_visit,gender,bmi
 
     def test_graph_creation_for_non_existent_chart_variable
       Dir.chdir(app_path) do
-        output, error = util_capture do
+        util_capture do
           variable_files = Dir.glob('variables/**/*.json')
           config = Spout::Helpers::ConfigReader.new
           subject_loader = Spout::Helpers::SubjectLoader.new(variable_files, [], '1.0.0', nil, config.visit)

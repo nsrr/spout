@@ -1,7 +1,10 @@
+# frozen_string_literal: true
+
 require 'test_helpers/sandbox'
 require 'test_helpers/capture'
 
 module ApplicationTests
+  # Tests to assure version is printed.
   class VersionTest < SandboxTest
     include TestHelpers::Capture
 
@@ -14,7 +17,7 @@ module ApplicationTests
     end
 
     def test_version
-      output, error = util_capture do
+      output, _error = util_capture do
         Dir.chdir(app_path) { Spout.launch ['version'] }
       end
       assert_equal "Spout #{Spout::VERSION::STRING}\n", output

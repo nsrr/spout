@@ -37,6 +37,12 @@ module TestHelpers
     def delete_app_file(file)
       File.delete("#{app_path}/#{file}")
     end
+
+    def read_index_file(type = 'index')
+      File.read(File.join(app_path, 'coverage', "#{type}.html"))
+    rescue
+      nil
+    end
   end
 
   module Fixtures
@@ -171,7 +177,6 @@ visit,age_at_visit,gender
       delete_app_file 'variables/visit.json'
       delete_app_file 'domains/vdomain.json'
     end
-
   end
 end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'colorize'
 
 require 'test_helpers/sandbox'
@@ -34,7 +36,7 @@ slug: myrepo
         YML
 
         Artifice.activate_with(app) do
-          output, error = util_capture do
+          output, _error = util_capture do
             Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--skip-tests', '--skip-coverage', '--skip-variables', '--skip-server-scripts'] }
           end
           assert_match 'CHANGELOG.md: PASS ## 1.0.0', output.uncolorize
@@ -43,7 +45,7 @@ slug: myrepo
 
       def test_changelog_version_does_not_match
         Artifice.activate_with(app) do
-          output, error = util_capture do
+          output, _error = util_capture do
             Dir.chdir(app_path) { Spout.launch ['deploy', 't', '--token=1-abcd', '--skip-tests', '--skip-coverage', '--skip-variables', '--skip-server-scripts'] }
           end
           assert_match 'Expected: ## 1.0.0', output.uncolorize
@@ -58,7 +60,7 @@ slug: myrepo
         YML
 
         Artifice.activate_with(app) do
-          output, error = util_capture do
+          output, _error = util_capture do
             Dir.chdir(app_path) do
               initialize_git_repository!
               `git add .`
@@ -78,7 +80,7 @@ slug: myrepo
         YML
 
         Artifice.activate_with(app) do
-          output, error = util_capture do
+          output, _error = util_capture do
             Dir.chdir(app_path) do
               initialize_git_repository!
               `git add .`
@@ -92,7 +94,7 @@ slug: myrepo
 
       def test_git_uncommitted_changes
         Artifice.activate_with(app) do
-          output, error = util_capture do
+          output, _error = util_capture do
             Dir.chdir(app_path) do
               initialize_git_repository!
               Spout.launch ['deploy', 't', '--token=1-abcd', '--skip-tests', '--skip-coverage', '--skip-variables', '--skip-server-scripts']

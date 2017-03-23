@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helpers/sandbox'
 require 'test_helpers/capture'
 
@@ -17,7 +19,7 @@ module ApplicationTests
     end
 
     def test_graphs_command_without_visit_variable
-      output, error = util_capture do
+      output, _error = util_capture do
         Dir.chdir(app_path) { Spout.launch ['graphs'] }
       end
 
@@ -27,16 +29,16 @@ module ApplicationTests
     def test_graphs_with_visit_variable
       create_visit_variable_and_domain
 
-      output, error = util_capture do
+      output, _error = util_capture do
         Dir.chdir(app_path) { Spout.launch ['graphs'] }
       end
 
       assert File.directory?(File.join(app_path, 'graphs', '1.0.0'))
       assert_equal ['age_at_visit.json', 'gender.json', 'visit.json', '.progress.json', '.', '..'].sort, Dir.entries(File.join(app_path, 'graphs', '1.0.0')).sort
-      assert_match /Parsing files in csvs\/1\.0\.0/, output.uncolorize
-      assert_match /of 3: age\_at\_visit/, output
-      assert_match /of 3: gender/, output
-      assert_match /of 3: visit/, output
+      assert_match %r{Parsing files in csvs/1\.0\.0}, output.uncolorize
+      assert_match(/of 3: age\_at\_visit/, output)
+      assert_match(/of 3: gender/, output)
+      assert_match(/of 3: visit/, output)
 
       json = JSON.parse(File.read(File.join(app_path, 'graphs', '1.0.0', 'gender.json'))) rescue json = { 'charts' => {}, 'tables' => {} }
       assert_equal %w(histogram age gender), json['charts'].keys
@@ -48,16 +50,16 @@ module ApplicationTests
     def test_graphs_with_limited_rows
       create_visit_variable_and_domain
 
-      output, error = util_capture do
+      output, _error = util_capture do
         Dir.chdir(app_path) { Spout.launch ['graphs', '--rows=2'] }
       end
 
       assert File.directory?(File.join(app_path, 'graphs', '1.0.0'))
       assert_equal ['age_at_visit.json', 'gender.json', 'visit.json', '.progress.json', '.', '..'].sort, Dir.entries(File.join(app_path, 'graphs', '1.0.0')).sort
-      assert_match /Parsing files in csvs\/1\.0\.0/, output.uncolorize
-      assert_match /of 3: age\_at\_visit/, output
-      assert_match /of 3: gender/, output
-      assert_match /of 3: visit/, output
+      assert_match %r{Parsing files in csvs/1\.0\.0}, output.uncolorize
+      assert_match(/of 3: age\_at\_visit/, output)
+      assert_match(/of 3: gender/, output)
+      assert_match(/of 3: visit/, output)
 
       json = JSON.parse(File.read(File.join(app_path, 'graphs', '1.0.0', 'gender.json'))) rescue json = { 'charts' => {}, 'tables' => {} }
       assert_equal %w(histogram age gender), json['charts'].keys

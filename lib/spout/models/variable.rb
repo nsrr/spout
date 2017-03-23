@@ -23,6 +23,7 @@ module Spout
         @id     = file_name.to_s.gsub(%r{^(.*)/|\.json$}, '').downcase
         @folder = file_name.to_s.gsub(%r{^#{dictionary_root}/variables/|#{@id}\.json$}, '')
         @form_names = []
+        @domain_name = nil
 
         json = begin
                  JSON.parse(File.read(file_name))
@@ -31,7 +32,7 @@ module Spout
                  nil
                end
 
-        if json.is_a? Hash
+        if json.is_a?(Hash)
           %w(display_name description type units commonly_used calculation).each do |method|
             instance_variable_set("@#{method}", json[method])
           end
@@ -45,9 +46,7 @@ module Spout
         elsif json
           @errors << "Variable must be a valid hash in the following format: {\n\"id\": \"VARIABLE_ID\",\n  \"display_name\": \"VARIABLE DISPLAY NAME\",\n  \"description\": \"VARIABLE DESCRIPTION\"\n}"
         end
-
         @errors = (@errors + [error]).compact
-
         @domain = Spout::Models::Domain.find_by_id(@domain_name)
         @forms = @form_names.collect { |form_name| Spout::Models::Form.find_by_id(form_name) }.compact
       end

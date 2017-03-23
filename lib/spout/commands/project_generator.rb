@@ -13,7 +13,7 @@ module Spout
       end
 
       def generate_folder_structure!(argv)
-        skip_gemfile = (argv.delete('--skip-gemfile') != nil)
+        skip_gemfile = !argv.delete('--skip-gemfile').nil?
         @full_path = File.join(argv[1].to_s.strip)
         usage = <<-EOT
 
@@ -22,14 +22,11 @@ Usage: spout new FOLDER
 The FOLDER must be empty or new.
 
 EOT
-
-        if @full_path == '' or ( Dir.exists?(@full_path) and (Dir.entries(@full_path) & ['.gitignore', '.ruby-version', '.travis.yml', 'Gemfile', 'Rakefile', 'domains', 'variables', 'test']).size > 0 )
+        if @full_path == '' || (Dir.exist?(@full_path) && (Dir.entries(@full_path) & ['.gitignore', '.ruby-version', '.travis.yml', 'Gemfile', 'Rakefile', 'domains', 'variables', 'test']).size > 0)
           puts usage
           exit(0)
         end
-
         FileUtils.mkpath(@full_path)
-
         copy_file 'gitignore', '.gitignore'
         copy_file 'ruby-version', '.ruby-version'
         copy_file 'travis.yml', '.travis.yml'

@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'test_helpers/sandbox'
 
 module ApplicationTests
+  # Tests to assure spout project directory structure is generated.
   class ProjectGeneratorTest < SandboxTest
-
     def setup
       build_app
     end
@@ -12,7 +14,14 @@ module ApplicationTests
     end
 
     def test_file_structure
-      assert_equal ['domains', 'forms', 'test', 'variables', '.gitignore', '.ruby-version', '.spout.yml', '.travis.yml', 'Gemfile', 'Rakefile', '.', '..'].sort, Dir.entries(app_path).sort
+      assert_equal(
+        [
+          'domains', 'forms', 'test', 'variables', '.gitignore',
+          '.ruby-version', '.spout.yml', '.travis.yml', 'Gemfile', 'Rakefile',
+          '.', '..'
+        ].sort,
+        Dir.entries(app_path).sort
+      )
     end
   end
 end

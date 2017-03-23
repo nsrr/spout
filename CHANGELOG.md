@@ -9,6 +9,9 @@
   - Updated to colorize 0.8.1
   - Updated to simplecov 0.12.0
 
+### Refactoring
+- General code cleanup based on Rubocop recommendations
+
 ## 0.11.1 (February 4, 2016)
 
 ### Bug Fix

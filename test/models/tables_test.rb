@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helpers/sandbox'
 require 'test_helpers/capture'
 
@@ -24,7 +26,7 @@ module ApplicationTests
 
     def test_numeric_vs_choices_table
       Dir.chdir(app_path) do
-        output, error = util_capture do
+        util_capture do
           @variable_files = Dir.glob('variables/**/*.json')
           @config = Spout::Helpers::ConfigReader.new
           @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
@@ -32,8 +34,7 @@ module ApplicationTests
 
           variable = Spout::Models::Variable.find_by_id 'age_at_visit'
           chart_variable = Spout::Models::Variable.find_by_id 'gender'
-          visit = Spout::Models::Variable.find_by_id 'visit'
-          table = Spout::Models::Tables.for(variable, chart_variable, @subject_loader.subjects, "All Visits")
+          table = Spout::Models::Tables.for(variable, chart_variable, @subject_loader.subjects, 'All Visits')
 
           assert_equal 'Gender vs Age at Visit', table.title
           assert_equal 'All Visits', table.subtitle
@@ -99,7 +100,7 @@ visit,age_at_visit,gender,race
       JSON
 
       Dir.chdir(app_path) do
-        output, error = util_capture do
+        util_capture do
           @variable_files = Dir.glob('variables/**/*.json')
           @config = Spout::Helpers::ConfigReader.new
           @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
@@ -156,7 +157,7 @@ visit,age_at_visit,gender,bmi
       JSON
 
       Dir.chdir(app_path) do
-        output, error = util_capture do
+        util_capture do
           @variable_files = Dir.glob('variables/**/*.json')
           @config = Spout::Helpers::ConfigReader.new
           @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
@@ -189,7 +190,7 @@ visit,age_at_visit,gender,bmi
 
     def test_choices_vs_numeric_table
       Dir.chdir(app_path) do
-        output, error = util_capture do
+        util_capture do
           @variable_files = Dir.glob('variables/**/*.json')
           @config = Spout::Helpers::ConfigReader.new
           @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
@@ -214,6 +215,5 @@ visit,age_at_visit,gender,bmi
         end
       end
     end
-
   end
 end

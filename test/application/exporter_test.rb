@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'test_helpers/sandbox'
 require 'test_helpers/capture'
 
@@ -30,7 +32,7 @@ folder,domain_id,value,display_name,description
 "",gdomain,r,Refused to Answer,""
       CSV
 
-      output, error = util_capture do
+      output, _error = util_capture do
         Dir.chdir(app_path) { Spout.launch ['export'] }
       end
 
@@ -65,7 +67,7 @@ folder,domain_id,value,display_name,description
 "",gdomain,r,Refused to Answer,""
       CSV
 
-      output, error = util_capture do
+      output, _error = util_capture do
         Dir.chdir(app_path) { Spout.launch ['export'] }
       end
 
@@ -82,7 +84,7 @@ folder,id,display_name,code_book
 "",intake_questionnaire,Intake Questionnaire at Baseline Visit,Baseline-Visit-Intake-Questionnaire.pdf
       CSV
 
-      output, error = util_capture do
+      output, _error = util_capture do
         Dir.chdir(app_path) { Spout.launch ['export'] }
       end
 
