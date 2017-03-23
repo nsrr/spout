@@ -7,7 +7,7 @@
   - Updated to Ruby 2.4.1
   - Updated to bundler 1.13
   - Updated to colorize 0.8.1
-  - Updated to simplecov 0.12.0
+  - Updated to simplecov 0.14.1
 
 ### Refactoring
 - General code cleanup based on Rubocop recommendations

@@ -8,5 +8,5 @@ group :test do
   # Pretty printed test output
   gem 'artifice'
   gem 'minitest'
-  gem 'simplecov', '~> 0.12.0', require: false
+  gem 'simplecov', '~> 0.14.1', require: false
 end
