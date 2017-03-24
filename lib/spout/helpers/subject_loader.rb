@@ -59,7 +59,7 @@ module Spout
           puts "  #{current_folder}".colorize(:white) if current_folder.to_s != '' && current_folder != last_folder
           print "    #{current_file}"
           last_folder = current_folder
-          CSV.parse(File.open(csv_file, 'r:iso-8859-1:utf-8'){ |f| f.read }, headers: true, header_converters: lambda { |h| h.to_s.downcase }) do |line|
+          CSV.parse(File.open(csv_file, 'r:iso-8859-1:utf-8', &:read), headers: true, header_converters: lambda { |h| h.to_s.downcase }) do |line|
             row = line.to_hash
             count += 1
             print "\r    #{current_file} " + "##{count}".colorize(:yellow) if (count % 10 == 0)

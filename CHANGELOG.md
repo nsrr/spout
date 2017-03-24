@@ -3,6 +3,8 @@
 ### Enhancements
 - **General Changes**
   - Spout now provides a warning and skips columns in CSVs with blank headers
+- **Importer Changes**
+  - The import command now reads in the `commonly_used` column
 - **Gem Changes**
   - Updated to Ruby 2.4.1
   - Updated to bundler 1.13

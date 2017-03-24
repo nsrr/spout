@@ -9,21 +9,17 @@ module Spout
   module Commands
     class Importer
       def initialize(argv)
-        use_domains = (argv.delete('--domains') != nil)
-
+        use_domains = !argv.delete('--domains').nil?
         @csv_file = argv[1].to_s
-
         unless File.exist?(@csv_file)
           puts csv_usage
           return self
         end
-
         if use_domains
           import_domains
         else
           import_variables
         end
-
       end
 
       def csv_usage
@@ -38,7 +34,7 @@ EOT
       end
 
       def import_variables
-        CSV.parse( File.open(@csv_file, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true ) do |line|
+        CSV.parse(File.open(@csv_file, 'r:iso-8859-1:utf-8', &:read), headers: true) do |line|
           row = line.to_hash
           if not row.keys.include?('id')
             puts "\nMissing column header `".colorize( :red ) + "id".colorize( :light_cyan ) + "` in data dictionary.".colorize( :red ) + additional_csv_info
@@ -61,6 +57,7 @@ EOT
           hash['calculation'] = calculation if calculation != ''
           labels = row.delete('labels').to_s.split(';')
           hash['labels'] = labels if labels.size > 0
+          hash['commonly_used'] = true if row.delete('commonly_used').to_s.casecmp('true').zero?
           hash['other'] = row unless row.empty?
 
           file_name = File.join(folder, id + '.json')
@@ -74,7 +71,7 @@ EOT
       def import_domains
         domains = {}
 
-        CSV.parse( File.open(@csv_file, 'r:iso-8859-1:utf-8'){|f| f.read}, headers: true ) do |line|
+        CSV.parse(File.open(@csv_file, 'r:iso-8859-1:utf-8', &:read), headers: true) do |line|
           row = line.to_hash
           if not row.keys.include?('domain_id')
             puts "\nMissing column header `".colorize( :red ) + "domain_id".colorize( :light_cyan ) + "` in data dictionary.".colorize( :red ) + additional_csv_info
@@ -116,7 +113,6 @@ EOT
           end
           puts "      create".colorize( :green ) + "  #{file_name}"
         end
-
       end
 
       # Converts ALL-CAPS display names to title case
@@ -135,8 +131,6 @@ EOT
       def additional_csv_info
         "\n\nFor additional information on specifying CSV column headers before import see:\n\n    " + "https://github.com/sleepepi/spout#generate-a-new-repository-from-an-existing-csv-file".colorize( :light_cyan ) + "\n\n"
       end
-
-
     end
   end
 end
