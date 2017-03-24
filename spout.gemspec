@@ -18,7 +18,12 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Remo Mueller']
   spec.email         = ['remosm@gmail.com']
   spec.description   = 'Manage your data dictionary as a JSON repository, and easily export back to CSV.'
-  spec.summary       = 'Turn your CSV data dictionary into a JSON repository. Collaborate with others to update the data dictionary in JSON format. Generate new Data Dictionary from the JSON repository. Test and validate your data dictionary using built-in tests, or add your own for further validations.'
+  spec.summary       = 'Turn your CSV data dictionary into a JSON repository. '\
+                       'Collaborate with others to update the data dictionary '\
+                       'in JSON format. Generate new Data Dictionary from the '\
+                       'JSON repository. Test and validate your data '\
+                       'dictionary using built-in tests, or add your own for '\
+                       'further validations.'
   spec.homepage      = 'https://github.com/sleepepi/spout'
   spec.license       = 'MIT'
 
