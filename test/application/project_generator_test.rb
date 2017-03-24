@@ -18,7 +18,7 @@ module ApplicationTests
         [
           'domains', 'forms', 'test', 'variables', '.gitignore',
           '.ruby-version', '.spout.yml', '.travis.yml', 'Gemfile', 'Rakefile',
-          '.', '..'
+          'CHANGELOG.md', 'README.md', 'VERSION', '.', '..'
         ].sort,
         Dir.entries(app_path).sort
       )

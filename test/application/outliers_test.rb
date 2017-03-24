@@ -10,6 +10,7 @@ module ApplicationTests
 
     def setup
       build_app
+      delete_app_file('VERSION')
     end
 
     def teardown

@@ -14,6 +14,7 @@ module ApplicationTests
 
       def setup
         build_app
+        delete_app_file('VERSION')
         basic_info
         app_file '.spout.yml', <<-YML
 ---
