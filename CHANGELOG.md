@@ -3,8 +3,11 @@
 ### Enhancements
 - **General Changes**
   - Spout now provides a warning and skips columns in CSVs with blank headers
+- **Exporter Changes**
+  - The export command now exports the variable forms attribute
 - **Importer Changes**
   - The import command now reads in the `commonly_used` column
+  - The import command now imports the variable forms attribute
 - **Gem Changes**
   - Updated to Ruby 2.4.1
   - Updated to bundler 1.13

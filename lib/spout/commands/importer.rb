@@ -56,8 +56,10 @@ EOT
           calculation = row.delete('calculation').to_s
           hash['calculation'] = calculation if calculation != ''
           labels = row.delete('labels').to_s.split(';')
-          hash['labels'] = labels if labels.size > 0
+          hash['labels'] = labels unless labels.empty?
           hash['commonly_used'] = true if row.delete('commonly_used').to_s.casecmp('true').zero?
+          forms = row.delete('forms').to_s.split(';')
+          hash['forms'] = forms unless forms.empty?
           hash['other'] = row unless row.empty?
 
           file_name = File.join(folder, id + '.json')

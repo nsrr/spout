@@ -11,8 +11,8 @@ module ApplicationTests
     def setup
       build_app
       app_file 'variables-import.csv', <<-CSV
-folder,id,display_name,description,type,domain,units,calculation,labels,calculation,commonly_used
-Demographics,gender,Gender,Gender Description,choices,gdomain,,,gender,,true
+folder,id,display_name,description,type,domain,units,calculation,labels,calculation,commonly_used,forms
+Demographics,gender,Gender,Gender Description,choices,gdomain,,,gender,,true,gform
       CSV
       app_file 'domains-import.csv', <<-CSV
 folder,domain_id,display_name,description,value
@@ -49,7 +49,10 @@ folder,domain_id,display_name,description,value
   "labels": [
     "gender"
   ],
-  "commonly_used": true
+  "commonly_used": true,
+  "forms": [
+    "gform"
+  ]
 }
       JSON
 
