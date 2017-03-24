@@ -15,8 +15,9 @@ class DictionaryTest < Minitest::Test
   # VALID_UNITS = ['minutes', 'hours'] # Add your own valid units to this array
   # @variables.select { |v| %w(numeric integer).include?(v.type) }.each do |variable|
   #   define_method("test_units: #{variable.path}") do
-  #     message = "\"#{variable.units}\"".colorize(:red) + " invalid units.\n             Valid types: " +
-  #               VALID_UNITS.sort.collect { |u| u.inspect.colorize(:white) }.join(', ')
+  #     message = "\"#{variable.units}\"".colorize(:red) + " invalid units.\n" +
+  #               "             Valid types: " +
+  #               VALID_UNITS.sort_by(&:to_s).collect { |u| u.inspect.colorize(:white) }.join(', ')
   #     assert VALID_UNITS.include?(variable.units), message
   #   end
   # end

@@ -17,6 +17,9 @@
 ### Refactoring
 - General code cleanup based on Rubocop recommendations
 
+### Bug Fixes
+- The `test_units` example method now works if `nil` is defined in `VALID_UNITS`
+
 ## 0.11.1 (February 4, 2016)
 
 ### Bug Fix
