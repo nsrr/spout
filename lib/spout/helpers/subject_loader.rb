@@ -126,7 +126,7 @@ module Spout
         @variable_files.each do |variable_file|
           json = JSON.parse(File.read(variable_file)) rescue json = nil
           next unless json
-          next unless ['choices'].include?(json['type'])
+          next unless json['type'] == 'choices' || json['domain'].to_s.downcase.strip != ''
           domain = json['domain'].to_s.downcase
           @all_domains << domain
         end

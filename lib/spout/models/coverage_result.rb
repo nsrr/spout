@@ -4,8 +4,11 @@ require 'spout/tests/variable_type_validation'
 
 module Spout
   module Models
+    # Contains the coverage of a specific variable.
     class CoverageResult
-      attr_accessor :error, :error_message, :file_name_test, :json_id_test, :values_test, :valid_values, :csv_values, :variable_type_test, :json, :domain_test
+      attr_accessor :error, :error_message, :file_name_test, :json_id_test,
+                    :values_test, :valid_values, :csv_values,
+                    :variable_type_test, :json, :domain_test
 
       def initialize(column, csv_values)
         load_json(column)
@@ -26,10 +29,10 @@ module Spout
 
       def load_valid_values
         valid_values = []
-        if @json['type'] == 'choices'
+        if @json['type'] == 'choices' || domain_name != ''
           file = Dir.glob("domains/**/#{@json['domain'].to_s.downcase}.json", File::FNM_CASEFOLD).first
           if json = JSON.parse(File.read(file)) rescue false
-            valid_values = json.collect{|hash| hash['value']}
+            valid_values = json.collect { |hash| hash['value'] }
           end
         end
         @valid_values = valid_values
@@ -48,7 +51,7 @@ module Spout
       end
 
       def check_domain_specified
-        if @json['type'] != 'choices'
+        if @json['type'] != 'choices' && domain_name == ''
           true
         else
           domain_file = Dir.glob("domains/**/#{@json['domain'].to_s.downcase}.json", File::FNM_CASEFOLD).first
@@ -61,6 +64,10 @@ module Spout
 
       def errored?
         error == true
+      end
+
+      def domain_name
+        @json['domain'].to_s.downcase.strip
       end
     end
   end

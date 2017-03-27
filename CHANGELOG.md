@@ -6,6 +6,7 @@
   - `spout new` command now generates `CHANGELOG.md`, `README.md`, and `VERSION`
     placeholder files
   - Check for the latest version available using `spout update`
+  - Integer and numeric variables can now reference a domain for missing values
 - **Exporter Changes**
   - The export command now exports the variable forms attribute
   - Dictionary exports now are in `exports` instead of `dd` folder
