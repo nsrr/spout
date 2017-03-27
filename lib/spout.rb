@@ -5,17 +5,19 @@ require 'spout/version'
 require 'spout/models/dictionary'
 
 Spout::COMMANDS = {
-  'n' => :new_project,
-  'v' => :version,
-  't' => :test,
-  'i' => :importer,
-  'e' => :exporter,
   'c' => :coverage_report,
+  'd' => :deploy,
+  'e' => :exporter,
   'g' => :generate_charts_and_tables,
+  'i' => :importer,
+  'n' => :new_project,
   'o' => :outliers_report,
-  'd' => :deploy
+  't' => :test,
+  'u' => :update,
+  'v' => :version
 }
 
+# Launch spout commands from command line.
 module Spout
   def self.launch(argv)
     send((Spout::COMMANDS[argv.first.to_s.scan(/\w/).first] || :help), argv)
@@ -68,6 +70,11 @@ module Spout
     system 'bundle exec rake'
     # require 'spout/commands/test_runner'
     # Spout::Commands::TestRunner.new(argv)
+  end
+
+  def self.update(argv)
+    require 'spout/commands/update'
+    Spout::Commands::Update.start(argv)
   end
 
   def self.version(_argv)

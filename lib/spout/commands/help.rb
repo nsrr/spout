@@ -29,6 +29,7 @@ The most common spout commands are:
                     in `<project_name>/graphs/<version>/`
   [d]eploy NAME     Push dataset and data dictionary to a
                     webserver specified in `.spout.yml`
+  [u]pdate          Update the Spout gem
   [v]ersion         Returns the version of Spout
 
 Commands can be referenced by the first letter:

@@ -7,6 +7,7 @@ require 'cgi'
 
 module Spout
   module Helpers
+    # Generates JSON web requests for GET, POST, and PATCH.
     class JsonRequestGeneric
       class << self
         def get(url, *args)
@@ -33,11 +34,13 @@ module Spout
           @http.use_ssl = true
           @http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         end
-      rescue => e
-        puts "Error sending JsonRequestGeneric: #{e}".colorize(:red)
+      rescue
+        @error = "Invalid URL: #{url.inspect}"
+        puts @error.colorize(:red)
       end
 
       def get
+        return unless @error.nil?
         full_path = @url.path
         query = ([@url.query] + @params).flatten.compact.join('&')
         full_path += "?#{query}" if query.to_s != ''
@@ -50,6 +53,7 @@ module Spout
       end
 
       def post
+        return unless @error.nil?
         response = @http.start do |http|
           http.post(@url.path, @params.flatten.compact.join('&'))
         end

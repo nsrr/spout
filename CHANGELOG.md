@@ -5,6 +5,7 @@
   - Spout now provides a warning and skips columns in CSVs with blank headers
   - `spout new` command now generates `CHANGELOG.md`, `README.md`, and `VERSION`
     placeholder files
+  - Check for the latest version available using `spout update`
 - **Exporter Changes**
   - The export command now exports the variable forms attribute
 - **Importer Changes**
