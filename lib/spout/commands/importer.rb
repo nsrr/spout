@@ -10,6 +10,7 @@ module Spout
     class Importer
       def initialize(argv)
         use_domains = !argv.delete('--domains').nil?
+        use_forms = !argv.delete('--forms').nil?
         @csv_file = argv[1].to_s
         unless File.exist?(@csv_file)
           puts csv_usage
@@ -17,6 +18,8 @@ module Spout
         end
         if use_domains
           import_domains
+        elsif use_forms
+          import_forms
         else
           import_variables
         end
@@ -62,7 +65,7 @@ EOT
           hash['forms'] = forms unless forms.empty?
           hash['other'] = row unless row.empty?
 
-          file_name = File.join(folder, id + '.json')
+          file_name = File.join(folder, "#{id}.json")
           File.open(file_name, 'w') do |file|
             file.write(JSON.pretty_generate(hash) + "\n")
           end
@@ -117,11 +120,45 @@ EOT
         end
       end
 
+      def import_forms
+        CSV.parse(File.open(@csv_file, 'r:iso-8859-1:utf-8', &:read), headers: true) do |line|
+          row = line.to_hash
+          unless row.keys.include?('id')
+            puts "\nMissing column header `".colorize(:red) +
+                 'id'.colorize(:light_cyan) +
+                 '` in data dictionary.'.colorize(:red) +
+                 additional_csv_info
+            exit(1)
+          end
+          unless row.keys.include?('display_name')
+            puts "\nMissing column header `".colorize(:red) +
+                 'display_name'.colorize(:light_cyan) +
+                 '` in data dictionary.'.colorize(:red) +
+                 additional_csv_info
+            exit(1)
+          end
+          next if row['id'] == ''
+          folder = File.join('forms', row.delete('folder').to_s)
+          FileUtils.mkpath folder
+          hash = {}
+          id = row.delete('id').to_s.downcase
+          hash['id'] = id
+          hash['display_name'] = tenderize(row.delete('display_name').to_s)
+          hash['code_book'] = row.delete('code_book').to_s
+          hash['other'] = row unless row.empty?
+          file_name = File.join(folder, "#{id}.json")
+          File.open(file_name, 'w') do |file|
+            file.write(JSON.pretty_generate(hash) + "\n")
+          end
+          puts '      create'.colorize(:green) + "  #{file_name}"
+        end
+      end
+
       # Converts ALL-CAPS display names to title case
       # Ex: BODY MASS INDEX changes to Body Mass Index
       # Ex: Patient ID stays the same as Patient ID
       def tenderize(text)
-        if text.match(/[a-z]/)
+        if /[a-z]/ =~ text
           text
         else
           text.downcase.gsub(/\b\w/) { $&.upcase }
@@ -131,7 +168,8 @@ EOT
       private
 
       def additional_csv_info
-        "\n\nFor additional information on specifying CSV column headers before import see:\n\n    " + "https://github.com/sleepepi/spout#generate-a-new-repository-from-an-existing-csv-file".colorize( :light_cyan ) + "\n\n"
+        "\n\nFor additional information on specifying CSV column headers before import see:\n\n    " +
+          "https://github.com/sleepepi/spout#generate-a-new-repository-from-an-existing-csv-file".colorize(:light_cyan) + "\n\n"
       end
     end
   end

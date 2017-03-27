@@ -19,6 +19,11 @@ folder,domain_id,display_name,description,value
 ,gdomain,Male,,m
 ,gdomain,Female,,f
       CSV
+      app_file 'forms-import.csv', <<-CSV
+folder,id,display_name,code_book
+Demographics/Baseline,family_history,Family History,family-history.pdf
+,medications,Medications,medications.pdf
+      CSV
     end
 
     def teardown
@@ -206,16 +211,38 @@ folder,id,display_name,description,type,domain,units,calculation,labels
 Demographics,BMI,BODY MASS INDEX,Body Mass Index Description,numeric,,,,bmi
 Measurements,RdI3P,Respiratory index for PT,RDI Description,numeric,,,,ahi
       CSV
-
       util_capture do
         Dir.chdir(app_path) { Spout.launch ['import', 'variables-import-all-caps-display-names.csv'] }
       end
-
       bmi_json = JSON.parse(File.read(File.join(app_path, 'variables', 'Demographics', 'bmi.json')))
       assert_equal 'Body Mass Index', bmi_json['display_name']
-
       rdi3p_json = JSON.parse(File.read(File.join(app_path, 'variables', 'Measurements', 'rdi3p.json')))
       assert_equal 'Respiratory index for PT', rdi3p_json['display_name']
+    end
+
+    def test_form_imports
+      output, _error = util_capture do
+        Dir.chdir(app_path) { Spout.launch %w(import forms-import.csv --forms) }
+      end
+      fx_form_json = <<-JSON
+{
+  "id": "family_history",
+  "display_name": "Family History",
+  "code_book": "family-history.pdf"
+}
+      JSON
+      mx_form_json = <<-JSON
+{
+  "id": "medications",
+  "display_name": "Medications",
+  "code_book": "medications.pdf"
+}
+      JSON
+      assert_equal 2, Dir.glob(File.join(app_path, 'forms', '**', '*.json')).count
+      assert_match %r{create(.*)forms/Demographics/Baseline/family_history\.json}, output
+      assert_match %r{create(.*)forms/medications\.json}, output
+      assert_equal fx_form_json, File.read(File.join(app_path, 'forms', 'Demographics', 'Baseline', 'family_history.json'))
+      assert_equal mx_form_json, File.read(File.join(app_path, 'forms', 'medications.json'))
     end
   end
 end

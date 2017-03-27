@@ -85,10 +85,12 @@ Usage: spout import <csv_file>
 
 Optional Flags:
   --domains    Specify to import CSV of domains
+  --forms      Specify to import CSV of forms
 
 More information:
 https://github.com/sleepepi/spout#generate-a-new-repository-from-an-existing-csv-file
 https://github.com/sleepepi/spout#importing-domains-from-an-existing-csv-file
+https://github.com/sleepepi/spout#importing-forms-from-an-existing-csv-file
 EOT
       end
 

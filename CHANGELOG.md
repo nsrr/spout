@@ -12,6 +12,7 @@
 - **Importer Changes**
   - The import command now reads in the `commonly_used` column
   - The import command now imports the variable forms attribute
+  - CSVs of forms can now be imported using `spout import <forms.csv> --forms`
 - **Gem Changes**
   - Updated to Ruby 2.4.1
   - Updated to bundler 1.13

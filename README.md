@@ -105,6 +105,29 @@ Other columns that are imported include:
 `folder`: The name of the folder path where the domain resides.
 
 
+#### Importing forms from an existing CSV file
+
+```
+spout import data_dictionary_domains.csv --forms
+```
+
+The CSV should contain at minimal three column headers:
+
+`folder`: This can be blank, however it is used to place forms into a folder
+hiearchy. The folder column can contain forward slashes `/` to place a form
+into a subfolder. An example may be, `id`: `family_history`,
+`folder`: `Demographics/BaselineVisit` would create a file
+`forms/Demographics/BaselineVisit/family_history.json`
+
+`id`: The reference name of the form.
+
+`display_name`: The name of the form.
+
+Other columns that are imported include:
+
+`code_book`: The file name of the document or PDF, including the file extension.
+
+
 ### Test your repository
 
 If you created your data dictionary repository using `spout new`, you can go
