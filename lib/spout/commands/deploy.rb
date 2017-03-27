@@ -9,7 +9,6 @@ require 'spout/helpers/config_reader'
 require 'spout/helpers/quietly'
 require 'spout/helpers/send_file'
 require 'spout/helpers/semantic'
-require 'spout/helpers/json_request'
 require 'spout/helpers/json_request_generic'
 
 # - **User Authorization**
@@ -37,6 +36,7 @@ end
 
 module Spout
   module Commands
+    # Deploys a data dictionary and associated dataset to the server.
     class Deploy
       include Spout::Helpers::Quietly
 
@@ -211,22 +211,17 @@ module Spout
       end
 
       def user_authorization
-        puts  "  Get your token here: " + "#{@url}/token".colorize(:blue).on_white.underline
-        print "     Enter your token: "
+        puts  '  Get your token here: ' + "#{@url}/token".colorize(:blue).on_white.underline
+        print '     Enter your token: '
         @token = STDIN.noecho(&:gets).chomp if @token.to_s.strip == ''
-
-        response = Spout::Helpers::JsonRequest.get("#{@url}/datasets/#{@slug}/a/#{@token}/editor.json")
-
-        if response.is_a?(Hash) and response['editor']
+        (json, _status) = Spout::Helpers::JsonRequestGeneric.get("#{@url}/datasets/#{@slug}/a/#{@token}/editor.json")
+        if json.is_a?(Hash) && json['editor']
           puts 'AUTHORIZED'.colorize(:green)
         else
           puts 'UNAUTHORIZED'.colorize(:red)
           puts "#{INDENT}You are not set as an editor on the #{@slug} dataset or you mistyped your token."
-          fail DeployError
+          raise DeployError
         end
-
-        # failure ''
-        # puts 'PASS'.colorize(:green)
       end
 
       def upload_variables
@@ -333,7 +328,7 @@ module Spout
           puts 'DONE'.colorize(:green)
         else
           puts 'FAIL'.colorize(:red)
-          fail DeployError
+          raise DeployError
         end
       end
 
@@ -356,7 +351,7 @@ module Spout
       def failure(message)
         puts 'FAIL'.colorize(:red)
         puts message
-        fail DeployError
+        raise DeployError
       end
 
       def upload_file(file, folder)
