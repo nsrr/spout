@@ -43,7 +43,9 @@ EOT
 
       def new_project
         puts <<-EOT
-Usage: spout new <project_name>
+Usage: spout new <project_name> [--skip-gemfile]
+
+Use `--skip-gemfile` to skip installing gems after project creation.
 
 More information here:
 
@@ -56,12 +58,23 @@ EOT
         puts <<-EOT
 Usage: spout version
 
+Returns version of spout.
+
 EOT
       end
 
       def test
         puts <<-EOT
 Usage: spout test
+
+EOT
+      end
+
+      def update
+        puts <<-EOT
+Usage: spout update
+
+Checks if a newer version of Spout is available.
 
 EOT
       end
