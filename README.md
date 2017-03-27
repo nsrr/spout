@@ -389,3 +389,11 @@ The following steps are run:
   - `README.md` and `KNOWNISSUES.md` are uploaded
 - **Server-Side Updates**
   - Server refreshes dataset folder to reflect new dataset and data dictionaries
+
+### Check if you are using the latest version of Spout
+
+You can check if a newer version of Spout is available by typing:
+
+```
+spout update
+```
