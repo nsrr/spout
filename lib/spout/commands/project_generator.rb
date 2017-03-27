@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'colorize'
+require 'date'
+require 'erb'
 require 'fileutils'
 
 TEMPLATES_DIRECTORY = File.expand_path('../../templates', __FILE__)
@@ -15,7 +17,8 @@ module Spout
 
       def generate_folder_structure!(argv)
         skip_gemfile = !argv.delete('--skip-gemfile').nil?
-        @full_path = File.join(argv[1].to_s.strip)
+        @project_name = argv[1].to_s.strip
+        @full_path = File.join(@project_name)
         usage = <<-EOT
 
 Usage: spout new FOLDER
@@ -31,11 +34,11 @@ EOT
         copy_file 'gitignore', '.gitignore'
         copy_file 'ruby-version', '.ruby-version'
         copy_file 'travis.yml', '.travis.yml'
-        copy_file 'spout.yml', '.spout.yml'
-        copy_file 'CHANGELOG.md'
+        evaluate_file 'spout.yml.erb', '.spout.yml'
+        evaluate_file 'CHANGELOG.md.erb', 'CHANGELOG.md'
         copy_file 'Gemfile'
         copy_file 'Rakefile'
-        copy_file 'README.md'
+        evaluate_file 'README.md.erb', 'README.md'
         copy_file 'VERSION'
         directory 'domains'
         copy_file 'keep', 'domains/.keep'
@@ -46,11 +49,10 @@ EOT
         directory 'test'
         copy_file 'test/dictionary_test.rb'
         copy_file 'test/test_helper.rb'
-        unless skip_gemfile
-          puts '         run'.colorize(:green) + '  bundle install'.colorize(:light_cyan)
-          Dir.chdir(@full_path)
-          system 'bundle install'
-        end
+        return if skip_gemfile
+        puts '         run'.colorize(:green) + '  bundle install'.colorize(:light_cyan)
+        Dir.chdir(@full_path)
+        system 'bundle install'
       end
 
       private
@@ -61,6 +63,17 @@ EOT
         template_file_path = File.join(TEMPLATES_DIRECTORY, template_file)
         puts '      create'.colorize(:green) + "  #{file_name}"
         FileUtils.copy(template_file_path, file_path)
+      end
+
+      def evaluate_file(template_file, file_name)
+        template_file_path = File.join(TEMPLATES_DIRECTORY, template_file)
+        template = ERB.new(File.read(template_file_path))
+        file_path = File.join(@full_path, file_name)
+        file_out = File.new(file_path, 'w')
+        file_out.syswrite(template.result(binding))
+        puts '      create'.colorize(:green) + "  #{file_name}"
+      ensure
+        file_out.close if file_out
       end
 
       def directory(directory_name)

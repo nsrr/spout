@@ -1,11 +1,11 @@
-<NAME> Data Dictionary
+<%= @project_name.capitalize %> Data Dictionary
 ======================
 
-[![Build Status](https://travis-ci.org/<REPOSITORY>.svg?branch=master)](https://travis-ci.org/<REPOSITORY>)
+[![Build Status](https://travis-ci.org/<REPOSITORY>/<%= @project_name.downcase %>-data-dictionary.svg?branch=master)](https://travis-ci.org/<REPOSITORY>/<%= @project_name.downcase %>-data-dictionary)
 
 ### Exports
 
-The data dictionary can be exported to CSV by typing:
+The <%= @project_name.downcase %> data dictionary can be exported to CSV by typing:
 
 ```
 spout export
@@ -17,7 +17,7 @@ dictionary.
 
 ### Testing
 
-The <NAME> Data Dictionary is tested using the
+The <%= @project_name.downcase %> data dictionary is tested using the
 [Spout Gem](https://github.com/sleepepi/spout).
 
 Data dictionary tests can be run by typing:
@@ -29,7 +29,7 @@ spout test
 
 ### Releases
 
-The Data Dictionary is tagged at various time points using
+The data dictionary is tagged at various time points using
 [Git tags](http://git-scm.com/book/en/Git-Basics-Tagging). The tags are used to
 reference a series of CSV files that correspond to the data dictionary itself.
 
@@ -43,4 +43,4 @@ approach for changing version numbers uses a variation on
 [Semantic Versioning](http://semver.org).
 
 A full list of changes for each version can be viewed in the
-[CHANGELOG](https://github.com/<REPOSITORY>/blob/master/CHANGELOG.md).
+[CHANGELOG](https://github.com/<REPOSITORY>/<%= @project_name.downcase %>-data-dictionary/blob/master/CHANGELOG.md).
