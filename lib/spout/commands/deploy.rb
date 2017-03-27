@@ -9,7 +9,7 @@ require 'spout/helpers/config_reader'
 require 'spout/helpers/quietly'
 require 'spout/helpers/send_file'
 require 'spout/helpers/semantic'
-require 'spout/helpers/json_request_generic'
+require 'spout/helpers/json_request'
 
 # - **User Authorization**
 #   - User authenticates via token, the user must be a dataset editor
@@ -214,7 +214,7 @@ module Spout
         puts  '  Get your token here: ' + "#{@url}/token".colorize(:blue).on_white.underline
         print '     Enter your token: '
         @token = STDIN.noecho(&:gets).chomp if @token.to_s.strip == ''
-        (json, _status) = Spout::Helpers::JsonRequestGeneric.get("#{@url}/datasets/#{@slug}/a/#{@token}/editor.json")
+        (json, _status) = Spout::Helpers::JsonRequest.get("#{@url}/datasets/#{@slug}/a/#{@token}/editor.json")
         if json.is_a?(Hash) && json['editor']
           puts 'AUTHORIZED'.colorize(:green)
         else
@@ -323,8 +323,8 @@ module Spout
 
         print 'Launch Server Scripts: '
         params = { auth_token: @token, dataset: @slug, version: @version, folders: @created_folders.compact.uniq }
-        (response, status) = Spout::Helpers::JsonRequestGeneric.post("#{@url}/api/v1/dictionary/refresh.json", params)
-        if response.is_a?(Hash) && response['refresh'] == 'success'
+        (json, _status) = Spout::Helpers::JsonRequest.post("#{@url}/api/v1/dictionary/refresh.json", params)
+        if json.is_a?(Hash) && json['refresh'] == 'success'
           puts 'DONE'.colorize(:green)
         else
           puts 'FAIL'.colorize(:red)
@@ -337,11 +337,12 @@ module Spout
           puts '  Set Default Version: ' + 'SKIP'.colorize(:blue)
           return
         end
-
         print '  Set Default Version: '
         params = { auth_token: @token, dataset: @slug, version: @version }
-        (response, status) = Spout::Helpers::JsonRequestGeneric.post("#{@url}/api/v1/dictionary/update_default_version.json", params)
-        if response.is_a?(Hash) && response['version_update'] == 'success'
+        (json, _status) = Spout::Helpers::JsonRequest.post(
+          "#{@url}/api/v1/dictionary/update_default_version.json", params
+        )
+        if json.is_a?(Hash) && json['version_update'] == 'success'
           puts @version.to_s.colorize(:green)
         else
           failure("#{INDENT}Unable to set default version\n#{INDENT}to " + @version.to_s.colorize(:white) + ' for ' + @slug.to_s.colorize(:white) + ' dataset.')

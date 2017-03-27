@@ -14,7 +14,7 @@ require 'spout/models/graphables'
 require 'spout/models/tables'
 require 'spout/helpers/config_reader'
 require 'spout/helpers/send_file'
-require 'spout/helpers/json_request_generic'
+require 'spout/helpers/json_request'
 require 'spout/version'
 
 module Spout
@@ -176,12 +176,12 @@ module Spout
                    domain: (variable.domain ? variable.domain.deploy_params : nil),
                    forms: variable.forms.collect(&:deploy_params) }
         params[:variable][:spout_stats] = stats.to_json
-        (response, status) = Spout::Helpers::JsonRequestGeneric.post("#{@url}/api/v1/variables/create_or_update.json", params)
-        if response.is_a?(Hash) && status.is_a?(Net::HTTPSuccess)
+        (json, status) = Spout::Helpers::JsonRequest.post("#{@url}/api/v1/variables/create_or_update.json", params)
+        if json.is_a?(Hash) && status.is_a?(Net::HTTPSuccess)
           @progress[variable.id]['uploaded'] << @webserver_name
         else
           puts "\nUPLOAD FAILED: ".colorize(:red) + variable.id
-          puts "- Error: #{response.inspect}"
+          puts "- Error: #{json.inspect}"
         end
       end
     end

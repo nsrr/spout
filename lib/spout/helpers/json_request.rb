@@ -8,7 +8,7 @@ require 'cgi'
 module Spout
   module Helpers
     # Generates JSON web requests for GET, POST, and PATCH.
-    class JsonRequestGeneric
+    class JsonRequest
       class << self
         def get(url, *args)
           new(url, *args).get

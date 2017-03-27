@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'colorize'
-require 'spout/helpers/json_request_generic'
+require 'spout/helpers/json_request'
 
 module Spout
   module Commands
@@ -17,7 +17,7 @@ module Spout
       end
 
       def start
-        (json, _status) = Spout::Helpers::JsonRequestGeneric.get('https://rubygems.org/api/v1/gems/spout.json')
+        (json, _status) = Spout::Helpers::JsonRequest.get('https://rubygems.org/api/v1/gems/spout.json')
         if json
           if json['version'] == Spout::VERSION::STRING
             puts 'The spout gem is ' + 'up-to-date'.colorize(:green) + '!'
