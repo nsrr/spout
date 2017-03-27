@@ -21,7 +21,7 @@ module Spout
       private
 
       def expanded_export!
-        folder = "dd/#{@standard_version}"
+        folder = "exports/#{@standard_version}"
         puts '      create'.colorize(:green) + "  #{folder}" unless @quiet
         FileUtils.mkpath folder
         generic_export(

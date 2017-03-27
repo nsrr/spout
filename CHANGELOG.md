@@ -8,6 +8,7 @@
   - Check for the latest version available using `spout update`
 - **Exporter Changes**
   - The export command now exports the variable forms attribute
+  - Dictionary exports now are in `exports` instead of `dd` folder
 - **Importer Changes**
   - The import command now reads in the `commonly_used` column
   - The import command now imports the variable forms attribute

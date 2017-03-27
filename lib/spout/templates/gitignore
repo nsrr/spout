@@ -5,8 +5,8 @@
 /Gemfile.lock
 
 # Data Dictionary folders
-/dd
 /coverage
 /csvs
+/exports
 /graphs
 /images

@@ -34,11 +34,11 @@ folder,domain_id,value,display_name,description
       output, _error = util_capture do
         Dir.chdir(app_path) { Spout.launch ['export'] }
       end
-      assert File.directory?(File.join(app_path, 'dd'))
-      assert_equal variable_csv, File.read(File.join(app_path, 'dd', '1.0.0', 'variables.csv'))
-      assert_equal domain_csv, File.read(File.join(app_path, 'dd', '1.0.0', 'domains.csv'))
-      assert_match 'dd/1.0.0/variables.csv', output
-      assert_match 'dd/1.0.0/domains.csv', output
+      assert File.directory?(File.join(app_path, 'exports'))
+      assert_equal variable_csv, File.read(File.join(app_path, 'exports', '1.0.0', 'variables.csv'))
+      assert_equal domain_csv, File.read(File.join(app_path, 'exports', '1.0.0', 'domains.csv'))
+      assert_match 'exports/1.0.0/variables.csv', output
+      assert_match 'exports/1.0.0/domains.csv', output
     end
 
     def test_exports_with_slug_specified
@@ -65,13 +65,13 @@ folder,domain_id,value,display_name,description
       output, _error = util_capture do
         Dir.chdir(app_path) { Spout.launch ['export'] }
       end
-      assert File.directory?(File.join(app_path, 'dd'))
+      assert File.directory?(File.join(app_path, 'exports'))
       assert_equal variable_csv, File.read(
-        File.join(app_path, 'dd', '1.0.0', 'myrepo-data-dictionary-1.0.0-variables.csv')
+        File.join(app_path, 'exports', '1.0.0', 'myrepo-data-dictionary-1.0.0-variables.csv')
       )
-      assert_equal domain_csv, File.read(File.join(app_path, 'dd', '1.0.0', 'myrepo-data-dictionary-1.0.0-domains.csv'))
-      assert_match 'dd/1.0.0/myrepo-data-dictionary-1.0.0-variables.csv', output
-      assert_match 'dd/1.0.0/myrepo-data-dictionary-1.0.0-domains.csv', output
+      assert_equal domain_csv, File.read(File.join(app_path, 'exports', '1.0.0', 'myrepo-data-dictionary-1.0.0-domains.csv'))
+      assert_match 'exports/1.0.0/myrepo-data-dictionary-1.0.0-variables.csv', output
+      assert_match 'exports/1.0.0/myrepo-data-dictionary-1.0.0-domains.csv', output
     end
 
     def test_export_creates_forms_csv
@@ -84,9 +84,9 @@ folder,id,display_name,code_book
         Dir.chdir(app_path) { Spout.launch ['export'] }
       end
 
-      assert File.directory?(File.join(app_path, 'dd'))
-      assert_equal form_csv, File.read(File.join(app_path, 'dd', '1.0.0', 'forms.csv'))
-      assert_match 'dd/1.0.0/forms.csv', output
+      assert File.directory?(File.join(app_path, 'exports'))
+      assert_equal form_csv, File.read(File.join(app_path, 'exports', '1.0.0', 'forms.csv'))
+      assert_match 'exports/1.0.0/forms.csv', output
     end
   end
 end
