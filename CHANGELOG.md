@@ -5,8 +5,11 @@
   - Spout now provides a warning and skips columns in CSVs with blank headers
   - `spout new` command now generates `CHANGELOG.md`, `README.md`, and `VERSION`
     placeholder files
-  - Check for the latest version available using `spout update`
   - Integer and numeric variables can now reference a domain for missing values
+- **Update Command Added**
+  - Check for the latest version available using `spout update`
+  - The update command provides steps to upgrade the data dictionary to the
+    latest version Spout
 - **Exporter Changes**
   - The export command now exports the variable forms attribute
   - Dictionary exports now are in `exports` instead of `dd` folder
