@@ -178,11 +178,11 @@ valid unit type
 
 ```ruby
 class DictionaryTest < Minitest::Test
-  # This line includes all default Spout Dictionary tests
+  # This line includes all default Spout Dictionary tests.
   include Spout::Tests
 
   # This line provides access to @variables, @forms, and @domains iterators
-  # iterators that can be used to write custom tests
+  # that can be used to write custom tests.
   include Spout::Helpers::Iterators
 
   VALID_UNITS = ['minutes', 'hours']
