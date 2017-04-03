@@ -1,5 +1,8 @@
 ## 0.12.1
 
+### Bug Fix
+- Fixed a bug that prevented `spout deploy` from uploading data dictionaries
+
 ## 0.12.0 (March 29, 2017)
 
 ### Enhancements

@@ -284,7 +284,7 @@ module Spout
         require 'spout/commands/exporter'
         Spout::Commands::Exporter.new(@version, ['--quiet'])
 
-        csv_files = Dir.glob("dd/#{@version}/*.csv")
+        csv_files = Dir.glob("exports/#{@version}/*.csv")
         csv_files.each_with_index do |csv_file, index|
           print "\r   Dictionary Uploads: " + "#{index + 1} of #{csv_files.count}".colorize(:green)
           @created_folders << 'datasets'
