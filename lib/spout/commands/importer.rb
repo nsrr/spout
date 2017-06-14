@@ -11,6 +11,7 @@ module Spout
       def initialize(argv)
         use_domains = !argv.delete('--domains').nil?
         use_forms = !argv.delete('--forms').nil?
+        @preserve_case = !argv.delete('--preserve-case').nil?
         @csv_file = argv[1].to_s
         unless File.exist?(@csv_file)
           puts csv_usage
@@ -158,6 +159,7 @@ EOT
       # Ex: BODY MASS INDEX changes to Body Mass Index
       # Ex: Patient ID stays the same as Patient ID
       def tenderize(text)
+        return text if @preserve_case
         if /[a-z]/ =~ text
           text
         else

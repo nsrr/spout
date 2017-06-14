@@ -1,5 +1,10 @@
 ## 0.13.0
 
+### Enhancements
+- **Importer Changes**
+  - Added option to preserve case of input using the `--preserve-case` flag
+    - `spout import <variables.csv> --preserve-case`
+
 ## 0.12.1 (April 3, 2017)
 
 ### Bug Fix

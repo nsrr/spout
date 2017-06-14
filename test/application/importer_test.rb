@@ -173,6 +173,37 @@ folder,domain_id,display_name,description,value
       assert_equal domain_json, File.read(File.join(app_path, 'domains', 'allcaps.json'))
     end
 
+    def test_preserve_case
+      app_file "domains-import-preserve-caps.csv", <<-CSV
+folder,domain_id,display_name,description,value
+,allcaps,AM/PM,,1
+,allcaps,PM/AM,,2
+      CSV
+
+      output, _error = util_capture do
+        Dir.chdir(app_path) { Spout.launch ["import", "domains-import-preserve-caps.csv", "--domains", "--preserve-case"] }
+      end
+
+      domain_json = <<-JSON
+[
+  {
+    "value": "1",
+    "display_name": "AM/PM",
+    "description": ""
+  },
+  {
+    "value": "2",
+    "display_name": "PM/AM",
+    "description": ""
+  }
+]
+      JSON
+
+      assert_equal 1, Dir.glob(File.join(app_path, "domains", "**", "*.json")).count
+      assert_match %r{create(.*)domains/allcaps\.json}, output
+      assert_equal domain_json, File.read(File.join(app_path, "domains", "allcaps.json"))
+    end
+
     def test_import_converts_ids_to_lowercase
       app_file 'variables-import-uppercase-ids.csv', <<-CSV
 folder,id,display_name,description,type,domain,units,calculation,labels
