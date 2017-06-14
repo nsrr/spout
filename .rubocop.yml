@@ -1,25 +1,49 @@
 AllCops:
   DisplayCopNames: true
-  # Exclude:
-  #   - 'config/**/*'
-  #   - 'script/**/*'
-# Style/Documentation:
-#   Enabled: false
+
 Metrics/ClassLength:
   Enabled: false
+
 Metrics/LineLength:
   Max: 120
-# While methods ideally should be around 5 lines max, comment this out while
-# other issues are present.
-# Metrics/MethodLength:
-#   Max: 5
+
+Metrics/MethodLength:
+  Enabled: false
+
 Style/ClassAndModuleChildren:
   Enabled: false
+
+# Don't require formatted string tokens.
+Style/FormatStringToken:
+  Enabled: false
+
 # Frozen String Literal Pragma will not be needed in Ruby 3+ as it will be the
 # default, Added `frozen_string_literal: true` to use this new default
 Style/FrozenStringLiteralComment:
   EnforcedStyle: always
+
 # Strings assigned to constants will no longer be considered mutable in Ruby 3+
 # This can be removed after Ruby 3 is released.
 Style/MutableConstant:
+  Enabled: false
+
+# Don't require brackets for white-space separated arrays.
+Style/PercentLiteralDelimiters:
+  Enabled: false
+
+# Allow perl backrefs.
+Style/PerlBackrefs:
+  Enabled: false
+
+# Check quotes usage according to lint rule below.
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: double_quotes
+
+# Allow symbol arrays.
+Style/SymbolArray:
+  Enabled: false
+
+# Allow word arrays.
+Style/WordArray:
   Enabled: false
