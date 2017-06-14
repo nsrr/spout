@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'spout/models/variable'
-require 'spout/models/domain'
-require 'spout/models/form'
+require "spout/models/variable"
+require "spout/models/domain"
+require "spout/models/form"
 
 module Spout
   module Models
@@ -17,9 +17,9 @@ module Spout
       def initialize(app_path)
         @app_path = app_path
 
-        @variable_files = json_files('variables')
-        @domain_files = json_files('domains')
-        @form_files = json_files('forms')
+        @variable_files = json_files("variables")
+        @domain_files = json_files("domains")
+        @form_files = json_files("forms")
 
         @variables = []
         @domains = []
@@ -34,21 +34,21 @@ module Spout
       end
 
       def load_variables!
-        load_type!('Variable')
+        load_type!("Variable")
       end
 
       def load_domains!
-        load_type!('Domain')
+        load_type!("Domain")
       end
 
       def load_forms!
-        load_type!('Form')
+        load_type!("Form")
       end
 
       private
 
       def json_files(type)
-        Dir.glob(File.join(@app_path, type, '**', '*.json'))
+        Dir.glob(File.join(@app_path, type, "**", "*.json"))
       end
 
       def load_type!(method)

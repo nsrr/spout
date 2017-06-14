@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require 'json'
+require "json"
 
-require 'spout/models/record'
-require 'spout/models/domain'
-require 'spout/models/form'
+require "spout/models/record"
+require "spout/models/domain"
+require "spout/models/form"
 
 
 module Spout
   module Models
     class Variable < Spout::Models::Record
-      # VARIABLE_TYPES = ['choices', 'numeric', 'integer']
+      # VARIABLE_TYPES = ["choices", "numeric", "integer"]
 
       attr_accessor :id, :folder, :display_name, :description, :type, :units, :labels, :commonly_used, :calculation
       attr_accessor :domain_name, :form_names
@@ -20,8 +20,8 @@ module Spout
 
       def initialize(file_name, dictionary_root)
         @errors = []
-        @id     = file_name.to_s.gsub(%r{^(.*)/|\.json$}, '').downcase
-        @folder = file_name.to_s.gsub(%r{^#{dictionary_root}/variables/|#{@id}\.json$}, '')
+        @id     = file_name.to_s.gsub(%r{^(.*)/|\.json$}, "").downcase
+        @folder = file_name.to_s.gsub(%r{^#{dictionary_root}/variables/|#{@id}\.json$}, "")
         @form_names = []
         @domain_name = nil
 
@@ -37,10 +37,10 @@ module Spout
             instance_variable_set("@#{method}", json[method])
           end
           @commonly_used = false if @commonly_used.nil?
-          @errors << "'id': #{json['id'].inspect} does not match filename #{@id.inspect}" if @id != json['id']
-          @domain_name  = json['domain'] # Spout::Models::Domain.new(json['domain'], dictionary_root)
-          @labels       = (json['labels'] || [])
-          @form_names   = (json['forms'] || []).collect do |form_name|
+          @errors << "'id': #{json['id'].inspect} does not match filename #{@id.inspect}" if @id != json["id"]
+          @domain_name  = json["domain"] # Spout::Models::Domain.new(json["domain"], dictionary_root)
+          @labels       = (json["labels"] || [])
+          @form_names   = (json["forms"] || []).collect do |form_name|
             form_name
           end
         elsif json
@@ -58,10 +58,10 @@ module Spout
       def known_issues
         line_found = false
         lines = []
-        known_issues_file = 'KNOWNISSUES.md'
+        known_issues_file = "KNOWNISSUES.md"
         if File.exist?(known_issues_file) && File.file?(known_issues_file)
           IO.foreach(known_issues_file) do |line|
-            if line_found && Variable.starts_with?(line, '  - ')
+            if line_found && Variable.starts_with?(line, "  - ")
               lines << line
             elsif Variable.partial_match?(line, "\\[#{id}\\]")
               line_found = true
@@ -84,7 +84,7 @@ module Spout
 
       def deploy_params
         { name: id, display_name: display_name, variable_type: type,
-          folder: folder.to_s.gsub(%r{/$}, ''), description: description,
+          folder: folder.to_s.gsub(%r{/$}, ""), description: description,
           units: units, calculation: calculation, commonly_used: commonly_used,
           labels: labels,
           stats_n: n, stats_mean: mean, stats_stddev: stddev,

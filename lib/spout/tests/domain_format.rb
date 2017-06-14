@@ -22,7 +22,7 @@ module Spout
         assert result, message
       end
 
-      Dir.glob('domains/**/*.json').each do |file|
+      Dir.glob("domains/**/*.json").each do |file|
         define_method("test_domain_format: #{file}") do
           assert_domain_format file
         end

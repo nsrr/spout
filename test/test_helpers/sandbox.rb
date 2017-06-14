@@ -1,9 +1,9 @@
-require 'tmpdir'
+require "tmpdir"
 
 module TestHelpers
   module Paths
     def app_template_path
-      File.join Dir.tmpdir, 'app_template'
+      File.join Dir.tmpdir, "app_template"
     end
 
     def tmp_path(*args)
@@ -29,7 +29,7 @@ module TestHelpers
 
     def app_file(path, contents)
       FileUtils.mkdir_p File.dirname("#{app_path}/#{path}")
-      File.open("#{app_path}/#{path}", 'w') do |f|
+      File.open("#{app_path}/#{path}", "w") do |f|
         f.puts contents
       end
     end
@@ -38,8 +38,8 @@ module TestHelpers
       File.delete("#{app_path}/#{file}")
     end
 
-    def read_index_file(type = 'index')
-      File.read(File.join(app_path, 'coverage', "#{type}.html"))
+    def read_index_file(type = "index")
+      File.read(File.join(app_path, "coverage", "#{type}.html"))
     rescue
       nil
     end
@@ -47,7 +47,7 @@ module TestHelpers
 
   module Fixtures
     def basic_info
-      app_file '.spout.yml', <<-YML
+      app_file ".spout.yml", <<-YML
 # slug: myrepo
 visit: visit
 charts:
@@ -56,7 +56,7 @@ charts:
   - chart: gender
     title: Gender
       YML
-      app_file 'variables/age_at_visit.json', <<-JSON
+      app_file "variables/age_at_visit.json", <<-JSON
         {
           "id": "age_at_visit",
           "display_name": "Age at Visit",
@@ -69,7 +69,7 @@ charts:
           "commonly_used": true
         }
       JSON
-      app_file 'variables/gender.json', <<-JSON
+      app_file "variables/gender.json", <<-JSON
         {
           "id": "gender",
           "display_name": "Gender",
@@ -85,7 +85,7 @@ charts:
           ]
         }
       JSON
-      app_file 'domains/gdomain.json', <<-JSON
+      app_file "domains/gdomain.json", <<-JSON
         [
           {
             "value": "m",
@@ -105,14 +105,14 @@ charts:
           }
         ]
       JSON
-      app_file 'forms/intake_questionnaire.json', <<-JSON
+      app_file "forms/intake_questionnaire.json", <<-JSON
         {
           "id": "intake_questionnaire",
           "display_name": "Intake Questionnaire at Baseline Visit",
           "code_book": "Baseline-Visit-Intake-Questionnaire.pdf"
         }
       JSON
-      app_file 'csvs/1.0.0/dataset.csv', <<-CSV
+      app_file "csvs/1.0.0/dataset.csv", <<-CSV
 visit,age_at_visit,gender
 1,30,m
 1,40,m
@@ -136,15 +136,15 @@ visit,age_at_visit,gender
     end
 
     def remove_basic_info
-      delete_app_file '.spout.yml'
-      delete_app_file 'variables/age_at_visit.json'
-      delete_app_file 'variables/gender.json'
-      delete_app_file 'domains/gdomain.json'
-      delete_app_file 'csvs/1.0.0/dataset.csv'
+      delete_app_file ".spout.yml"
+      delete_app_file "variables/age_at_visit.json"
+      delete_app_file "variables/gender.json"
+      delete_app_file "domains/gdomain.json"
+      delete_app_file "csvs/1.0.0/dataset.csv"
     end
 
     def create_visit_variable_and_domain
-      app_file 'variables/visit.json', <<-JSON
+      app_file "variables/visit.json", <<-JSON
         {
           "id": "visit",
           "display_name": "Visit",
@@ -157,7 +157,7 @@ visit,age_at_visit,gender
           "commonly_used": true
         }
       JSON
-      app_file 'domains/vdomain.json', <<-JSON
+      app_file "domains/vdomain.json", <<-JSON
         [
           {
             "value": "1",
@@ -174,14 +174,14 @@ visit,age_at_visit,gender
     end
 
     def remove_visit_variable_and_domain
-      delete_app_file 'variables/visit.json'
-      delete_app_file 'domains/vdomain.json'
+      delete_app_file "variables/visit.json"
+      delete_app_file "domains/vdomain.json"
     end
   end
 end
 
-require 'test_helper'
-require 'fileutils'
+require "test_helper"
+require "fileutils"
 class SandboxTest < Minitest::Test
   include TestHelpers::Paths
   include TestHelpers::Generation
@@ -196,5 +196,5 @@ Module.new do
   FileUtils.rm_rf(app_template_path)
   FileUtils.mkdir(app_template_path)
 
-  Spout.launch(['new', app_template_path, '--skip-gemfile'])
+  Spout.launch(["new", app_template_path, "--skip-gemfile"])
 end

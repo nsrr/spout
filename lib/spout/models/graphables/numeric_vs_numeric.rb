@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'spout/models/graphables/default'
-require 'spout/helpers/array_statistics'
+require "spout/models/graphables/default"
+require "spout/helpers/array_statistics"
 
 module Spout
   module Models
@@ -44,10 +44,10 @@ module Spout
 
         def array_statistics(array)
           {      y: (array.mean.round(1) rescue 0.0),
-            stddev: ("%0.1f" % array.standard_deviation rescue ''),
-            median: ("%0.1f" % array.median rescue ''),
-               min: ("%0.1f" % array.min rescue ''),
-               max: ("%0.1f" % array.max rescue ''),
+            stddev: ("%0.1f" % array.standard_deviation rescue ""),
+            median: ("%0.1f" % array.median rescue ""),
+               min: ("%0.1f" % array.min rescue ""),
+               max: ("%0.1f" % array.max rescue ""),
                  n: array.n }
         end
 

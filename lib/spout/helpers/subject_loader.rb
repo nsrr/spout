@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'colorize'
-require 'csv'
-require 'json'
+require "colorize"
+require "csv"
+require "json"
 
-require 'spout/models/subject'
-require 'spout/helpers/semantic'
-require 'spout/models/empty'
+require "spout/models/subject"
+require "spout/helpers/semantic"
+require "spout/models/empty"
 
 module Spout
   module Helpers
@@ -24,7 +24,7 @@ module Spout
         @all_methods = {}
         @all_domains = []
         @csv_files = []
-        @csv_directory = ''
+        @csv_directory = ""
       end
 
       def load_subjects_from_csvs!
@@ -35,31 +35,31 @@ module Spout
       def load_subjects_from_csvs_part_one!
         @subjects = []
 
-        available_folders = (Dir.exist?('csvs') ? Dir.entries('csvs').select { |e| File.directory? File.join('csvs', e) }.reject { |e| ['.', '..'].include?(e) }.sort : [])
+        available_folders = (Dir.exist?("csvs") ? Dir.entries("csvs").select { |e| File.directory? File.join("csvs", e) }.reject { |e| [".", ".."].include?(e) }.sort : [])
 
         @semantic = Spout::Helpers::Semantic.new(@standard_version, available_folders)
 
         @csv_directory = @semantic.selected_folder
 
-        csv_root = File.join('csvs', @csv_directory)
+        csv_root = File.join("csvs", @csv_directory)
         @csv_files = Dir.glob("#{csv_root}/**/*.csv").sort
 
         if @csv_directory != @standard_version
-          puts "\n#{@csv_files.size == 0 ? 'No CSVs found' : 'Parsing files' } in " + "#{csv_root}".colorize(:white) + ' for dictionary version ' + @standard_version.to_s.colorize(:green) + "\n"
+          puts "\n#{@csv_files.size == 0 ? 'No CSVs found' : 'Parsing files' } in " + "#{csv_root}".colorize(:white) + " for dictionary version " + @standard_version.to_s.colorize(:green) + "\n"
         else
           puts "\n#{@csv_files.size == 0 ? 'No CSVs found' : 'Parsing files' } in " + "#{csv_root}".colorize(:white) + "\n"
         end
 
         last_folder = nil
         @csv_files.each do |csv_file|
-          relative_path = csv_file.gsub(%r{^#{csv_root}}, '')
+          relative_path = csv_file.gsub(%r{^#{csv_root}}, "")
           current_file = File.basename(relative_path)
-          current_folder = relative_path.gsub(/#{current_file}$/, '')
+          current_folder = relative_path.gsub(/#{current_file}$/, "")
           count = 1 # Includes counting the header row
-          puts "  #{current_folder}".colorize(:white) if current_folder.to_s != '' && current_folder != last_folder
+          puts "  #{current_folder}".colorize(:white) if current_folder.to_s != "" && current_folder != last_folder
           print "    #{current_file}"
           last_folder = current_folder
-          CSV.parse(File.open(csv_file, 'r:iso-8859-1:utf-8', &:read), headers: true, header_converters: lambda { |h| h.to_s.downcase }) do |line|
+          CSV.parse(File.open(csv_file, "r:iso-8859-1:utf-8", &:read), headers: true, header_converters: lambda { |h| h.to_s.downcase }) do |line|
             row = line.to_hash
             count += 1
             print "\r    #{current_file} " + "##{count}".colorize(:yellow) if (count % 10 == 0)
@@ -69,7 +69,7 @@ module Spout
 
               row.each_with_index do |(key, value), index|
                 method = key.to_s.downcase.strip
-                if method == ''
+                if method == ""
                   puts "\nSkipping column #{index + 1} due to blank header.".colorize(:red) if count == 2
                   next
                 end
@@ -99,20 +99,20 @@ module Spout
 
       def load_subjects_from_csvs_part_two!
         variable_count = @variable_files.count
-        print 'Converting numeric values to floats'
+        print "Converting numeric values to floats"
         @variable_files.each_with_index do |variable_file, index|
           print "\rConverting numeric values to floats:#{'% 3d' % ((index + 1) * 100 / variable_count)}%"
           json = JSON.parse(File.read(variable_file)) rescue json = nil
           next unless json
-          next unless @valid_ids.include?(json['id'].to_s.downcase) || @valid_ids.size == 0
-          next unless %w(numeric integer).include?(json['type'])
-          method = json['id'].to_s.downcase
+          next unless @valid_ids.include?(json["id"].to_s.downcase) || @valid_ids.size == 0
+          next unless %w(numeric integer).include?(json["type"])
+          method = json["id"].to_s.downcase
           next unless Spout::Models::Subject.method_defined?(method)
 
           domain_json = get_domain(json)
           # Make all domain options nil for numerics/integers
           if domain_json
-            domain_values = domain_json.collect { |option_hash| option_hash['value'] }
+            domain_values = domain_json.collect { |option_hash| option_hash["value"] }
             @subjects.each { |s| domain_values.include?(s.send(method)) ? s.send("#{method}=", nil) : nil }
           end
 
@@ -126,8 +126,8 @@ module Spout
         @variable_files.each do |variable_file|
           json = JSON.parse(File.read(variable_file)) rescue json = nil
           next unless json
-          next unless json['type'] == 'choices' || json['domain'].to_s.downcase.strip != ''
-          domain = json['domain'].to_s.downcase
+          next unless json["type"] == "choices" || json["domain"].to_s.downcase.strip != ""
+          domain = json["domain"].to_s.downcase
           @all_domains << domain
         end
         @all_domains = @all_domains.compact.uniq.sort
@@ -141,11 +141,11 @@ module Spout
       end
 
       def get_variable(variable_name)
-        get_json(variable_name, 'variable')
+        get_json(variable_name, "variable")
       end
 
       def get_domain(json)
-        get_json(json['domain'], 'domain')
+        get_json(json["domain"], "domain")
       end
     end
   end

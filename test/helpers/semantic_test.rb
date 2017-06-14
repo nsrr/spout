@@ -1,9 +1,8 @@
-require 'test_helper'
-require 'spout/helpers/semantic'
+require "test_helper"
+require "spout/helpers/semantic"
 
 module HelperTests
   class SemanticTest < Minitest::Test
-
     def test_no_match
       @semantic = Spout::Helpers::Semantic.new("0.1.0", ["0.2.0", "0.3.0", "0.4.0", "0.4.0.rc"].shuffle)
       assert_equal "0.1.0", @semantic.version
@@ -69,6 +68,5 @@ module HelperTests
       assert_equal [], @semantic.valid_versions.collect(&:string)
       assert_equal "", @semantic.selected_folder
     end
-
   end
 end

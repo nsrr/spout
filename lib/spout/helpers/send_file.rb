@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require 'openssl'
-require 'net/http'
-require 'json'
+require "openssl"
+require "net/http"
+require "json"
 
 module Spout
   module Helpers
@@ -17,13 +17,13 @@ module Spout
 
       def initialize(url, filename, version, token, slug, folder)
         @params = {}
-        @params['version'] = version
-        @params['auth_token'] = token if token
-        @params['dataset'] = slug if slug
-        @params['folder'] = folder if folder
+        @params["version"] = version
+        @params["auth_token"] = token if token
+        @params["dataset"] = slug if slug
+        @params["folder"] = folder if folder
         begin
-          file = File.open(filename, 'rb')
-          @params['file'] = file
+          file = File.open(filename, "rb")
+          @params["file"] = file
 
           mp = Multipart::MultipartPost.new
           @query, @headers = mp.prepare_query(@params)
@@ -35,7 +35,7 @@ module Spout
           @url = URI.parse(url)
 
           @http = Net::HTTP.new(@url.host, @url.port)
-          if @url.scheme == 'https'
+          if @url.scheme == "https"
             @http.use_ssl = true
             @http.verify_mode = OpenSSL::SSL::VERIFY_NONE
           end
@@ -77,14 +77,14 @@ module Multipart
     end
 
     def to_multipart
-      mime_type = 'application/octet-stream'
+      mime_type = "application/octet-stream"
       "Content-Disposition: form-data; name=\"#{k}\"; filename=\"#{filename}\"\r\n" + "Content-Transfer-Encoding: binary\r\n" + "Content-Type: #{mime_type}\r\n\r\n" + content + "\r\n"
     end
   end
 
   class MultipartPost
-    BOUNDARY = 'a#41-93r1-^&#213-rule0000'
-    HEADER = { 'Content-type' => "multipart/form-data, boundary=#{BOUNDARY} " }
+    BOUNDARY = "a#41-93r1-^&#213-rule0000"
+    HEADER = { "Content-type" => "multipart/form-data, boundary=#{BOUNDARY} " }
 
     def prepare_query(params)
       fp = []
@@ -95,7 +95,7 @@ module Multipart
           fp.push(Param.new(k, v))
         end
       end
-      query = fp.collect { |p| "--#{BOUNDARY}\r\n" + p.to_multipart }.join('') + "--#{BOUNDARY}--"
+      query = fp.collect { |p| "--#{BOUNDARY}\r\n" + p.to_multipart }.join("") + "--#{BOUNDARY}--"
       return query, HEADER
     end
   end

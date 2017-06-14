@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'json'
+require "json"
 
-require 'spout/models/record'
-require 'spout/models/option'
+require "spout/models/record"
+require "spout/models/option"
 
 module Spout
   module Models
@@ -13,9 +13,9 @@ module Spout
 
       def initialize(file_name, dictionary_root)
         @errors = []
-        @id = file_name.to_s.gsub(/^(.*)\/|\.json$/, '').downcase
+        @id = file_name.to_s.gsub(/^(.*)\/|\.json$/, "").downcase
 
-        @folder = file_name.to_s.gsub(/^#{dictionary_root}\/domains\/|#{@id}\.json$/, '')
+        @folder = file_name.to_s.gsub(/^#{dictionary_root}\/domains\/|#{@id}\.json$/, "")
         @options = []
 
         json = begin
@@ -31,7 +31,7 @@ module Spout
         end
 
         if json.is_a? Array
-          @id = file_name.to_s.gsub(/^(.*)\/|\.json$/, '').downcase
+          @id = file_name.to_s.gsub(/^(.*)\/|\.json$/, "").downcase
           @options = (json || []).collect do |option|
             Spout::Models::Option.new(option)
           end
@@ -41,7 +41,7 @@ module Spout
       end
 
       def deploy_params
-        { name: id, folder: folder.to_s.gsub(%r{/$}, ''),
+        { name: id, folder: folder.to_s.gsub(%r{/$}, ""),
           options: options.collect(&:deploy_params),
           spout_version: Spout::VERSION::STRING }
       end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'json'
-require 'fileutils'
+require "json"
+require "fileutils"
 
 module Spout
   module Models
@@ -27,7 +27,7 @@ module Spout
         end
 
         def expected_path(id)
-          File.join(dictionary_root, record_folder, '**', expected_filename(id))
+          File.join(dictionary_root, record_folder, "**", expected_filename(id))
         end
 
         def dictionary_root

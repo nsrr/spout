@@ -10,9 +10,9 @@ module Spout
         assert VALID_VARIABLE_TYPES.include?(item), message
       end
 
-      Dir.glob('variables/**/*.json').each do |file|
+      Dir.glob("variables/**/*.json").each do |file|
         define_method("test_variable_type: #{file}") do
-          assert_variable_type begin JSON.parse(File.read(file))['type'] rescue nil end
+          assert_variable_type begin JSON.parse(File.read(file))["type"] rescue nil end
         end
       end
     end

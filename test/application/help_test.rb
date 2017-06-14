@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'test_helpers/sandbox'
-require 'test_helpers/capture'
+require "test_helpers/sandbox"
+require "test_helpers/capture"
 
 module ApplicationTests
   # Tests to assure help command lists all commands.
@@ -18,9 +18,9 @@ module ApplicationTests
 
     def test_help
       output, _error = util_capture do
-        Dir.chdir(app_path) { Spout.launch ['help'] }
+        Dir.chdir(app_path) { Spout.launch ["help"] }
       end
-      assert_match 'The most common spout commands are:', output
+      assert_match "The most common spout commands are:", output
       Spout::COMMANDS.keys.each do |key|
         assert_match(/^  \[#{key}\]/, output)
       end

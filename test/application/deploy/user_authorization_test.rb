@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'colorize'
+require "colorize"
 
-require 'test_helpers/sandbox'
-require 'test_helpers/capture'
-require 'test_helpers/nsrr'
+require "test_helpers/sandbox"
+require "test_helpers/capture"
+require "test_helpers/nsrr"
 
 module ApplicationTests
   module DeployTests
@@ -15,7 +15,7 @@ module ApplicationTests
       def setup
         build_app
         basic_info
-        app_file '.spout.yml', <<-YML
+        app_file ".spout.yml", <<-YML
 ---
 webservers:
   - name: test
@@ -39,7 +39,7 @@ slug: myrepo
               )
             end
           end
-          assert_match '     Enter your token: AUTHORIZED', output.uncolorize
+          assert_match "     Enter your token: AUTHORIZED", output.uncolorize
         end
       end
 
@@ -53,7 +53,7 @@ slug: myrepo
               )
             end
           end
-          assert_match '     Enter your token: UNAUTHORIZED', output.uncolorize
+          assert_match "     Enter your token: UNAUTHORIZED", output.uncolorize
         end
       end
 
@@ -67,7 +67,7 @@ slug: myrepo
               )
             end
           end
-          assert_match '     Enter your token: UNAUTHORIZED', output.uncolorize
+          assert_match "     Enter your token: UNAUTHORIZED", output.uncolorize
         end
       end
     end

@@ -3,7 +3,6 @@
 module Spout
   module Tests
     module JsonValidation
-
       def assert_valid_json(item, msg = nil)
         result = begin
           !!JSON.parse(File.read(item))
@@ -33,7 +32,6 @@ module Spout
           assert_valid_json file
         end
       end
-
     end
   end
 end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'spout/models/variable'
-require 'spout/helpers/table_formatting'
+require "spout/models/variable"
+require "spout/helpers/table_formatting"
 
 module Spout
   module Models
@@ -34,9 +34,9 @@ module Spout
         def valid?
           if @variable.nil? || @chart_variable.nil? || @values_unique == []
             false
-          elsif @variable.type == 'choices' && @variable.domain.options == []
+          elsif @variable.type == "choices" && @variable.domain.options == []
             false
-          elsif @chart_variable.type == 'choices' && @chart_variable.domain.options == []
+          elsif @chart_variable.type == "choices" && @chart_variable.domain.options == []
             false
           else
             true
@@ -44,7 +44,7 @@ module Spout
         end
 
         def title
-          ''
+          ""
         end
 
         def headers

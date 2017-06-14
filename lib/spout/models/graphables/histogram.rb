@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'spout/models/graphables/default'
+require "spout/models/graphables/default"
 
 module Spout
   module Models
@@ -12,7 +12,7 @@ module Spout
         end
 
         def categories
-          if @variable.type == 'choices'
+          if @variable.type == "choices"
             filtered_domain_options(@variable).collect(&:display_name)
           else
             @buckets.collect(&:display_name)
@@ -20,7 +20,7 @@ module Spout
         end
 
         def units
-          'Subjects'
+          "Subjects"
         end
 
         def series
@@ -31,7 +31,7 @@ module Spout
 
             data = []
 
-            if @variable.type == 'choices'
+            if @variable.type == "choices"
               data = filtered_domain_options(@variable).collect do |o|
                 visit_subject_values.select { |v| v == o.value }.count
               end

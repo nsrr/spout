@@ -1,18 +1,17 @@
 # frozen_string_literal: true
 
-require 'spout/models/graphables/default'
+require "spout/models/graphables/default"
 
 module Spout
   module Models
     module Graphables
       class ChoicesVsChoices < Spout::Models::Graphables::Default
-
         def categories
           filtered_domain_options(@chart_variable).collect(&:display_name)
         end
 
         def units
-          'percent'
+          "percent"
         end
 
         def series
@@ -26,9 +25,8 @@ module Spout
         end
 
         def stacking
-          'percent'
+          "percent"
         end
-
       end
     end
   end

@@ -16,7 +16,7 @@ Spout has been used extensively to curate and clean datasets available on the
 
 Add this line to your application's Gemfile:
 
-    gem 'spout'
+    gem "spout"
 
 And then execute:
 
@@ -143,7 +143,7 @@ tests, or just a subset of Spout tests.
 `test/dictionary_test.rb`
 
 ```ruby
-require 'spout/tests'
+require "spout/tests"
 
 class DictionaryTest < Minitest::Test
   # This line includes all default Spout Dictionary tests
@@ -152,7 +152,7 @@ end
 ```
 
 ```ruby
-require 'spout/tests'
+require "spout/tests"
 
 class DictionaryTest < Minitest::Test
   # You can include only certain Spout tests by including them individually
@@ -185,13 +185,13 @@ class DictionaryTest < Minitest::Test
   # that can be used to write custom tests.
   include Spout::Helpers::Iterators
 
-  VALID_UNITS = ['minutes', 'hours']
+  VALID_UNITS = ["minutes", "hours"]
 
   @variables.select { |v| %w(numeric integer).include?(v.type) }.each do |variable|
     define_method("test_units: #{variable.path}") do
       message = "\"#{variable.units}\"".colorize(:red) + " invalid units.\n" +
                 "             Valid types: " +
-                VALID_UNITS.sort_by(&:to_s).collect { |u| u.inspect.colorize(:white) }.join(', ')
+                VALID_UNITS.sort_by(&:to_s).collect { |u| u.inspect.colorize(:white) }.join(", ")
       assert VALID_UNITS.include?(variable.units), message
     end
   end

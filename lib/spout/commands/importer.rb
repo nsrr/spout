@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
-require 'csv'
-require 'json'
-require 'fileutils'
-require 'colorize'
+require "csv"
+require "json"
+require "fileutils"
+require "colorize"
 
 module Spout
   module Commands
     class Importer
       def initialize(argv)
-        use_domains = !argv.delete('--domains').nil?
-        use_forms = !argv.delete('--forms').nil?
-        @preserve_case = !argv.delete('--preserve-case').nil?
+        use_domains = !argv.delete("--domains").nil?
+        use_forms = !argv.delete("--forms").nil?
+        @preserve_case = !argv.delete("--preserve-case").nil?
         @csv_file = argv[1].to_s
         unless File.exist?(@csv_file)
           puts csv_usage
@@ -38,36 +38,36 @@ EOT
       end
 
       def import_variables
-        CSV.parse(File.open(@csv_file, 'r:iso-8859-1:utf-8', &:read), headers: true) do |line|
+        CSV.parse(File.open(@csv_file, "r:iso-8859-1:utf-8", &:read), headers: true) do |line|
           row = line.to_hash
-          if not row.keys.include?('id')
+          if not row.keys.include?("id")
             puts "\nMissing column header `".colorize( :red ) + "id".colorize( :light_cyan ) + "` in data dictionary.".colorize( :red ) + additional_csv_info
             exit(1)
           end
-          next if row['id'] == ''
-          folder = File.join('variables', row.delete('folder').to_s)
+          next if row["id"] == ""
+          folder = File.join("variables", row.delete("folder").to_s)
           FileUtils.mkpath folder
           hash = {}
-          id = row.delete('id').to_s.downcase
-          hash['id'] = id
-          hash['display_name'] = tenderize(row.delete('display_name').to_s)
-          hash['description'] = row.delete('description').to_s
-          hash['type'] = row.delete('type')
-          domain = row.delete('domain').to_s.downcase
-          hash['domain'] = domain if domain != ''
-          units = row.delete('units').to_s
-          hash['units'] = units if units != ''
-          calculation = row.delete('calculation').to_s
-          hash['calculation'] = calculation if calculation != ''
-          labels = row.delete('labels').to_s.split(';')
-          hash['labels'] = labels unless labels.empty?
-          hash['commonly_used'] = true if row.delete('commonly_used').to_s.casecmp('true').zero?
-          forms = row.delete('forms').to_s.split(';')
-          hash['forms'] = forms unless forms.empty?
-          hash['other'] = row unless row.empty?
+          id = row.delete("id").to_s.downcase
+          hash["id"] = id
+          hash["display_name"] = tenderize(row.delete("display_name").to_s)
+          hash["description"] = row.delete("description").to_s
+          hash["type"] = row.delete("type")
+          domain = row.delete("domain").to_s.downcase
+          hash["domain"] = domain if domain != ""
+          units = row.delete("units").to_s
+          hash["units"] = units if units != ""
+          calculation = row.delete("calculation").to_s
+          hash["calculation"] = calculation if calculation != ""
+          labels = row.delete("labels").to_s.split(";")
+          hash["labels"] = labels unless labels.empty?
+          hash["commonly_used"] = true if row.delete("commonly_used").to_s.casecmp("true").zero?
+          forms = row.delete("forms").to_s.split(";")
+          hash["forms"] = forms unless forms.empty?
+          hash["other"] = row unless row.empty?
 
           file_name = File.join(folder, "#{id}.json")
-          File.open(file_name, 'w') do |file|
+          File.open(file_name, "w") do |file|
             file.write(JSON.pretty_generate(hash) + "\n")
           end
           puts "      create".colorize( :green ) + "  #{file_name}"
@@ -77,33 +77,33 @@ EOT
       def import_domains
         domains = {}
 
-        CSV.parse(File.open(@csv_file, 'r:iso-8859-1:utf-8', &:read), headers: true) do |line|
+        CSV.parse(File.open(@csv_file, "r:iso-8859-1:utf-8", &:read), headers: true) do |line|
           row = line.to_hash
-          if not row.keys.include?('domain_id')
+          if not row.keys.include?("domain_id")
             puts "\nMissing column header `".colorize( :red ) + "domain_id".colorize( :light_cyan ) + "` in data dictionary.".colorize( :red ) + additional_csv_info
             exit(1)
           end
-          if not row.keys.include?('value')
+          if not row.keys.include?("value")
             puts "\nMissing column header `".colorize( :red ) + "value".colorize( :light_cyan ) + "` in data dictionary.".colorize( :red ) + additional_csv_info
             exit(1)
           end
-          if not row.keys.include?('display_name')
+          if not row.keys.include?("display_name")
             puts "\nMissing column header `".colorize( :red ) + "display_name".colorize( :light_cyan ) + "` in data dictionary.".colorize( :red ) + additional_csv_info
             exit(1)
           end
 
-          next if row['domain_id'].to_s == '' or row['value'].to_s == '' or row['display_name'].to_s == ''
-          folder = File.join('domains', row['folder'].to_s).gsub(/[^a-zA-Z0-9_\/\.-]/, '_')
-          domain_name = row['domain_id'].to_s.gsub(/[^a-zA-Z0-9_\/\.-]/, '_').downcase
+          next if row["domain_id"].to_s == "" or row["value"].to_s == "" or row["display_name"].to_s == ""
+          folder = File.join("domains", row["folder"].to_s).gsub(/[^a-zA-Z0-9_\/\.-]/, "_")
+          domain_name = row["domain_id"].to_s.gsub(/[^a-zA-Z0-9_\/\.-]/, "_").downcase
           domains[domain_name] ||= {}
           domains[domain_name]["folder"] = folder
           domains[domain_name]["options"] ||= []
 
           hash = {}
-          hash['value'] = row.delete('value').to_s
-          hash['display_name'] = tenderize(row.delete('display_name').to_s)
-          hash['description'] = row.delete('description').to_s
-          hash['missing'] = true if hash['value'].match(/^[\.-]/)
+          hash["value"] = row.delete("value").to_s
+          hash["display_name"] = tenderize(row.delete("display_name").to_s)
+          hash["description"] = row.delete("description").to_s
+          hash["missing"] = true if hash["value"].match(/^[\.-]/)
 
           domains[domain_name]["options"] << hash
         end
@@ -112,9 +112,9 @@ EOT
           folder = domain_hash["folder"]
           FileUtils.mkpath folder
 
-          file_name = File.join(folder, domain_name + '.json')
+          file_name = File.join(folder, "#{domain_name}.json")
 
-          File.open(file_name, 'w') do |file|
+          File.open(file_name, "w") do |file|
             file.write(JSON.pretty_generate(domain_hash["options"]) + "\n")
           end
           puts "      create".colorize( :green ) + "  #{file_name}"
@@ -122,36 +122,36 @@ EOT
       end
 
       def import_forms
-        CSV.parse(File.open(@csv_file, 'r:iso-8859-1:utf-8', &:read), headers: true) do |line|
+        CSV.parse(File.open(@csv_file, "r:iso-8859-1:utf-8", &:read), headers: true) do |line|
           row = line.to_hash
-          unless row.keys.include?('id')
+          unless row.keys.include?("id")
             puts "\nMissing column header `".colorize(:red) +
-                 'id'.colorize(:light_cyan) +
-                 '` in data dictionary.'.colorize(:red) +
+                 "id".colorize(:light_cyan) +
+                 "` in data dictionary.".colorize(:red) +
                  additional_csv_info
             exit(1)
           end
-          unless row.keys.include?('display_name')
+          unless row.keys.include?("display_name")
             puts "\nMissing column header `".colorize(:red) +
-                 'display_name'.colorize(:light_cyan) +
-                 '` in data dictionary.'.colorize(:red) +
+                 "display_name".colorize(:light_cyan) +
+                 "` in data dictionary.".colorize(:red) +
                  additional_csv_info
             exit(1)
           end
-          next if row['id'] == ''
-          folder = File.join('forms', row.delete('folder').to_s)
+          next if row["id"] == ""
+          folder = File.join("forms", row.delete("folder").to_s)
           FileUtils.mkpath folder
           hash = {}
-          id = row.delete('id').to_s.downcase
-          hash['id'] = id
-          hash['display_name'] = tenderize(row.delete('display_name').to_s)
-          hash['code_book'] = row.delete('code_book').to_s
-          hash['other'] = row unless row.empty?
+          id = row.delete("id").to_s.downcase
+          hash["id"] = id
+          hash["display_name"] = tenderize(row.delete("display_name").to_s)
+          hash["code_book"] = row.delete("code_book").to_s
+          hash["other"] = row unless row.empty?
           file_name = File.join(folder, "#{id}.json")
-          File.open(file_name, 'w') do |file|
+          File.open(file_name, "w") do |file|
             file.write(JSON.pretty_generate(hash) + "\n")
           end
-          puts '      create'.colorize(:green) + "  #{file_name}"
+          puts "      create".colorize(:green) + "  #{file_name}"
         end
       end
 

@@ -12,7 +12,7 @@ module Spout
       end
 
       def to_s
-        'Empty'
+        "Empty"
       end
     end
   end

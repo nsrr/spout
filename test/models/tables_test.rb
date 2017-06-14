@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'test_helpers/sandbox'
-require 'test_helpers/capture'
+require "test_helpers/sandbox"
+require "test_helpers/capture"
 
-require 'spout/models/tables'
-require 'spout/helpers/config_reader'
-require 'spout/helpers/subject_loader'
+require "spout/models/tables"
+require "spout/helpers/config_reader"
+require "spout/helpers/subject_loader"
 
 module ApplicationTests
   class TablesTest < SandboxTest
@@ -27,17 +27,17 @@ module ApplicationTests
     def test_numeric_vs_choices_table
       Dir.chdir(app_path) do
         util_capture do
-          @variable_files = Dir.glob('variables/**/*.json')
+          @variable_files = Dir.glob("variables/**/*.json")
           @config = Spout::Helpers::ConfigReader.new
-          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
+          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], "1.0.0", nil, @config.visit)
           @subject_loader.load_subjects_from_csvs!
 
-          variable = Spout::Models::Variable.find_by_id 'age_at_visit'
-          chart_variable = Spout::Models::Variable.find_by_id 'gender'
-          table = Spout::Models::Tables.for(variable, chart_variable, @subject_loader.subjects, 'All Visits')
+          variable = Spout::Models::Variable.find_by_id "age_at_visit"
+          chart_variable = Spout::Models::Variable.find_by_id "gender"
+          table = Spout::Models::Tables.for(variable, chart_variable, @subject_loader.subjects, "All Visits")
 
-          assert_equal 'Gender vs Age at Visit', table.title
-          assert_equal 'All Visits', table.subtitle
+          assert_equal "Gender vs Age at Visit", table.title
+          assert_equal "All Visits", table.subtitle
           assert_equal [["", "N", "Mean", "StdDev", "Median", "Min", "Max", "Unknown", "Total"]], table.headers
           assert_equal [[{ text: "Total", style: "font-weight:bold" },
                          { text: "18",    style: "font-weight:bold" },
@@ -56,7 +56,7 @@ module ApplicationTests
     end
 
     def test_choices_vs_choices_table
-      app_file 'csvs/1.0.0/dataset.csv', <<-CSV
+      app_file "csvs/1.0.0/dataset.csv", <<-CSV
 visit,age_at_visit,gender,race
 1,30,m,b
 1,40,m,b
@@ -78,7 +78,7 @@ visit,age_at_visit,gender,race
 2,39,f,w
       CSV
 
-      app_file 'variables/race.json', <<-JSON
+      app_file "variables/race.json", <<-JSON
         {
           "id": "race",
           "display_name": "Race",
@@ -86,7 +86,7 @@ visit,age_at_visit,gender,race
           "domain": "race"
         }
       JSON
-      app_file 'domains/race.json', <<-JSON
+      app_file "domains/race.json", <<-JSON
         [
           {
             "value": "w",
@@ -101,16 +101,16 @@ visit,age_at_visit,gender,race
 
       Dir.chdir(app_path) do
         util_capture do
-          @variable_files = Dir.glob('variables/**/*.json')
+          @variable_files = Dir.glob("variables/**/*.json")
           @config = Spout::Helpers::ConfigReader.new
-          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
+          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], "1.0.0", nil, @config.visit)
           @subject_loader.load_subjects_from_csvs!
 
-          variable = Spout::Models::Variable.find_by_id 'gender'
-          chart_variable = Spout::Models::Variable.find_by_id 'race'
+          variable = Spout::Models::Variable.find_by_id "gender"
+          chart_variable = Spout::Models::Variable.find_by_id "race"
           table = Spout::Models::Tables.for(variable, chart_variable, @subject_loader.subjects, nil)
 
-          assert_equal 'Gender vs Race', table.title
+          assert_equal "Gender vs Race", table.title
           assert_nil table.subtitle
           assert_equal [["", "White", "Black", "Total"]], table.headers
           assert_equal [[{ text: "Total", style: "font-weight:bold" },
@@ -125,7 +125,7 @@ visit,age_at_visit,gender,race
     end
 
     def test_numeric_vs_numeric_table
-      app_file 'csvs/1.0.0/dataset.csv', <<-CSV
+      app_file "csvs/1.0.0/dataset.csv", <<-CSV
 visit,age_at_visit,gender,bmi
 1,30,m,15
 1,40,m,20
@@ -147,7 +147,7 @@ visit,age_at_visit,gender,bmi
 2,39,f,22
       CSV
 
-      app_file 'variables/bmi.json', <<-JSON
+      app_file "variables/bmi.json", <<-JSON
         {
           "id": "bmi",
           "display_name": "Body Mass Index",
@@ -158,16 +158,16 @@ visit,age_at_visit,gender,bmi
 
       Dir.chdir(app_path) do
         util_capture do
-          @variable_files = Dir.glob('variables/**/*.json')
+          @variable_files = Dir.glob("variables/**/*.json")
           @config = Spout::Helpers::ConfigReader.new
-          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
+          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], "1.0.0", nil, @config.visit)
           @subject_loader.load_subjects_from_csvs!
 
-          variable = Spout::Models::Variable.find_by_id 'bmi'
-          chart_variable = Spout::Models::Variable.find_by_id 'age_at_visit'
+          variable = Spout::Models::Variable.find_by_id "bmi"
+          chart_variable = Spout::Models::Variable.find_by_id "age_at_visit"
           table = Spout::Models::Tables.for(variable, chart_variable, @subject_loader.subjects, nil)
 
-          assert_equal 'Age at Visit vs Body Mass Index', table.title
+          assert_equal "Age at Visit vs Body Mass Index", table.title
           assert_nil table.subtitle
           assert_equal [["", "N", "Mean", "StdDev", "Median", "Min", "Max", "Unknown", "Total"]], table.headers
           assert_equal [[{ text: "Total", style: "font-weight:bold" },
@@ -191,16 +191,16 @@ visit,age_at_visit,gender,bmi
     def test_choices_vs_numeric_table
       Dir.chdir(app_path) do
         util_capture do
-          @variable_files = Dir.glob('variables/**/*.json')
+          @variable_files = Dir.glob("variables/**/*.json")
           @config = Spout::Helpers::ConfigReader.new
-          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], '1.0.0', nil, @config.visit)
+          @subject_loader = Spout::Helpers::SubjectLoader.new(@variable_files, [], "1.0.0", nil, @config.visit)
           @subject_loader.load_subjects_from_csvs!
 
-          variable = Spout::Models::Variable.find_by_id 'gender'
-          chart_variable = Spout::Models::Variable.find_by_id 'age_at_visit'
+          variable = Spout::Models::Variable.find_by_id "gender"
+          chart_variable = Spout::Models::Variable.find_by_id "age_at_visit"
           table = Spout::Models::Tables.for(variable, chart_variable, @subject_loader.subjects, nil)
 
-          assert_equal 'Gender vs Age at Visit', table.title
+          assert_equal "Gender vs Age at Visit", table.title
           assert_nil table.subtitle
           assert_equal [["", "22.0 to 30.0 years", "33.0 to 40.0 years", "42.0 to 47.0 years", "48.0 to 53.0 years", "Total"]], table.headers
           assert_equal [[{ text: "Total", style: "font-weight:bold" },

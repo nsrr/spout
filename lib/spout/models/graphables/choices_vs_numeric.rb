@@ -1,13 +1,12 @@
 # frozen_string_literal: true
 
-require 'spout/models/graphables/default'
-require 'spout/helpers/array_statistics'
+require "spout/models/graphables/default"
+require "spout/helpers/array_statistics"
 
 module Spout
   module Models
     module Graphables
       class ChoicesVsNumeric < Spout::Models::Graphables::Default
-
         def categories
           filtered_subjects = filter_and_sort_subjects
 
@@ -20,7 +19,7 @@ module Spout
         end
 
         def units
-          'percent'
+          "percent"
         end
 
         def series
@@ -37,7 +36,7 @@ module Spout
         end
 
         def stacking
-          'percent'
+          "percent"
         end
 
         private
@@ -51,7 +50,6 @@ module Spout
             []
           end
         end
-
       end
     end
   end

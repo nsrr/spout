@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'spout/helpers/array_statistics'
-require 'spout/helpers/table_formatting'
+require "spout/helpers/array_statistics"
+require "spout/helpers/table_formatting"
 
 module Spout
   module Helpers

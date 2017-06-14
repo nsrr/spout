@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
-require 'spout/tests/json_helper'
+require "spout/tests/json_helper"
 
 module Spout
   module Tests
     module DomainSpecified
-
       Dir.glob("variables/**/*.json").each do |file|
         if json_value(file, :type) == "choices"
           define_method("test_domain_specified:"+file) do
@@ -14,7 +13,6 @@ module Spout
           end
         end
       end
-
     end
   end
 end

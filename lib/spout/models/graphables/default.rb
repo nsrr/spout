@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'spout/models/variable'
-require 'spout/models/bucket'
+require "spout/models/variable"
+require "spout/models/bucket"
 
 module Spout
   module Models
@@ -29,9 +29,9 @@ module Spout
         def valid?
           if @variable.nil? || @chart_variable.nil? || @values_unique == []
             false
-          elsif @variable.type == 'choices' && @variable.domain.options == []
+          elsif @variable.type == "choices" && @variable.domain.options == []
             false
-          elsif @chart_variable.type == 'choices' && @chart_variable.domain.options == []
+          elsif @chart_variable.type == "choices" && @chart_variable.domain.options == []
             false
           else
             true
@@ -43,7 +43,7 @@ module Spout
         end
 
         def subtitle
-          'By Visit'
+          "By Visit"
         end
 
         def categories
@@ -110,7 +110,7 @@ module Spout
         end
 
         def all_integer?(values_numeric)
-          count = values_numeric.count { |v| Integer(format('%.0f', v)) == v }
+          count = values_numeric.count { |v| Integer(format("%.0f", v)) == v }
           count == values_numeric.size
         end
 

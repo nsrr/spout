@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 # Basic spout tests
 class SpoutTest < Minitest::Test

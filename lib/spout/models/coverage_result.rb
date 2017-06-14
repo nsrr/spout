@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'spout/tests/variable_type_validation'
+require "spout/tests/variable_type_validation"
 
 module Spout
   module Models
@@ -24,15 +24,15 @@ module Spout
         file = Dir.glob("variables/**/#{column.to_s.downcase}.json", File::FNM_CASEFOLD).first
         @file_name_test = !file.nil?
         @json = JSON.parse(File.read(file)) rescue @json = {}
-        @json_id_test = (@json['id'].to_s.downcase == column)
+        @json_id_test = (@json["id"].to_s.downcase == column)
       end
 
       def load_valid_values
         valid_values = []
-        if @json['type'] == 'choices' || domain_name != ''
+        if @json["type"] == "choices" || domain_name != ""
           file = Dir.glob("domains/**/#{@json['domain'].to_s.downcase}.json", File::FNM_CASEFOLD).first
           if json = JSON.parse(File.read(file)) rescue false
-            valid_values = json.collect { |hash| hash['value'] }
+            valid_values = json.collect { |hash| hash["value"] }
           end
         end
         @valid_values = valid_values
@@ -43,15 +43,15 @@ module Spout
       end
 
       def check_values
-        @json['type'] != 'choices' || (@valid_values | @csv_values.compact).size == @valid_values.size
+        @json["type"] != "choices" || (@valid_values | @csv_values.compact).size == @valid_values.size
       end
 
       def check_variable_type
-        Spout::Tests::VariableTypeValidation::VALID_VARIABLE_TYPES.include?(@json['type'])
+        Spout::Tests::VariableTypeValidation::VALID_VARIABLE_TYPES.include?(@json["type"])
       end
 
       def check_domain_specified
-        if @json['type'] != 'choices' && domain_name == ''
+        if @json["type"] != "choices" && domain_name == ""
           true
         else
           domain_file = Dir.glob("domains/**/#{@json['domain'].to_s.downcase}.json", File::FNM_CASEFOLD).first
@@ -67,7 +67,7 @@ module Spout
       end
 
       def domain_name
-        @json['domain'].to_s.downcase.strip
+        @json["domain"].to_s.downcase.strip
       end
     end
   end

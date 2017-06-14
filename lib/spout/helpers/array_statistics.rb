@@ -116,13 +116,13 @@ module Spout
   module Helpers
     class ArrayStatistics
       def self.calculations
-        [['N', :n, :count],
-         ['Mean', :mean, :decimal],
-         ['StdDev', :standard_deviation, :decimal, '± %s'],
-         ['Median', :median, :decimal],
-         ['Min', :compact_min, :decimal],
-         ['Max', :compact_max, :decimal],
-         ['Unknown', :unknown, :count]]
+        [["N", :n, :count],
+         ["Mean", :mean, :decimal],
+         ["StdDev", :standard_deviation, :decimal, "± %s"],
+         ["Median", :median, :decimal],
+         ["Min", :compact_min, :decimal],
+         ["Max", :compact_max, :decimal],
+         ["Unknown", :unknown, :count]]
       end
     end
   end

@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-require 'test_helpers/sandbox'
+require "test_helpers/sandbox"
 
 module ApplicationTests
   class DictionaryTest < SandboxTest
-
     def setup
       build_app
       basic_info
@@ -53,6 +52,5 @@ module ApplicationTests
       assert_equal 1, dictionary.domains.count
       assert_equal 1, dictionary.forms.count
     end
-
   end
 end

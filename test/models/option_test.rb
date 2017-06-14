@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'test_helpers/sandbox'
+require "test_helpers/sandbox"
 
 module ApplicationTests
   class OptionTest < SandboxTest
@@ -78,6 +78,5 @@ module ApplicationTests
       assert_equal 1, option.errors
       assert_equal "Option value can't be blank", option.errors.first
     end
-
   end
 end

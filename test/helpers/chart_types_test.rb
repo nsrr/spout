@@ -1,9 +1,8 @@
-require 'test_helper'
-require 'spout/helpers/chart_types'
+require "test_helper"
+require "spout/helpers/chart_types"
 
 module HelperTests
   class ChartTypesTest < Minitest::Test
-
     def test_precision_for_infinity
       assert_equal [[0, 0]]*12, Spout::Helpers::ChartTypes::continuous_buckets([0,0])
     end
@@ -52,6 +51,5 @@ module HelperTests
       assert_nil Spout::Helpers::ChartTypes::get_bucket(buckets, "m")
       assert_nil Spout::Helpers::ChartTypes::get_bucket(buckets, "1")
     end
-
   end
 end

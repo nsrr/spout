@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'spout/models/graphables/default'
+require "spout/models/graphables/default"
 
 module Spout
   module Models

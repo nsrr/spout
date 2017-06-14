@@ -7,7 +7,7 @@ module Spout
       # From Rails: http://apidock.com/rails/v3.2.13/Kernel/silence_stream
       def silence_stream(stream)
         old_stream = stream.dup
-        stream.reopen(/mswin|mingw/ =~ RbConfig::CONFIG['host_os'] ? 'NUL:' : '/dev/null')
+        stream.reopen(/mswin|mingw/ =~ RbConfig::CONFIG["host_os"] ? "NUL:" : "/dev/null")
         stream.sync = true
         yield
       ensure

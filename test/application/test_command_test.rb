@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'test_helpers/sandbox'
-require 'test_helpers/capture'
+require "test_helpers/sandbox"
+require "test_helpers/capture"
 
 module ApplicationTests
   # Tests to assure dictionary tests are run.
@@ -19,7 +19,7 @@ module ApplicationTests
     def test_dictionary_tests
       skip
       output, _error = util_capture do
-        Dir.chdir(app_path) { Spout.launch ['test'] }
+        Dir.chdir(app_path) { Spout.launch ["test"] }
       end
       assert_match(/Loaded Suite test/, output)
       assert_match(/DictionaryTest/, output)

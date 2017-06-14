@@ -6,7 +6,7 @@
 #   "code_book": "Baseline-Visit-Intake-Questionnaire.pdf"
 # }
 
-require 'spout/models/record'
+require "spout/models/record"
 
 module Spout
   module Models
@@ -16,13 +16,13 @@ module Spout
 
       def initialize(file_name, dictionary_root)
         @errors = []
-        @id     = file_name.to_s.gsub(/^(.*)\/|\.json$/, '').downcase
-        @folder = file_name.to_s.gsub(/^#{dictionary_root}\/forms\/|#{@id}\.json$/, '')
+        @id     = file_name.to_s.gsub(/^(.*)\/|\.json$/, "").downcase
+        @folder = file_name.to_s.gsub(/^#{dictionary_root}\/forms\/|#{@id}\.json$/, "")
 
         json = begin
           JSON.parse(File.read(file_name))
         rescue => e
-          form_name = file_name.to_s.gsub(/^(.*)\/|\.json$/, '').downcase
+          form_name = file_name.to_s.gsub(/^(.*)\/|\.json$/, "").downcase
           @errors << "Error Parsing #{form_name}.json: #{e.message}"
           nil
         end
@@ -32,14 +32,14 @@ module Spout
             instance_variable_set("@#{method}", json[method])
           end
 
-          @errors << "'id': #{json['id'].inspect} does not match filename #{@id.inspect}" if @id != json['id']
+          @errors << "'id': #{json['id'].inspect} does not match filename #{@id.inspect}" if @id != json["id"]
         elsif json
           @errors << "Form must be a valid hash in the following format: {\n\"id\": \"FORM_ID\",\n  \"display_name\": \"FORM DISPLAY NAME\",\n  \"code_book\": \"FORMPDF.pdf\"\n}"
         end
       end
 
       def deploy_params
-        { name: id, folder: folder.to_s.gsub(%r{/$}, ''),
+        { name: id, folder: folder.to_s.gsub(%r{/$}, ""),
           display_name: display_name, code_book: code_book,
           spout_version: Spout::VERSION::STRING }
       end

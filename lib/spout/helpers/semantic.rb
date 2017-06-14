@@ -10,7 +10,7 @@ module Spout
 
       def initialize(string)
         @string = string.to_s
-        (@major, @minor, @tiny, @build) = @string.split('.')
+        (@major, @minor, @tiny, @build) = @string.split(".")
       end
 
       def major_number

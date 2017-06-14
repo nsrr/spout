@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'spout/models/tables/default'
-require 'spout/helpers/array_statistics'
+require "spout/models/tables/default"
+require "spout/helpers/array_statistics"
 
 module Spout
   module Models
@@ -12,17 +12,17 @@ module Spout
         end
 
         def headers
-          [[''] + Spout::Helpers::ArrayStatistics.calculations.collect(&:first) + ['Total']]
+          [[""] + Spout::Helpers::ArrayStatistics.calculations.collect(&:first) + ["Total"]]
         end
 
         def footers
           total_values = Spout::Helpers::ArrayStatistics.calculations.collect do |_calculation_label, calculation_method, calculation_type, calculation_format|
             total_count = @filtered_subjects.collect(&@variable.id.to_sym).send(calculation_method)
-            { text: Spout::Helpers::TableFormatting.format_number(total_count, calculation_type, calculation_format), style: 'font-weight:bold' }
+            { text: Spout::Helpers::TableFormatting.format_number(total_count, calculation_type, calculation_format), style: "font-weight:bold" }
           end
 
           [
-            [{ text: 'Total', style: 'font-weight:bold' }] + total_values + [{ text: Spout::Helpers::TableFormatting.format_number(@filtered_subjects.count, :count), style: 'font-weight:bold' }]
+            [{ text: "Total", style: "font-weight:bold" }] + total_values + [{ text: Spout::Helpers::TableFormatting.format_number(@filtered_subjects.count, :count), style: "font-weight:bold" }]
           ]
         end
 
@@ -36,7 +36,7 @@ module Spout
 
             row_name = get_row_name(quartile, bucket, row_subjects)
 
-            [row_name] + data + [{ text: Spout::Helpers::TableFormatting.format_number(row_subjects.count, :count), style: 'font-weight:bold' }]
+            [row_name] + data + [{ text: Spout::Helpers::TableFormatting.format_number(row_subjects.count, :count), style: "font-weight:bold" }]
           end
         end
 
@@ -44,7 +44,7 @@ module Spout
 
         def get_row_name(quartile, bucket, row_subjects)
           if row_subjects.size == 0
-            quartile.to_s.capitalize.gsub('_one', ' One').gsub('_two', ' Two').gsub('_three', ' Three').gsub('_four', ' Four')
+            quartile.to_s.capitalize.gsub("_one", " One").gsub("_two", " Two").gsub("_three", " Three").gsub("_four", " Four")
           else
             "#{bucket.collect(&@chart_variable.id.to_sym).min} to #{bucket.collect(&@chart_variable.id.to_sym).max} #{@chart_variable.units}"
           end

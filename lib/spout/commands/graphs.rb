@@ -1,40 +1,40 @@
 # frozen_string_literal: true
 
-require 'csv'
-require 'fileutils'
-require 'rubygems'
-require 'json'
-require 'yaml'
-require 'colorize'
+require "csv"
+require "fileutils"
+require "rubygems"
+require "json"
+require "yaml"
+require "colorize"
 
-require 'spout/helpers/subject_loader'
-require 'spout/helpers/chart_types'
-require 'spout/models/variable'
-require 'spout/models/graphables'
-require 'spout/models/tables'
-require 'spout/helpers/config_reader'
-require 'spout/helpers/send_file'
-require 'spout/helpers/json_request'
-require 'spout/version'
+require "spout/helpers/subject_loader"
+require "spout/helpers/chart_types"
+require "spout/models/variable"
+require "spout/models/graphables"
+require "spout/models/tables"
+require "spout/helpers/config_reader"
+require "spout/helpers/send_file"
+require "spout/helpers/json_request"
+require "spout/version"
 
 module Spout
   module Commands
     class Graphs
-      def initialize(argv, standard_version, deploy_mode = false, url = '', slug = '', token = '', webserver_name = '', subjects = nil)
+      def initialize(argv, standard_version, deploy_mode = false, url = "", slug = "", token = "", webserver_name = "", subjects = nil)
         @deploy_mode = deploy_mode
         @url = url
         @standard_version = standard_version
         @slug = slug
         @token = token
         @webserver_name = webserver_name
-        @clean = !(argv.delete('--no-resume').nil? && argv.delete('--clean').nil?)
+        @clean = !(argv.delete("--no-resume").nil? && argv.delete("--clean").nil?)
 
         @config = Spout::Helpers::ConfigReader.new
 
         @stratification_variable = Spout::Models::Variable.find_by_id @config.visit
 
         if @stratification_variable.nil?
-          if @config.visit == ''
+          if @config.visit == ""
             puts "The visit variable in .spout.yml can't be blank."
           else
             puts "Could not find the following visit variable: #{@config.visit}"
@@ -42,7 +42,7 @@ module Spout
           return self
         end
 
-        missing_variables = @config.charts.select { |c| Spout::Models::Variable.find_by_id(c['chart']).nil? }
+        missing_variables = @config.charts.select { |c| Spout::Models::Variable.find_by_id(c["chart"]).nil? }
         if missing_variables.count > 0
           puts "Could not find the following chart variable#{'s' unless missing_variables.size == 1}: #{missing_variables.join(', ')}"
           return self
@@ -50,17 +50,17 @@ module Spout
 
         rows_arg = argv.find { |arg| /^--rows=(\d*)/ =~ arg }
         argv.delete(rows_arg)
-        @number_of_rows = rows_arg.gsub(/--rows=/, '').to_i if rows_arg
+        @number_of_rows = rows_arg.gsub(/--rows=/, "").to_i if rows_arg
 
-        @valid_ids = argv.collect { |s| s.to_s.downcase }.compact.reject { |s| s == '' }
+        @valid_ids = argv.collect { |s| s.to_s.downcase }.compact.reject { |s| s == "" }
 
-        @chart_variables = @config.charts.unshift('chart' => @config.visit, 'title' => 'Histogram')
+        @chart_variables = @config.charts.unshift("chart" => @config.visit, "title" => "Histogram")
 
         @dictionary_root = Dir.pwd
-        @variable_files = Dir.glob(File.join(@dictionary_root, 'variables', '**', '*.json'))
+        @variable_files = Dir.glob(File.join(@dictionary_root, "variables", "**", "*.json"))
 
         t = Time.now
-        @graphs_folder = File.join('graphs', @standard_version)
+        @graphs_folder = File.join("graphs", @standard_version)
         FileUtils.mkpath @graphs_folder
 
         @subjects = if subjects
@@ -79,14 +79,14 @@ module Spout
       end
 
       def load_current_progress
-        @progress_file = File.join(@graphs_folder, '.progress.json')
+        @progress_file = File.join(@graphs_folder, ".progress.json")
         @progress = JSON.parse(File.read(@progress_file)) rescue @progress = {}
-        @progress = {} if !@progress.is_a?(Hash) || @clean || @progress['SPOUT_VERSION'] != Spout::VERSION::STRING
-        @progress['SPOUT_VERSION'] = Spout::VERSION::STRING
+        @progress = {} if !@progress.is_a?(Hash) || @clean || @progress["SPOUT_VERSION"] != Spout::VERSION::STRING
+        @progress["SPOUT_VERSION"] = Spout::VERSION::STRING
       end
 
       def save_current_progress
-        File.open(@progress_file, 'w') do |f|
+        File.open(@progress_file, "w") do |f|
           f.write(JSON.pretty_generate(@progress) + "\n")
         end
       end
@@ -115,12 +115,12 @@ module Spout
           end
 
           @progress[variable.id] ||= {}
-          @progress[variable.id]['uploaded'] ||= []
-          next if (!@deploy_mode && @progress[variable.id]['generated'] == true) || (@deploy_mode && @progress[variable.id]['uploaded'].include?(@webserver_name))
+          @progress[variable.id]["uploaded"] ||= []
+          next if (!@deploy_mode && @progress[variable.id]["generated"] == true) || (@deploy_mode && @progress[variable.id]["uploaded"].include?(@webserver_name))
 
           stats = compute_stats(variable)
 
-          if @deploy_mode && !@progress[variable.id]['uploaded'].include?(@webserver_name)
+          if @deploy_mode && !@progress[variable.id]["uploaded"].include?(@webserver_name)
             values = @subjects.collect(&variable.id.to_sym).compact_empty
             variable.n = values.n
             variable.unknown = values.unknown
@@ -142,8 +142,8 @@ module Spout
         return stats unless %w(numeric integer choices).include?(variable.type)
 
         @chart_variables.each do |chart_type_hash|
-          chart_type = chart_type_hash['chart']
-          chart_title = chart_type_hash['title'].downcase.tr(' ', '-')
+          chart_type = chart_type_hash["chart"]
+          chart_title = chart_type_hash["title"].downcase.tr(" ", "-")
           chart_variable = Spout::Models::Variable.find_by_id(chart_type)
 
           filtered_subjects = @subjects.reject { |s| s.send(chart_type).nil? || s.send(variable.id).nil? }
@@ -165,8 +165,8 @@ module Spout
         end
 
         chart_json_file = File.join(@graphs_folder, "#{variable.id}.json")
-        File.open(chart_json_file, 'w') { |file| file.write(JSON.pretty_generate(stats) + "\n") }
-        @progress[variable.id]['generated'] = true
+        File.open(chart_json_file, "w") { |file| file.write(JSON.pretty_generate(stats) + "\n") }
+        @progress[variable.id]["generated"] = true
         stats
       end
 
@@ -178,7 +178,7 @@ module Spout
         params[:variable][:spout_stats] = stats.to_json
         (json, status) = Spout::Helpers::JsonRequest.post("#{@url}/api/v1/variables/create_or_update.json", params)
         if json.is_a?(Hash) && status.is_a?(Net::HTTPSuccess)
-          @progress[variable.id]['uploaded'] << @webserver_name
+          @progress[variable.id]["uploaded"] << @webserver_name
         else
           puts "\nUPLOAD FAILED: ".colorize(:red) + variable.id
           puts "- Error: #{json.inspect}"

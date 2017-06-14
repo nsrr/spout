@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'rubygems'
-require 'json'
+require "rubygems"
+require "json"
 
-require 'minitest/autorun'
-require 'minitest/reporters'
-require 'colorize'
+require "minitest/autorun"
+require "minitest/reporters"
+require "colorize"
 
 module Minitest
   module Reporters
@@ -14,22 +14,22 @@ module Minitest
 
       def start
         super
-        print 'Loaded Suite test'.colorize(:white)
+        print "Loaded Suite test".colorize(:white)
         puts
         puts
-        puts 'Started'
+        puts "Started"
         puts
       end
 
       def report
         super
-        puts format('Finished in %.5f seconds.', total_time)
+        puts format("Finished in %.5f seconds.", total_time)
         puts
-        print format('%d tests', count).colorize(:white)
-        print format(', %d assertions, ', assertions)
+        print format("%d tests", count).colorize(:white)
+        print format(", %d assertions, ", assertions)
         color = failures.zero? && errors.zero? ? :green : :red
-        print format('%d failures, %d errors, ', failures, errors).colorize(color)
-        print format('%d skips', skips).colorize(:yellow)
+        print format("%d failures, %d errors, ", failures, errors).colorize(color)
+        print format("%d skips", skips).colorize(:yellow)
         puts
         puts
       end
@@ -37,11 +37,11 @@ module Minitest
       def record(test)
         super
         if !test.skipped? && test.failure
-          print '    '
+          print "    "
           print_colored_status(test)
           print "    #{test.name}"
           puts
-          print '             '
+          print "             "
           print test.failure.to_s.gsub("\n", "\n             ")
           puts
           puts
@@ -74,23 +74,23 @@ end
 
 Minitest::Reporters.use! Minitest::Reporters::SpoutReporter.new
 
-require 'spout/tests/json_validation'
-require 'spout/tests/domain_existence_validation'
-require 'spout/tests/domain_format'
-require 'spout/tests/domain_name_format'
-require 'spout/tests/domain_name_uniqueness'
-require 'spout/tests/domain_specified'
-require 'spout/tests/form_existence_validation'
-require 'spout/tests/form_name_format'
-require 'spout/tests/form_name_match'
-require 'spout/tests/form_name_uniqueness'
-require 'spout/tests/variable_display_name_length'
-require 'spout/tests/variable_name_format'
-require 'spout/tests/variable_name_match'
-require 'spout/tests/variable_name_uniqueness'
-require 'spout/tests/variable_type_validation'
+require "spout/tests/json_validation"
+require "spout/tests/domain_existence_validation"
+require "spout/tests/domain_format"
+require "spout/tests/domain_name_format"
+require "spout/tests/domain_name_uniqueness"
+require "spout/tests/domain_specified"
+require "spout/tests/form_existence_validation"
+require "spout/tests/form_name_format"
+require "spout/tests/form_name_match"
+require "spout/tests/form_name_uniqueness"
+require "spout/tests/variable_display_name_length"
+require "spout/tests/variable_name_format"
+require "spout/tests/variable_name_match"
+require "spout/tests/variable_name_uniqueness"
+require "spout/tests/variable_type_validation"
 
-require 'spout/helpers/iterators'
+require "spout/helpers/iterators"
 
 module Spout
   module Tests

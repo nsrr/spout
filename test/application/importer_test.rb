@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require 'test_helpers/sandbox'
-require 'test_helpers/capture'
+require "test_helpers/sandbox"
+require "test_helpers/capture"
 
 module ApplicationTests
   # Tests to assure that dictionary imports work.
@@ -10,16 +10,16 @@ module ApplicationTests
 
     def setup
       build_app
-      app_file 'variables-import.csv', <<-CSV
+      app_file "variables-import.csv", <<-CSV
 folder,id,display_name,description,type,domain,units,calculation,labels,calculation,commonly_used,forms
 Demographics,gender,Gender,Gender Description,choices,gdomain,,,gender,,true,gform
       CSV
-      app_file 'domains-import.csv', <<-CSV
+      app_file "domains-import.csv", <<-CSV
 folder,domain_id,display_name,description,value
 ,gdomain,Male,,m
 ,gdomain,Female,,f
       CSV
-      app_file 'forms-import.csv', <<-CSV
+      app_file "forms-import.csv", <<-CSV
 folder,id,display_name,code_book
 Demographics/Baseline,family_history,Family History,family-history.pdf
 ,medications,Medications,medications.pdf
@@ -32,7 +32,7 @@ Demographics/Baseline,family_history,Family History,family-history.pdf
 
     def test_import_with_missing_csv
       output, _error = util_capture do
-        Dir.chdir(app_path) { Spout.launch ['import'] }
+        Dir.chdir(app_path) { Spout.launch ["import"] }
       end
 
       assert_match(/Usage: spout import CSVFILE/, output)
@@ -41,7 +41,7 @@ Demographics/Baseline,family_history,Family History,family-history.pdf
 
     def test_variable_imports
       output, _error = util_capture do
-        Dir.chdir(app_path) { Spout.launch ['import', 'variables-import.csv'] }
+        Dir.chdir(app_path) { Spout.launch ["import", "variables-import.csv"] }
       end
 
       variable_json = <<-JSON
@@ -61,14 +61,14 @@ Demographics/Baseline,family_history,Family History,family-history.pdf
 }
       JSON
 
-      assert_equal 1, Dir.glob(File.join(app_path, 'variables', '**', '*.json')).count
+      assert_equal 1, Dir.glob(File.join(app_path, "variables", "**", "*.json")).count
       assert_match %r{create(.*)variables/Demographics/gender\.json}, output
-      assert_equal variable_json, File.read(File.join(app_path, 'variables', 'Demographics', 'gender.json'))
+      assert_equal variable_json, File.read(File.join(app_path, "variables", "Demographics", "gender.json"))
     end
 
     def test_domain_imports
       output, _error = util_capture do
-        Dir.chdir(app_path) { Spout.launch ['import', 'domains-import.csv', '--domains'] }
+        Dir.chdir(app_path) { Spout.launch ["import", "domains-import.csv", "--domains"] }
       end
 
       domain_json = <<-JSON
@@ -86,13 +86,13 @@ Demographics/Baseline,family_history,Family History,family-history.pdf
 ]
       JSON
 
-      assert_equal 1, Dir.glob(File.join(app_path, 'domains', '**', '*.json')).count
+      assert_equal 1, Dir.glob(File.join(app_path, "domains", "**", "*.json")).count
       assert_match %r{create(.*)domains/gdomain\.json}, output
-      assert_equal domain_json, File.read(File.join(app_path, 'domains', 'gdomain.json'))
+      assert_equal domain_json, File.read(File.join(app_path, "domains", "gdomain.json"))
     end
 
     def test_domain_imports_with_missing_codes
-      app_file 'domains-import-with-missing-codes.csv', <<-CSV
+      app_file "domains-import-with-missing-codes.csv", <<-CSV
 folder,domain_id,display_name,description,value
 ,energylevel,High,,10
 ,energylevel,Medium,,5
@@ -102,7 +102,7 @@ folder,domain_id,display_name,description,value
       CSV
 
       output, _error = util_capture do
-        Dir.chdir(app_path) { Spout.launch ['import', 'domains-import-with-missing-codes.csv', '--domains'] }
+        Dir.chdir(app_path) { Spout.launch ["import", "domains-import-with-missing-codes.csv", "--domains"] }
       end
 
       domain_json = <<-JSON
@@ -137,20 +137,20 @@ folder,domain_id,display_name,description,value
 ]
       JSON
 
-      assert_equal 1, Dir.glob(File.join(app_path, 'domains', '**', '*.json')).count
+      assert_equal 1, Dir.glob(File.join(app_path, "domains", "**", "*.json")).count
       assert_match %r{create(.*)domains/energylevel\.json}, output
-      assert_equal domain_json, File.read(File.join(app_path, 'domains', 'energylevel.json'))
+      assert_equal domain_json, File.read(File.join(app_path, "domains", "energylevel.json"))
     end
 
     def test_domain_remove_all_caps_from_display_names
-      app_file 'domains-import-with-all-caps-display-names.csv', <<-CSV
+      app_file "domains-import-with-all-caps-display-names.csv", <<-CSV
 folder,domain_id,display_name,description,value
 ,allcaps,I AM YELLING,,1
 ,allcaps,No yelling please,,2
       CSV
 
       output, _error = util_capture do
-        Dir.chdir(app_path) { Spout.launch ['import', 'domains-import-with-all-caps-display-names.csv', '--domains'] }
+        Dir.chdir(app_path) { Spout.launch ["import", "domains-import-with-all-caps-display-names.csv", "--domains"] }
       end
 
       domain_json = <<-JSON
@@ -168,9 +168,9 @@ folder,domain_id,display_name,description,value
 ]
       JSON
 
-      assert_equal 1, Dir.glob(File.join(app_path, 'domains', '**', '*.json')).count
+      assert_equal 1, Dir.glob(File.join(app_path, "domains", "**", "*.json")).count
       assert_match %r{create(.*)domains/allcaps\.json}, output
-      assert_equal domain_json, File.read(File.join(app_path, 'domains', 'allcaps.json'))
+      assert_equal domain_json, File.read(File.join(app_path, "domains", "allcaps.json"))
     end
 
     def test_preserve_case
@@ -205,50 +205,50 @@ folder,domain_id,display_name,description,value
     end
 
     def test_import_converts_ids_to_lowercase
-      app_file 'variables-import-uppercase-ids.csv', <<-CSV
+      app_file "variables-import-uppercase-ids.csv", <<-CSV
 folder,id,display_name,description,type,domain,units,calculation,labels
 Demographics,BMI,Body Mass Index,Body Mass Index Description,numeric,,,,bmi
 Measurements,RdI3P,Respiratory Index,RDI Description,numeric,,,,ahi
       CSV
 
       util_capture do
-        Dir.chdir(app_path) { Spout.launch ['import', 'variables-import-uppercase-ids.csv'] }
+        Dir.chdir(app_path) { Spout.launch ["import", "variables-import-uppercase-ids.csv"] }
       end
 
-      bmi_json = JSON.parse(File.read(File.join(app_path, 'variables', 'Demographics', 'bmi.json')))
-      assert_equal 'bmi', bmi_json['id']
+      bmi_json = JSON.parse(File.read(File.join(app_path, "variables", "Demographics", "bmi.json")))
+      assert_equal "bmi", bmi_json["id"]
 
-      rdi3p_json = JSON.parse(File.read(File.join(app_path, 'variables', 'Measurements', 'rdi3p.json')))
-      assert_equal 'rdi3p', rdi3p_json['id']
+      rdi3p_json = JSON.parse(File.read(File.join(app_path, "variables", "Measurements", "rdi3p.json")))
+      assert_equal "rdi3p", rdi3p_json["id"]
     end
 
     def test_import_converts_domain_ids_to_lowercase
-      app_file 'variables-import-uppercase-domains-ids.csv', <<-CSV
+      app_file "variables-import-uppercase-domains-ids.csv", <<-CSV
 folder,id,display_name,description,type,domain,units,calculation,labels
 Demographics,gender,Gender,Gender Description,choices,GDomain,,,gender
       CSV
 
       util_capture do
-        Dir.chdir(app_path) { Spout.launch ['import', 'variables-import-uppercase-domains-ids.csv'] }
+        Dir.chdir(app_path) { Spout.launch ["import", "variables-import-uppercase-domains-ids.csv"] }
       end
 
-      gender_json = JSON.parse(File.read(File.join(app_path, 'variables', 'Demographics', 'gender.json')))
-      assert_equal 'gdomain', gender_json['domain']
+      gender_json = JSON.parse(File.read(File.join(app_path, "variables", "Demographics", "gender.json")))
+      assert_equal "gdomain", gender_json["domain"]
     end
 
     def test_import_removes_all_caps_from_display_names
-      app_file 'variables-import-all-caps-display-names.csv', <<-CSV
+      app_file "variables-import-all-caps-display-names.csv", <<-CSV
 folder,id,display_name,description,type,domain,units,calculation,labels
 Demographics,BMI,BODY MASS INDEX,Body Mass Index Description,numeric,,,,bmi
 Measurements,RdI3P,Respiratory index for PT,RDI Description,numeric,,,,ahi
       CSV
       util_capture do
-        Dir.chdir(app_path) { Spout.launch ['import', 'variables-import-all-caps-display-names.csv'] }
+        Dir.chdir(app_path) { Spout.launch ["import", "variables-import-all-caps-display-names.csv"] }
       end
-      bmi_json = JSON.parse(File.read(File.join(app_path, 'variables', 'Demographics', 'bmi.json')))
-      assert_equal 'Body Mass Index', bmi_json['display_name']
-      rdi3p_json = JSON.parse(File.read(File.join(app_path, 'variables', 'Measurements', 'rdi3p.json')))
-      assert_equal 'Respiratory index for PT', rdi3p_json['display_name']
+      bmi_json = JSON.parse(File.read(File.join(app_path, "variables", "Demographics", "bmi.json")))
+      assert_equal "Body Mass Index", bmi_json["display_name"]
+      rdi3p_json = JSON.parse(File.read(File.join(app_path, "variables", "Measurements", "rdi3p.json")))
+      assert_equal "Respiratory index for PT", rdi3p_json["display_name"]
     end
 
     def test_form_imports
@@ -269,11 +269,11 @@ Measurements,RdI3P,Respiratory index for PT,RDI Description,numeric,,,,ahi
   "code_book": "medications.pdf"
 }
       JSON
-      assert_equal 2, Dir.glob(File.join(app_path, 'forms', '**', '*.json')).count
+      assert_equal 2, Dir.glob(File.join(app_path, "forms", "**", "*.json")).count
       assert_match %r{create(.*)forms/Demographics/Baseline/family_history\.json}, output
       assert_match %r{create(.*)forms/medications\.json}, output
-      assert_equal fx_form_json, File.read(File.join(app_path, 'forms', 'Demographics', 'Baseline', 'family_history.json'))
-      assert_equal mx_form_json, File.read(File.join(app_path, 'forms', 'medications.json'))
+      assert_equal fx_form_json, File.read(File.join(app_path, "forms", "Demographics", "Baseline", "family_history.json"))
+      assert_equal mx_form_json, File.read(File.join(app_path, "forms", "medications.json"))
     end
   end
 end
