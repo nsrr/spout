@@ -2,6 +2,7 @@
 
 module Spout
   module Helpers
+    # Formats numbers in coverage and outlier tables.
     class TableFormatting
       # def initialize(number)
       #   @number = number
@@ -14,7 +15,7 @@ module Spout
       # type:  :count    or   :decimal
       def self.format_number(number, type, format = nil)
         if number.nil?
-          format_nil(number)
+          format_nil
         elsif type == :count
           format_count(number)
         else
@@ -22,7 +23,7 @@ module Spout
         end
       end
 
-      def self.format_nil(number)
+      def self.format_nil
         "-"
       end
 
@@ -32,7 +33,7 @@ module Spout
       #     1000          ->         "1,000"
       # Input (Numeric)   -> Output (String)
       def self.format_count(number)
-        (number == 0 || number.nil?) ? "-" : number_with_delimiter(number)
+        number.zero? || number.nil? ? "-" : number_with_delimiter(number)
       end
 
       # decimal:
@@ -44,7 +45,7 @@ module Spout
       # Input (Numeric)   -> Output (String)
       def self.format_decimal(number, format)
         precision = 1
-        precision = -Math.log10(number.abs).floor if number.abs < 1.0 && number != 0
+        precision = -Math.log10(number.abs).floor if number.abs < 1.0 && !number.zero?
 
         number = number_with_delimiter(number.to_f.round(precision))
         number = format % number if format
