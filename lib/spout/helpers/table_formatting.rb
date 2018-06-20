@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "spout/helpers/number_helper"
+
 module Spout
   module Helpers
     # Formats numbers in coverage and outlier tables.
@@ -7,10 +9,6 @@ module Spout
       # def initialize(number)
       #   @number = number
       # end
-
-      def self.number_with_delimiter(number, delimiter = ",")
-        number.to_s.reverse.scan(/(?:\d*\.)?\d{1,3}-?/).join(delimiter).reverse
-      end
 
       # type:  :count    or   :decimal
       def self.format_number(number, type, format = nil)
@@ -33,7 +31,7 @@ module Spout
       #     1000          ->         "1,000"
       # Input (Numeric)   -> Output (String)
       def self.format_count(number)
-        number.zero? || number.nil? ? "-" : number_with_delimiter(number)
+        number.zero? || number.nil? ? "-" : Spout::Helpers::NumberHelper.number_with_delimiter(number)
       end
 
       # decimal:
@@ -47,7 +45,7 @@ module Spout
         precision = 1
         precision = -Math.log10(number.abs).floor if number.abs < 1.0 && !number.zero?
 
-        number = number_with_delimiter(number.to_f.round(precision))
+        number = Spout::Helpers::NumberHelper.number_with_delimiter(number.to_f.round(precision))
         number = format % number if format
         number
       end
