@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require "colorize"
-require "csv"
 require "json"
 
-require "spout/models/subject"
+require "spout/helpers/csv_reader"
 require "spout/helpers/semantic"
+require "spout/models/subject"
 require "spout/models/empty"
 
 module Spout
@@ -59,8 +59,8 @@ module Spout
           puts "  #{current_folder}".colorize(:white) if current_folder.to_s != "" && current_folder != last_folder
           print "    #{current_file}"
           last_folder = current_folder
-          CSV.parse(File.open(csv_file, "r:iso-8859-1:utf-8", &:read), headers: true, header_converters: lambda { |h| h.to_s.downcase }) do |line|
-            row = line.to_hash
+
+          Spout::Helpers::CSVReader.read_csv(csv_file) do |row|
             count += 1
             print "\r    #{current_file} " + "##{count}".colorize(:yellow) if (count % 10 == 0)
             @subjects << Spout::Models::Subject.create do |t|
@@ -87,7 +87,6 @@ module Spout
                 end
               end
             end
-
             # puts "Memory Used: " + (`ps -o rss -p #{$$}`.strip.split.last.to_i / 1024).to_s + " MB" if count % 1000 == 0
             break if !@number_of_rows.nil? && count - 1 >= @number_of_rows
           end

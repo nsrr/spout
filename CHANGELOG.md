@@ -4,6 +4,7 @@
 - **General Changes**
   - Updated to ruby 2.5.1
   - Updated to simplecov 0.16.1
+  - Improved memory management reading large CSVs
 - **Importer Changes**
   - Added option to preserve case of input using the `--preserve-case` flag
     - `spout import <variables.csv> --preserve-case`

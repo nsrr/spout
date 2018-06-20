@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
-require "csv"
 require "json"
 require "fileutils"
 require "colorize"
+
+require "spout/helpers/csv_reader"
 
 module Spout
   module Commands
@@ -38,8 +39,7 @@ EOT
       end
 
       def import_variables
-        CSV.parse(File.open(@csv_file, "r:iso-8859-1:utf-8", &:read), headers: true) do |line|
-          row = line.to_hash
+        Spout::Helpers::CSVReader.read_csv(@csv_file) do |row|
           if not row.keys.include?("id")
             puts "\nMissing column header `".colorize( :red ) + "id".colorize( :light_cyan ) + "` in data dictionary.".colorize( :red ) + additional_csv_info
             exit(1)
@@ -77,8 +77,7 @@ EOT
       def import_domains
         domains = {}
 
-        CSV.parse(File.open(@csv_file, "r:iso-8859-1:utf-8", &:read), headers: true) do |line|
-          row = line.to_hash
+        Spout::Helpers::CSVReader.read_csv(@csv_file) do |row|
           if not row.keys.include?("domain_id")
             puts "\nMissing column header `".colorize( :red ) + "domain_id".colorize( :light_cyan ) + "` in data dictionary.".colorize( :red ) + additional_csv_info
             exit(1)
@@ -122,8 +121,7 @@ EOT
       end
 
       def import_forms
-        CSV.parse(File.open(@csv_file, "r:iso-8859-1:utf-8", &:read), headers: true) do |line|
-          row = line.to_hash
+        Spout::Helpers::CSVReader.read_csv(@csv_file) do |row|
           unless row.keys.include?("id")
             puts "\nMissing column header `".colorize(:red) +
                  "id".colorize(:light_cyan) +
