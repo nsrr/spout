@@ -1,6 +1,8 @@
 ## 0.13.0
 
 ### Enhancements
+- **General Changes**
+  - Updated to ruby 2.5.1
 - **Importer Changes**
   - Added option to preserve case of input using the `--preserve-case` flag
     - `spout import <variables.csv> --preserve-case`

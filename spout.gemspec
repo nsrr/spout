@@ -8,7 +8,7 @@
 # gem list -r spout
 # gem install spout
 
-lib = File.expand_path("../lib", __FILE__)
+lib = File.expand_path("lib", __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "spout/version"
 
@@ -25,6 +25,10 @@ Gem::Specification.new do |spec|
                        "dictionary using built-in tests, or add your own for "\
                        "further validations."
   spec.homepage      = "https://github.com/sleepepi/spout"
+
+  spec.required_ruby_version     = ">= 2.5.1"
+  spec.required_rubygems_version = ">= 2.7.6"
+
   spec.license       = "MIT"
 
   spec.files = Dir["{bin,lib}/**/*"] + ["CHANGELOG.md", "LICENSE", "Rakefile", "README.md", "spout.gemspec"]
