@@ -26,7 +26,7 @@ Usage: spout new FOLDER
 The FOLDER must be empty or new.
 
 EOT
-        if @full_path == "" || (Dir.exist?(@full_path) && (Dir.entries(@full_path) & [".gitignore", ".ruby-version", ".travis.yml", "Gemfile", "gems.rb", "Rakefile", "domains", "variables", "test"]).size > 0)
+        if @full_path == "" || (Dir.exist?(@full_path) && (Dir.entries(@full_path) & [".gitignore", ".ruby-version", ".travis.yml", "Gemfile", "gems.rb", "domains", "variables", "test"]).size > 0)
           puts usage
           exit(0)
         end
@@ -37,7 +37,6 @@ EOT
         evaluate_file "spout.yml.erb", ".spout.yml"
         evaluate_file "CHANGELOG.md.erb", "CHANGELOG.md"
         copy_file "gems.rb"
-        copy_file "Rakefile"
         evaluate_file "README.md.erb", "README.md"
         copy_file "VERSION"
         directory "domains"
