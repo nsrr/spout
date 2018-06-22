@@ -6,8 +6,6 @@ require "json"
 require "minitest/autorun"
 require "minitest/reporters"
 
-require "spout/helpers/color"
-
 module Minitest
   module Reporters
     class SpoutReporter < BaseReporter

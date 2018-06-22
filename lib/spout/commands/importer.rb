@@ -3,7 +3,6 @@
 require "json"
 require "fileutils"
 
-require "spout/helpers/color"
 require "spout/helpers/csv_reader"
 
 module Spout

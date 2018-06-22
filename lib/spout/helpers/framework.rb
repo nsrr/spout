@@ -4,8 +4,6 @@ require "date"
 require "erb"
 require "fileutils"
 
-require "spout/helpers/color"
-
 TEMPLATES_DIRECTORY = File.expand_path("../../templates", __FILE__)
 
 module Spout

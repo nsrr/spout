@@ -2,7 +2,6 @@
 
 require "json"
 
-require "spout/helpers/color"
 require "spout/helpers/csv_reader"
 require "spout/helpers/semantic"
 require "spout/models/subject"

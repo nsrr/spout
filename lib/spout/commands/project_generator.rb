@@ -2,7 +2,6 @@
 
 require "fileutils"
 
-require "spout/helpers/color"
 require "spout/helpers/framework"
 
 module Spout

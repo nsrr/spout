@@ -6,7 +6,6 @@ require "rubygems"
 require "json"
 require "yaml"
 
-require "spout/helpers/color"
 require "spout/helpers/subject_loader"
 require "spout/helpers/chart_types"
 require "spout/models/variable"

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "spout/version"
+require "spout/color"
 
 require "spout/models/dictionary"
 

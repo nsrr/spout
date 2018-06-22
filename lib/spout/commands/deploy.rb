@@ -5,7 +5,6 @@ require "io/console"
 
 require "spout/helpers/subject_loader"
 require "spout/helpers/config_reader"
-require "spout/helpers/color"
 require "spout/helpers/quietly"
 require "spout/helpers/send_file"
 require "spout/helpers/semantic"
