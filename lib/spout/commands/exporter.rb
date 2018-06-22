@@ -22,7 +22,7 @@ module Spout
 
       def expanded_export!
         folder = "exports/#{@standard_version}"
-        puts "      create".colorize(:green) + "  #{folder}" unless @quiet
+        puts "      create".green + "  #{folder}" unless @quiet
         FileUtils.mkpath folder
         generic_export(
           folder,
@@ -38,7 +38,7 @@ module Spout
 
       def generic_export(folder, type, keys, include_domain_name = false)
         export_file = export_file_name(type)
-        puts "      export".colorize(:blue) + "  #{folder}/#{export_file}" unless @quiet
+        puts "      export".blue + "  #{folder}/#{export_file}" unless @quiet
         CSV.open("#{folder}/#{export_file}", "wb") do |csv|
           csv << if include_domain_name
                    %w(folder domain_id) + keys

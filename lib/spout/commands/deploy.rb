@@ -77,7 +77,7 @@ module Spout
         begin
           run_all
         rescue Interrupt
-          puts "\nINTERRUPTED".colorize(:red)
+          puts "\nINTERRUPTED".red
         end
       end
 
@@ -104,21 +104,21 @@ module Spout
         @slug = @config.slug
 
         if @slug == ""
-          message = "#{INDENT}Please specify a dataset slug in your `.spout.yml` file!".colorize(:red) + " Ex:\n---\nslug: mydataset\n".colorize(:grey)
+          message = "#{INDENT}Please specify a dataset slug in your `.spout.yml` file!".red + " Ex:\n---\nslug: mydataset\n".gray
           failure(message)
         end
 
         if @config.webservers.empty?
-          message = "#{INDENT}Please specify a webserver in your `.spout.yml` file!".colorize(:red) + " Ex:\n---\nwebservers:\n  - name: production\n    url: https://sleepdata.org\n  - name: staging\n    url: https://staging.sleepdata.org\n".colorize(:grey)
+          message = "#{INDENT}Please specify a webserver in your `.spout.yml` file!".red + " Ex:\n---\nwebservers:\n  - name: production\n    url: https://sleepdata.org\n  - name: staging\n    url: https://staging.sleepdata.org\n".gray
           failure(message)
         end
 
         matching_webservers = @config.webservers.select { |wh| /^#{@environment}/i =~ wh["name"].to_s.downcase }
         if matching_webservers.count == 0
-          message = "#{INDENT}0 webservers match '#{@environment}'.".colorize(:red) + " The following webservers exist in your `.spout.yml` file:\n" + "#{INDENT}#{@config.webservers.collect{|wh| wh['name'].to_s.downcase}.join(', ')}".colorize(:white)
+          message = "#{INDENT}0 webservers match '#{@environment}'.".red + " The following webservers exist in your `.spout.yml` file:\n" + "#{INDENT}#{@config.webservers.collect{|wh| wh['name'].to_s.downcase}.join(', ')}".white
           failure(message)
         elsif matching_webservers.count > 1
-          message = "#{INDENT}#{matching_webservers.count} webservers match '#{@environment}'.".colorize(:red) + " Did you mean one of the following?\n" + "#{INDENT}#{matching_webservers.collect{|wh| wh['name'].to_s.downcase}.join(', ')}".colorize(:white)
+          message = "#{INDENT}#{matching_webservers.count} webservers match '#{@environment}'.".red + " Did you mean one of the following?\n" + "#{INDENT}#{matching_webservers.collect{|wh| wh['name'].to_s.downcase}.join(', ')}".white
           failure(message)
         end
 
@@ -126,13 +126,13 @@ module Spout
         @url = URI.parse(matching_webservers.first["url"].to_s.strip) rescue @url = nil
 
         if @url.to_s == ""
-          message = "#{INDENT}Invalid URL format for #{matching_webservers.first['name'].to_s.strip.downcase} webserver: ".colorize(:red) + "'#{matching_webservers.first['url'].to_s.strip}'".colorize(:white)
+          message = "#{INDENT}Invalid URL format for #{matching_webservers.first['name'].to_s.strip.downcase} webserver: ".red + "'#{matching_webservers.first['url'].to_s.strip}'".white
           failure(message)
         end
 
-        puts "PASS".colorize(:green)
-        puts "        Target Server: " + "#{@url}".colorize(:white)
-        puts "       Target Dataset: " + "#{@slug}".colorize(:white)
+        puts "PASS".green
+        puts "        Target Server: " + "#{@url}".white
+        puts "       Target Dataset: " + "#{@slug}".white
       end
 
       # - **Version Check**
@@ -141,7 +141,7 @@ module Spout
       #   - "v#{VERSION}" matches HEAD git tag annotation
       def version_check
         if @skip_checks
-          puts "        Version Check: " + "SKIP".colorize(:blue)
+          puts "        Version Check: " + "SKIP".blue
           return
         end
 
@@ -151,19 +151,19 @@ module Spout
 
         print "     Git Status Check: "
         if stdout.to_s.strip == ""
-          puts "PASS".colorize(:green) + " " + "nothing to commit, working directory clean".colorize(:white)
+          puts "PASS".green + " " + "nothing to commit, working directory clean".white
         else
-          message = "#{INDENT}working directory contains uncomitted changes\n#{INDENT}use `".colorize(:red) + "--skip-checks".colorize(:white) + "` to ignore this step".colorize(:red)
+          message = "#{INDENT}working directory contains uncomitted changes\n#{INDENT}use `".red + "--skip-checks".white + "` to ignore this step".red
           failure message
         end
 
         changelog = File.open("CHANGELOG.md", &:readline).strip rescue changelog = ""
         if changelog.match(/^## #{@version.split('.')[0..2].join('.')}/)
-          puts "         CHANGELOG.md: " + "PASS".colorize(:green) + " " + changelog.colorize(:white)
+          puts "         CHANGELOG.md: " + "PASS".green + " " + changelog.white
         else
           print "         CHANGELOG.md: "
-          message = "#{INDENT}Expected: ".colorize(:red) + "## #{@version}".colorize(:white) +
-                  "\n#{INDENT}  Actual: ".colorize(:red) + changelog.colorize(:white)
+          message = "#{INDENT}Expected: ".red + "## #{@version}".white +
+                  "\n#{INDENT}  Actual: ".red + changelog.white
           failure message
         end
 
@@ -174,16 +174,16 @@ module Spout
         print "        Version Check: "
         tag = stdout.to_s.strip
         if "v#{@version}" != tag
-          message = "#{INDENT}Version specified in `VERSION` file ".colorize(:red) + "'v#{@version}'".colorize(:white) + " does not match git tag on HEAD commit ".colorize(:red) + "'#{tag}'".colorize(:white)
+          message = "#{INDENT}Version specified in `VERSION` file ".red + "'v#{@version}'".white + " does not match git tag on HEAD commit ".red + "'#{tag}'".white
           failure message
         else
-          puts "PASS".colorize(:green) + " VERSION " + "'v#{@version}'".colorize(:white) + " matches git tag " + "'#{tag}'".colorize(:white)
+          puts "PASS".green + " VERSION " + "'v#{@version}'".white + " matches git tag " + "'#{tag}'".white
         end
       end
 
       def test_check
         if @skip_tests
-          puts "          Spout Tests: " + "SKIP".colorize(:blue)
+          puts "          Spout Tests: " + "SKIP".blue
           return
         end
 
@@ -194,31 +194,31 @@ module Spout
         end
 
         if stdout.match(/[^\d]0 failures, 0 errors,/)
-          puts "PASS".colorize(:green)
+          puts "PASS".green
         else
-          message = "#{INDENT}spout t".colorize(:white) + " had errors or failures".colorize(:red) + "\n#{INDENT}Please fix all errors and failures and then run spout deploy again."
+          message = "#{INDENT}spout t".white + " had errors or failures".red + "\n#{INDENT}Please fix all errors and failures and then run spout deploy again."
           failure message
         end
       end
 
       def coverage_check
         if @skip_coverage
-          puts "     Dataset Coverage: " + "SKIP".colorize(:blue)
+          puts "     Dataset Coverage: " + "SKIP".blue
           return
         end
 
-        puts "     Dataset Coverage: " + "NOT IMPLEMENTED".colorize(:yellow)
+        puts "     Dataset Coverage: " + "NOT IMPLEMENTED".yellow
       end
 
       def user_authorization
-        puts  "  Get your token here: " + "#{@url}/token".colorize(:blue).colorize(:white_bg).colorize(:underline)
+        puts  "  Get your token here: " + "#{@url}/token".blue.bg_gray.underline
         print "     Enter your token: "
         @token = STDIN.noecho(&:gets).chomp if @token.to_s.strip == ""
         (json, _status) = Spout::Helpers::JsonRequest.get("#{@url}/datasets/#{@slug}/a/#{@token}/editor.json")
         if json.is_a?(Hash) && json["editor"]
-          puts "AUTHORIZED".colorize(:green)
+          puts "AUTHORIZED".green
         else
-          puts "UNAUTHORIZED".colorize(:red)
+          puts "UNAUTHORIZED".red
           puts "#{INDENT}You are not set as an editor on the #{@slug} dataset or you mistyped your token."
           raise DeployError
         end
@@ -226,7 +226,7 @@ module Spout
 
       def upload_variables
         if @skip_variables
-          puts "     Upload Variables: " + "SKIP".colorize(:blue)
+          puts "     Upload Variables: " + "SKIP".blue
           return
         end
         load_subjects_from_csvs
@@ -246,12 +246,12 @@ module Spout
         require "spout/commands/graphs"
         @argv << "--clean" if @clean
         Spout::Commands::Graphs.new(@argv, @version, true, @url, @slug, @token, @webserver_name, @subjects)
-        puts "\r     Upload Variables: " + "DONE          ".colorize(:green)
+        puts "\r     Upload Variables: " + "DONE          ".green
       end
 
       def dataset_uploads
         if @skip_dataset
-          puts "      Dataset Uploads: " + "SKIP".colorize(:blue)
+          puts "      Dataset Uploads: " + "SKIP".blue
           return
         end
 
@@ -261,7 +261,7 @@ module Spout
         csv_files = Dir.glob("csvs/#{csv_directory}/**/*.csv")
 
         csv_files.each_with_index do |csv_file, index|
-          print "\r      Dataset Uploads: " + "#{index + 1} of #{csv_files.count}".colorize(:green)
+          print "\r      Dataset Uploads: " + "#{index + 1} of #{csv_files.count}".green
           folder = csv_file.gsub(%r{^csvs/#{csv_directory}}, "").gsub(/#{File.basename(csv_file)}$/, "")
           folder = folder.gsub(%r{/$}, "")
           @created_folders << "datasets#{folder}"
@@ -270,12 +270,12 @@ module Spout
           upload_file(csv_file, "datasets#{folder}") unless @archive_only
           upload_file(csv_file, "datasets/archive/#{@version}#{folder}")
         end
-        puts "\r      Dataset Uploads: " + "DONE          ".colorize(:green)
+        puts "\r      Dataset Uploads: " + "DONE          ".green
       end
 
       def data_dictionary_uploads
         if @skip_dictionary
-          puts "   Dictionary Uploads: " + "SKIP".colorize(:blue)
+          puts "   Dictionary Uploads: " + "SKIP".blue
           return
         end
 
@@ -286,38 +286,38 @@ module Spout
 
         csv_files = Dir.glob("exports/#{@version}/*.csv")
         csv_files.each_with_index do |csv_file, index|
-          print "\r   Dictionary Uploads: " + "#{index + 1} of #{csv_files.count}".colorize(:green)
+          print "\r   Dictionary Uploads: " + "#{index + 1} of #{csv_files.count}".green
           @created_folders << "datasets"
           @created_folders << "datasets/archive"
           @created_folders << "datasets/archive/#{@version}"
           upload_file(csv_file, "datasets") unless @archive_only
           upload_file(csv_file, "datasets/archive/#{@version}")
         end
-        puts "\r   Dictionary Uploads: " + "DONE          ".colorize(:green)
+        puts "\r   Dictionary Uploads: " + "DONE          ".green
       end
 
       def markdown_uploads
         if @skip_documentation
-          puts "Documentation Uploads: " + "SKIP".colorize(:blue)
+          puts "Documentation Uploads: " + "SKIP".blue
           return
         end
 
         print "Documentation Uploads:"
         markdown_files = Dir.glob(%w(CHANGELOG.md KNOWNISSUES.md))
         markdown_files.each_with_index do |markdown_file, index|
-          print "\rDocumentation Uploads: " + "#{index + 1} of #{markdown_files.count}".colorize(:green)
+          print "\rDocumentation Uploads: " + "#{index + 1} of #{markdown_files.count}".green
           @created_folders << "datasets"
           @created_folders << "datasets/archive"
           @created_folders << "datasets/archive/#{@version}"
           upload_file(markdown_file, "datasets") unless @archive_only
           upload_file(markdown_file, "datasets/archive/#{@version}")
         end
-        puts "\rDocumentation Uploads: " + "DONE          ".colorize(:green)
+        puts "\rDocumentation Uploads: " + "DONE          ".green
       end
 
       def trigger_server_updates
         if @skip_server_scripts
-          puts "Launch Server Scripts: " + "SKIP".colorize(:blue)
+          puts "Launch Server Scripts: " + "SKIP".blue
           return
         end
 
@@ -325,16 +325,16 @@ module Spout
         params = { auth_token: @token, dataset: @slug, version: @version, folders: @created_folders.compact.uniq }
         (json, _status) = Spout::Helpers::JsonRequest.post("#{@url}/api/v1/dictionary/refresh.json", params)
         if json.is_a?(Hash) && json["refresh"] == "success"
-          puts "DONE".colorize(:green)
+          puts "DONE".green
         else
-          puts "FAIL".colorize(:red)
+          puts "FAIL".red
           raise DeployError
         end
       end
 
       def set_default_dataset_version
         if @archive_only
-          puts "  Set Default Version: " + "SKIP".colorize(:blue)
+          puts "  Set Default Version: " + "SKIP".blue
           return
         end
         print "  Set Default Version: "
@@ -343,14 +343,14 @@ module Spout
           "#{@url}/api/v1/dictionary/update_default_version.json", params
         )
         if json.is_a?(Hash) && json["version_update"] == "success"
-          puts @version.to_s.colorize(:green)
+          puts @version.to_s.green
         else
-          failure("#{INDENT}Unable to set default version\n#{INDENT}to " + @version.to_s.colorize(:white) + " for " + @slug.to_s.colorize(:white) + " dataset.")
+          failure("#{INDENT}Unable to set default version\n#{INDENT}to " + @version.to_s.white + " for " + @slug.to_s.white + " dataset.")
         end
       end
 
       def failure(message)
-        puts "FAIL".colorize(:red)
+        puts "FAIL".red
         puts message
         raise DeployError
       end

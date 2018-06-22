@@ -49,7 +49,7 @@ EOT
         copy_file "test/dictionary_test.rb"
         copy_file "test/test_helper.rb"
         return if skip_gemfile
-        puts "         run".colorize(:green) + "  bundle install".colorize(:cyan)
+        puts "         run".green + "  bundle install".cyan
         Dir.chdir(@full_path)
         system "bundle install"
       end

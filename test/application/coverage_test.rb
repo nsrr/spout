@@ -61,7 +61,7 @@ module ApplicationTests
       output, _error = util_capture do
         Dir.chdir(app_path) { Spout.launch(["coverage", "--console"]) }
       end
-      assert_match %r{Parsing files in csvs/1\.0\.0}, output.uncolorize
+      assert_match %r{Parsing files in csvs/1\.0\.0}, output.colorless
       assert_equal [".", "..", "dataset.csv"].sort, Dir.entries(File.join(app_path, "csvs", "1.0.0")).sort
       index_file = read_index_file
       refute_nil index_file

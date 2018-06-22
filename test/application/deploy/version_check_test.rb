@@ -39,7 +39,7 @@ slug: myrepo
           output, _error = util_capture do
             Dir.chdir(app_path) { Spout.launch ["deploy", "t", "--token=1-abcd", "--skip-tests", "--skip-coverage", "--skip-variables", "--skip-server-scripts"] }
           end
-          assert_match "CHANGELOG.md: PASS ## 1.0.0", output.uncolorize
+          assert_match "CHANGELOG.md: PASS ## 1.0.0", output.colorless
         end
       end
 
@@ -48,8 +48,8 @@ slug: myrepo
           output, _error = util_capture do
             Dir.chdir(app_path) { Spout.launch ["deploy", "t", "--token=1-abcd", "--skip-tests", "--skip-coverage", "--skip-variables", "--skip-server-scripts"] }
           end
-          assert_match "Expected: ## 1.0.0", output.uncolorize
-          assert_match "Actual: ", output.uncolorize
+          assert_match "Expected: ## 1.0.0", output.colorless
+          assert_match "Actual: ", output.colorless
         end
       end
 
@@ -69,7 +69,7 @@ slug: myrepo
               Spout.launch ["deploy", "t", "--token=1-abcd", "--skip-tests", "--skip-coverage", "--skip-variables", "--skip-server-scripts"]
             end
           end
-          assert_match "CHANGELOG.md: PASS ## 1.0.0", output.uncolorize
+          assert_match "CHANGELOG.md: PASS ## 1.0.0", output.colorless
         end
       end
 
@@ -88,7 +88,7 @@ slug: myrepo
               Spout.launch ["deploy", "t", "--token=1-abcd", "--skip-tests", "--skip-coverage", "--skip-variables", "--skip-server-scripts"]
             end
           end
-          assert_match "Version specified in `VERSION` file 'v1.0.0' does not match git tag on HEAD commit ''", output.uncolorize
+          assert_match "Version specified in `VERSION` file 'v1.0.0' does not match git tag on HEAD commit ''", output.colorless
         end
       end
 
@@ -100,8 +100,8 @@ slug: myrepo
               Spout.launch ["deploy", "t", "--token=1-abcd", "--skip-tests", "--skip-coverage", "--skip-variables", "--skip-server-scripts"]
             end
           end
-          assert_match "Git Status Check: FAIL", output.uncolorize
-          assert_match "working directory contains uncomitted changes", output.uncolorize
+          assert_match "Git Status Check: FAIL", output.colorless
+          assert_match "working directory contains uncomitted changes", output.colorless
         end
       end
 

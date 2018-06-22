@@ -41,7 +41,7 @@ EOT
       def import_variables
         Spout::Helpers::CSVReader.read_csv(@csv_file) do |row|
           if not row.keys.include?("id")
-            puts "\nMissing column header `".colorize(:red) + "id".colorize(:cyan) + "` in data dictionary.".colorize(:red) + additional_csv_info
+            puts "\nMissing column header `".red + "id".cyan + "` in data dictionary.".red + additional_csv_info
             exit(1)
           end
           next if row["id"] == ""
@@ -70,7 +70,7 @@ EOT
           File.open(file_name, "w") do |file|
             file.write(JSON.pretty_generate(hash) + "\n")
           end
-          puts "      create".colorize( :green ) + "  #{file_name}"
+          puts "      create".green + "  #{file_name}"
         end
       end
 
@@ -79,15 +79,15 @@ EOT
 
         Spout::Helpers::CSVReader.read_csv(@csv_file) do |row|
           if not row.keys.include?("domain_id")
-            puts "\nMissing column header `".colorize(:red) + "domain_id".colorize(:cyan) + "` in data dictionary.".colorize(:red) + additional_csv_info
+            puts "\nMissing column header `".red + "domain_id".cyan + "` in data dictionary.".red + additional_csv_info
             exit(1)
           end
           if not row.keys.include?("value")
-            puts "\nMissing column header `".colorize(:red) + "value".colorize(:cyan) + "` in data dictionary.".colorize(:red) + additional_csv_info
+            puts "\nMissing column header `".red + "value".cyan + "` in data dictionary.".red + additional_csv_info
             exit(1)
           end
           if not row.keys.include?("display_name")
-            puts "\nMissing column header `".colorize(:red) + "display_name".colorize(:cyan) + "` in data dictionary.".colorize(:red) + additional_csv_info
+            puts "\nMissing column header `".red + "display_name".cyan + "` in data dictionary.".red + additional_csv_info
             exit(1)
           end
 
@@ -116,23 +116,23 @@ EOT
           File.open(file_name, "w") do |file|
             file.write(JSON.pretty_generate(domain_hash["options"]) + "\n")
           end
-          puts "      create".colorize( :green ) + "  #{file_name}"
+          puts "      create".green + "  #{file_name}"
         end
       end
 
       def import_forms
         Spout::Helpers::CSVReader.read_csv(@csv_file) do |row|
           unless row.keys.include?("id")
-            puts "\nMissing column header `".colorize(:red) +
-                 "id".colorize(:cyan) +
-                 "` in data dictionary.".colorize(:red) +
+            puts "\nMissing column header `".red +
+                 "id".cyan +
+                 "` in data dictionary.".red +
                  additional_csv_info
             exit(1)
           end
           unless row.keys.include?("display_name")
-            puts "\nMissing column header `".colorize(:red) +
-                 "display_name".colorize(:cyan) +
-                 "` in data dictionary.".colorize(:red) +
+            puts "\nMissing column header `".red +
+                 "display_name".cyan +
+                 "` in data dictionary.".red +
                  additional_csv_info
             exit(1)
           end
@@ -149,7 +149,7 @@ EOT
           File.open(file_name, "w") do |file|
             file.write(JSON.pretty_generate(hash) + "\n")
           end
-          puts "      create".colorize(:green) + "  #{file_name}"
+          puts "      create".green + "  #{file_name}"
         end
       end
 
@@ -169,7 +169,7 @@ EOT
 
       def additional_csv_info
         "\n\nFor additional information on specifying CSV column headers before import see:\n\n    " +
-          "https://github.com/sleepepi/spout#generate-a-new-repository-from-an-existing-csv-file".colorize(:cyan) + "\n\n"
+          "https://github.com/sleepepi/spout#generate-a-new-repository-from-an-existing-csv-file".cyan + "\n\n"
       end
     end
   end

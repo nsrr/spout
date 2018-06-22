@@ -45,9 +45,9 @@ module Spout
         @csv_files = Dir.glob("#{csv_root}/**/*.csv").sort
 
         if @csv_directory != @standard_version
-          puts "\n#{@csv_files.size == 0 ? 'No CSVs found' : 'Parsing files' } in " + "#{csv_root}".colorize(:white) + " for dictionary version " + @standard_version.to_s.colorize(:green) + "\n"
+          puts "\n#{@csv_files.size == 0 ? 'No CSVs found' : 'Parsing files' } in " + "#{csv_root}".white + " for dictionary version " + @standard_version.to_s.green + "\n"
         else
-          puts "\n#{@csv_files.size == 0 ? 'No CSVs found' : 'Parsing files' } in " + "#{csv_root}".colorize(:white) + "\n"
+          puts "\n#{@csv_files.size == 0 ? 'No CSVs found' : 'Parsing files' } in " + "#{csv_root}".white + "\n"
         end
 
         last_folder = nil
@@ -56,13 +56,13 @@ module Spout
           current_file = File.basename(relative_path)
           current_folder = relative_path.gsub(/#{current_file}$/, "")
           count = 1 # Includes counting the header row
-          puts "  #{current_folder}".colorize(:white) if current_folder.to_s != "" && current_folder != last_folder
+          puts "  #{current_folder}".white if current_folder.to_s != "" && current_folder != last_folder
           print "    #{current_file}"
           last_folder = current_folder
 
           Spout::Helpers::CSVReader.read_csv(csv_file) do |row|
             count += 1
-            print "\r    #{current_file} " + "##{count}".colorize(:yellow) if (count % 10 == 0)
+            print "\r    #{current_file} " + "##{count}".yellow if (count % 10 == 0)
             @subjects << Spout::Models::Subject.create do |t|
               t._visit = row[@visit]
               t._csv = File.basename(csv_file)
@@ -70,7 +70,7 @@ module Spout
               row.each_with_index do |(key, value), index|
                 method = key.to_s.downcase.strip
                 if method == ""
-                  puts "\nSkipping column #{index + 1} due to blank header.".colorize(:red) if count == 2
+                  puts "\nSkipping column #{index + 1} due to blank header.".red if count == 2
                   next
                 end
                 next unless @valid_ids.include?(method) || @valid_ids.size == 0
@@ -91,7 +91,7 @@ module Spout
             break if !@number_of_rows.nil? && count - 1 >= @number_of_rows
           end
 
-          print "\r    #{current_file} " + "##{count}".colorize(:green)
+          print "\r    #{current_file} " + "##{count}".green
           puts "\n"
         end
       end

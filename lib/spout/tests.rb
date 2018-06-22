@@ -15,8 +15,7 @@ module Minitest
 
       def start
         super
-        puts "Started spout tests".colorize(:white)
-        puts
+        puts "Started spout tests".white
         puts
       end
 
@@ -24,11 +23,11 @@ module Minitest
         super
         puts format("Finished in %.5f seconds.", total_time)
         puts
-        print format("%d tests", count).colorize(:white)
+        print format("%d tests", count).white
         print format(", %d assertions, ", assertions)
         color = failures.zero? && errors.zero? ? :green : :red
-        print format("%d failures, %d errors, ", failures, errors).colorize(color)
-        print format("%d skips", skips).colorize(:yellow)
+        print format("%d failures, %d errors, ", failures, errors).send(color)
+        print format("%d skips", skips).yellow
         puts
         puts
       end
@@ -57,7 +56,7 @@ module Minitest
                 else
                   :red
                 end
-        print pad_mark(result(test).to_s.upcase).colorize(color)
+        print pad_mark(result(test).to_s.upcase).send(color)
       end
 
       def before_suite(suite)

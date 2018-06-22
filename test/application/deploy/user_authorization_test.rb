@@ -38,7 +38,7 @@ slug: myrepo
               )
             end
           end
-          assert_match "     Enter your token: AUTHORIZED", output.uncolorize
+          assert_match "     Enter your token: AUTHORIZED", output.colorless
         end
       end
 
@@ -52,7 +52,7 @@ slug: myrepo
               )
             end
           end
-          assert_match "     Enter your token: UNAUTHORIZED", output.uncolorize
+          assert_match "     Enter your token: UNAUTHORIZED", output.colorless
         end
       end
 
@@ -66,7 +66,7 @@ slug: myrepo
               )
             end
           end
-          assert_match "     Enter your token: UNAUTHORIZED", output.uncolorize
+          assert_match "     Enter your token: UNAUTHORIZED", output.colorless
         end
       end
     end

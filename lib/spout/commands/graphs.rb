@@ -109,7 +109,7 @@ module Spout
           next unless Spout::Models::Subject.method_defined?(variable.id)
 
           if @deploy_mode
-            print "\r     Upload Variables: " + "#{"% 3d" % ((file_index+1)*100/variable_files_count)}% Uploaded".colorize(:white)
+            print "\r     Upload Variables: " + "#{"% 3d" % ((file_index+1)*100/variable_files_count)}% Uploaded".white
           else
             puts "#{file_index + 1} of #{variable_files_count}: #{variable.folder}#{variable.id}"
           end
@@ -180,7 +180,7 @@ module Spout
         if json.is_a?(Hash) && status.is_a?(Net::HTTPSuccess)
           @progress[variable.id]["uploaded"] << @webserver_name
         else
-          puts "\nUPLOAD FAILED: ".colorize(:red) + variable.id
+          puts "\nUPLOAD FAILED: ".red + variable.id
           puts "- Error: #{json.inspect}"
         end
       end

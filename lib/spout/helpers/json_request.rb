@@ -36,7 +36,7 @@ module Spout
         end
       rescue
         @error = "Invalid URL: #{url.inspect}"
-        puts @error.colorize(:red)
+        puts @error.red
       end
 
       def get
@@ -49,7 +49,7 @@ module Spout
         end
         [JSON.parse(response.body), response]
       rescue => e
-        puts "GET Error: #{e}".colorize(:red)
+        puts "GET Error: #{e}".red
       end
 
       def post
@@ -59,7 +59,7 @@ module Spout
         end
         [JSON.parse(response.body), response]
       rescue => e
-        puts "POST ERROR: #{e}".colorize(:red)
+        puts "POST ERROR: #{e}".red
         nil
       end
 

@@ -37,7 +37,7 @@ slug: myrepo
               Spout.launch %w(deploy t --token=1-abcd --skip-checks --skip-tests --skip-coverage --skip-variables)
             end
           end
-          assert_match "Launch Server Scripts: DONE", output.uncolorize
+          assert_match "Launch Server Scripts: DONE", output.colorless
         end
       end
 
@@ -49,7 +49,7 @@ slug: myrepo
               Spout.launch %w(deploy t --token=3-ijkl --skip-checks --skip-tests --skip-coverage --skip-variables)
             end
           end
-          assert_match "Launch Server Scripts: FAIL", output.uncolorize
+          assert_match "Launch Server Scripts: FAIL", output.colorless
         end
       end
     end

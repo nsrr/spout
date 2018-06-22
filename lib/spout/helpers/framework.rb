@@ -16,7 +16,7 @@ module Spout
         file_name = template_file if file_name == ""
         file_path = File.join(@full_path, file_name)
         template_file_path = File.join(TEMPLATES_DIRECTORY, template_file)
-        puts "      create".colorize(:green) + "  #{file_name}"
+        puts "      create".green + "  #{file_name}"
         FileUtils.copy(template_file_path, file_path)
       end
 
@@ -26,14 +26,14 @@ module Spout
         file_path = File.join(@full_path, file_name)
         file_out = File.new(file_path, "w")
         file_out.syswrite(template.result(binding))
-        puts "      create".colorize(:green) + "  #{file_name}"
+        puts "      create".green + "  #{file_name}"
       ensure
         file_out.close if file_out
       end
 
       def directory(directory_name)
         directory_path = File.join(@full_path, directory_name)
-        puts "      create".colorize(:green) + "  #{directory_name}"
+        puts "      create".green + "  #{directory_name}"
         FileUtils.mkpath(directory_path)
       end
     end
