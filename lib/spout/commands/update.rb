@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "colorize"
+require "spout/helpers/color"
 require "spout/helpers/json_request"
 require "spout/helpers/framework"
 

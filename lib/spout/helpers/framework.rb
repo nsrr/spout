@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
-require "colorize"
 require "date"
 require "erb"
 require "fileutils"
+
+require "spout/helpers/color"
 
 TEMPLATES_DIRECTORY = File.expand_path("../../templates", __FILE__)
 

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require "colorize"
-
+require "spout/helpers/color"
 require "test_helpers/sandbox"
 require "test_helpers/capture"
 require "test_helpers/nsrr"

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "colorize"
 require "net/http"
 require "io/console"
 
 require "spout/helpers/subject_loader"
 require "spout/helpers/config_reader"
+require "spout/helpers/color"
 require "spout/helpers/quietly"
 require "spout/helpers/send_file"
 require "spout/helpers/semantic"
@@ -104,12 +104,12 @@ module Spout
         @slug = @config.slug
 
         if @slug == ""
-          message = "#{INDENT}Please specify a dataset slug in your `.spout.yml` file!".colorize(:red) + " Ex:\n---\nslug: mydataset\n".colorize(:orange)
+          message = "#{INDENT}Please specify a dataset slug in your `.spout.yml` file!".colorize(:red) + " Ex:\n---\nslug: mydataset\n".colorize(:grey)
           failure(message)
         end
 
         if @config.webservers.empty?
-          message = "#{INDENT}Please specify a webserver in your `.spout.yml` file!".colorize(:red) + " Ex:\n---\nwebservers:\n  - name: production\n    url: https://sleepdata.org\n  - name: staging\n    url: https://staging.sleepdata.org\n".colorize(:orange)
+          message = "#{INDENT}Please specify a webserver in your `.spout.yml` file!".colorize(:red) + " Ex:\n---\nwebservers:\n  - name: production\n    url: https://sleepdata.org\n  - name: staging\n    url: https://staging.sleepdata.org\n".colorize(:grey)
           failure(message)
         end
 
@@ -211,7 +211,7 @@ module Spout
       end
 
       def user_authorization
-        puts  "  Get your token here: " + "#{@url}/token".colorize(:blue).on_white.underline
+        puts  "  Get your token here: " + "#{@url}/token".colorize(:blue).colorize(:white_bg).colorize(:underline)
         print "     Enter your token: "
         @token = STDIN.noecho(&:gets).chomp if @token.to_s.strip == ""
         (json, _status) = Spout::Helpers::JsonRequest.get("#{@url}/datasets/#{@slug}/a/#{@token}/editor.json")

@@ -4,6 +4,7 @@
 - **Framework Changes**
   - Spout data dictionaries can now specify gem dependencies using `gems.rb`
     instead of `Gemfile`
+  - Removed dependency on colorize gem
 - **Test Changes**
   - Improved the spout testing framework
     - Tests are now run excusively using `spout t` command

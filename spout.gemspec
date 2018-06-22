@@ -40,5 +40,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency "minitest"
   spec.add_dependency "minitest-reporters"
   spec.add_dependency "json"
-  spec.add_dependency "colorize", "~> 0.8.1"
 end

@@ -5,7 +5,8 @@ require "json"
 
 require "minitest/autorun"
 require "minitest/reporters"
-require "colorize"
+
+require "spout/helpers/color"
 
 module Minitest
   module Reporters
@@ -14,10 +15,8 @@ module Minitest
 
       def start
         super
-        print "Loaded Suite test".colorize(:white)
+        puts "Started spout tests".colorize(:white)
         puts
-        puts
-        puts "Started"
         puts
       end
 
@@ -111,6 +110,3 @@ module Spout
     include Spout::Tests::VariableTypeValidation
   end
 end
-
-# Initialize the String class `@disable_colorization` instance variable
-String.disable_colorization = false

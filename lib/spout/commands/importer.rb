@@ -2,8 +2,8 @@
 
 require "json"
 require "fileutils"
-require "colorize"
 
+require "spout/helpers/color"
 require "spout/helpers/csv_reader"
 
 module Spout
@@ -41,7 +41,7 @@ EOT
       def import_variables
         Spout::Helpers::CSVReader.read_csv(@csv_file) do |row|
           if not row.keys.include?("id")
-            puts "\nMissing column header `".colorize( :red ) + "id".colorize( :light_cyan ) + "` in data dictionary.".colorize( :red ) + additional_csv_info
+            puts "\nMissing column header `".colorize(:red) + "id".colorize(:cyan) + "` in data dictionary.".colorize(:red) + additional_csv_info
             exit(1)
           end
           next if row["id"] == ""
@@ -79,15 +79,15 @@ EOT
 
         Spout::Helpers::CSVReader.read_csv(@csv_file) do |row|
           if not row.keys.include?("domain_id")
-            puts "\nMissing column header `".colorize( :red ) + "domain_id".colorize( :light_cyan ) + "` in data dictionary.".colorize( :red ) + additional_csv_info
+            puts "\nMissing column header `".colorize(:red) + "domain_id".colorize(:cyan) + "` in data dictionary.".colorize(:red) + additional_csv_info
             exit(1)
           end
           if not row.keys.include?("value")
-            puts "\nMissing column header `".colorize( :red ) + "value".colorize( :light_cyan ) + "` in data dictionary.".colorize( :red ) + additional_csv_info
+            puts "\nMissing column header `".colorize(:red) + "value".colorize(:cyan) + "` in data dictionary.".colorize(:red) + additional_csv_info
             exit(1)
           end
           if not row.keys.include?("display_name")
-            puts "\nMissing column header `".colorize( :red ) + "display_name".colorize( :light_cyan ) + "` in data dictionary.".colorize( :red ) + additional_csv_info
+            puts "\nMissing column header `".colorize(:red) + "display_name".colorize(:cyan) + "` in data dictionary.".colorize(:red) + additional_csv_info
             exit(1)
           end
 
@@ -124,14 +124,14 @@ EOT
         Spout::Helpers::CSVReader.read_csv(@csv_file) do |row|
           unless row.keys.include?("id")
             puts "\nMissing column header `".colorize(:red) +
-                 "id".colorize(:light_cyan) +
+                 "id".colorize(:cyan) +
                  "` in data dictionary.".colorize(:red) +
                  additional_csv_info
             exit(1)
           end
           unless row.keys.include?("display_name")
             puts "\nMissing column header `".colorize(:red) +
-                 "display_name".colorize(:light_cyan) +
+                 "display_name".colorize(:cyan) +
                  "` in data dictionary.".colorize(:red) +
                  additional_csv_info
             exit(1)
@@ -169,7 +169,7 @@ EOT
 
       def additional_csv_info
         "\n\nFor additional information on specifying CSV column headers before import see:\n\n    " +
-          "https://github.com/sleepepi/spout#generate-a-new-repository-from-an-existing-csv-file".colorize(:light_cyan) + "\n\n"
+          "https://github.com/sleepepi/spout#generate-a-new-repository-from-an-existing-csv-file".colorize(:cyan) + "\n\n"
       end
     end
   end

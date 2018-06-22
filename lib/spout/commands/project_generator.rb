@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "colorize"
 require "fileutils"
 
+require "spout/helpers/color"
 require "spout/helpers/framework"
 
 module Spout
@@ -49,7 +49,7 @@ EOT
         copy_file "test/dictionary_test.rb"
         copy_file "test/test_helper.rb"
         return if skip_gemfile
-        puts "         run".colorize(:green) + "  bundle install".colorize(:light_cyan)
+        puts "         run".colorize(:green) + "  bundle install".colorize(:cyan)
         Dir.chdir(@full_path)
         system "bundle install"
       end
