@@ -9,6 +9,7 @@ gemspec
 group :test do
   # Pretty printed test output
   gem "artifice"
+  gem "rake"
   gem "minitest"
   gem "simplecov", "~> 0.16.1", require: false
 end

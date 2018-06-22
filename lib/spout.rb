@@ -67,9 +67,8 @@ module Spout
   end
 
   def self.test(_argv)
-    system "bundle exec rake"
-    # require "spout/commands/test_runner"
-    # Spout::Commands::TestRunner.new(argv)
+    require "spout/commands/test_runner"
+    Spout::Commands::TestRunner.run
   end
 
   def self.update(argv)

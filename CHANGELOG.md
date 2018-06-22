@@ -1,5 +1,13 @@
 ## 0.14.0
 
+### Enhancements
+- **Test Changes**
+  - Improved the spout testing framework
+    - Tests are now run excusively using `spout t` command
+    - Tests no longer spawn an extra process to run
+    - Rake dependency has been removed
+    - Failing tests no longer include an unnecessary rake backtrace
+
 ## 0.13.0 (June 21, 2018)
 
 ### Enhancements
