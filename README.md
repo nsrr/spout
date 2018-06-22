@@ -13,7 +13,7 @@ Spout has been used extensively to curate and clean datasets available on the
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add this line to your application's `gems.rb`:
 
     gem "spout"
 

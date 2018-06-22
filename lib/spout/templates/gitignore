@@ -2,6 +2,7 @@
 .DS_Store
 
 # Project Files
+/gems.locked
 /Gemfile.lock
 
 # Data Dictionary folders

@@ -17,7 +17,7 @@ module ApplicationTests
       assert_equal(
         [
           "domains", "forms", "test", "variables", ".gitignore",
-          ".ruby-version", ".spout.yml", ".travis.yml", "Gemfile", "Rakefile",
+          ".ruby-version", ".spout.yml", ".travis.yml", "gems.rb", "Rakefile",
           "CHANGELOG.md", "README.md", "VERSION", ".", ".."
         ].sort,
         Dir.entries(app_path).sort

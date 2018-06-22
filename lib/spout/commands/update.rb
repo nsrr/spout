@@ -25,12 +25,15 @@ module Spout
         if json
           if json["version"] == Spout::VERSION::STRING
             puts "The spout gem is " + "up-to-date".colorize(:green) + "!"
-            check_framework if File.exist?("Gemfile")
+            check_framework if File.exist?("Gemfile") || File.exist?("gems.rb")
           else
-            puts "A newer version (v#{json['version']}) is available!\n\n"
-            if File.exist?("Gemfile")
-              puts "Add the following to your Gemfile and run " + "bundle update".colorize(:green) + ".\n\n"
-              puts "  gem \"spout\", \"~> #{json['version']}\"\n".colorize(:white)
+            puts "A newer version (v#{json["version"]}) is available!\n\n"
+            if File.exist?("gems.rb")
+              puts "Add the following to gems.rb and run " + "bundle update".colorize(:green) + ".\n\n"
+              puts "  gem \"spout\", \"~> #{json["version"]}\"\n".colorize(:white)
+            elsif File.exist?("Gemfile")
+              puts "Add the following to Gemfile and run " + "bundle update".colorize(:green) + ".\n\n"
+              puts "  gem \"spout\", \"~> #{json["version"]}\"\n".colorize(:white)
             else
               puts "Type the following command to update:\n\n"
               puts "  gem install spout --no-document".colorize(:white) + "\n\n"
