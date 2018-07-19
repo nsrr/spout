@@ -1,4 +1,4 @@
-## 0.14.1
+## 0.14.1 (July 19, 2018)
 
 ### Bug Fix
 - Variable names that clash with certain ruby class methods no longer crash
