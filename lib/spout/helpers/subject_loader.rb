@@ -73,7 +73,7 @@ module Spout
                   next
                 end
                 next unless @valid_ids.include?(method) || @valid_ids.size == 0
-                unless t.respond_to?(method)
+                unless t.respond_to?(method) && t.respond_to?("#{method}=")
                   t.class.send(:define_method, "#{method}") { instance_variable_get("@#{method}") }
                   t.class.send(:define_method, "#{method}=") { |v| instance_variable_set("@#{method}", v) }
                 end

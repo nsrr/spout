@@ -1,5 +1,9 @@
 ## 0.14.1
 
+### Bug Fix
+- Variable names that clash with certain ruby class methods no longer crash
+  spout coverage
+
 ## 0.14.0 (June 26, 2018)
 
 ### Enhancements
