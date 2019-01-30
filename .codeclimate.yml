@@ -29,6 +29,5 @@ plugins:
 exclude_patterns:
 - "lib/spout/templates/**/*"
 - "lib/spout/views/**/*"
-- "Gemfile"
 - "LICENSE"
 - "Rakefile"

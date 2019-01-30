@@ -2,14 +2,12 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in spout.gemspec
+# Specify your gem's dependencies in spout.gemspec.
 gemspec
 
-# Testing
 group :test do
-  # Pretty printed test output
   gem "artifice"
-  gem "rake"
   gem "minitest"
+  gem "rake"
   gem "simplecov", "~> 0.16.1", require: false
 end

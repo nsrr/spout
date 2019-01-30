@@ -27,17 +27,17 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/sleepepi/spout"
 
   spec.required_ruby_version     = ">= 2.6.1"
-  spec.required_rubygems_version = ">= 2.7.6"
+  spec.required_rubygems_version = ">= 3.0.1"
 
   spec.license       = "MIT"
 
-  spec.files = Dir["{bin,lib}/**/*"] + ["CHANGELOG.md", "LICENSE", "Rakefile", "README.md", "spout.gemspec"]
+  spec.files         = Dir["{bin,lib}/**/*"] + ["CHANGELOG.md", "LICENSE", "Rakefile", "README.md", "spout.gemspec"]
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.test_files    = spec.files.grep(%r{^(test)/})
   spec.require_paths = ["lib"]
 
   spec.add_dependency "bundler", "~> 1.16"
+  spec.add_dependency "json"
   spec.add_dependency "minitest"
   spec.add_dependency "minitest-reporters"
-  spec.add_dependency "json"
 end
