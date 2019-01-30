@@ -1,6 +1,6 @@
 # Spout
 
-[![Build Status](https://travis-ci.org/sleepepi/spout.svg?branch=master)](https://travis-ci.org/sleepepi/spout)
+[![Build Status](https://travis-ci.com/sleepepi/spout.svg?branch=master)](https://travis-ci.com/sleepepi/spout)
 [![Code Climate](https://codeclimate.com/github/sleepepi/spout/badges/gpa.svg)](https://codeclimate.com/github/sleepepi/spout)
 
 Turn your CSV data dictionary into a JSON repository. Collaborate with others to
