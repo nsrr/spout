@@ -1,5 +1,9 @@
 ## 1.0.0
 
+### Enhancements
+- **Gem Changes**
+  - Updated to ruby 2.6.1
+
 ## 0.14.1 (July 19, 2018)
 
 ### Bug Fix
