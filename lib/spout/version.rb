@@ -2,10 +2,10 @@
 
 module Spout
   module VERSION #:nodoc:
-    MAJOR = 0
-    MINOR = 14
-    TINY = 1
-    BUILD = nil # "pre", "rc", "rc2", nil
+    MAJOR = 1
+    MINOR = 0
+    TINY = 0
+    BUILD = "pre" # "pre", "rc", "rc2", nil
 
     STRING = [MAJOR, MINOR, TINY, BUILD].compact.join(".").freeze
   end
