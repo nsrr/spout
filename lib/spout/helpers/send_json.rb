@@ -37,7 +37,6 @@ module Spout
 
         header = { "Content-Type" => "application/json", "Accept" => "application/json" }
         response = @http.start do |http|
-          puts @params.to_json.white
           http.post(@url.path, @params.to_json, header)
         end
         [JSON.parse(response.body), response]
