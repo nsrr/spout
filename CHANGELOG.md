@@ -4,6 +4,10 @@
 - **Gem Changes**
   - Updated to ruby 2.6.1
 
+### Bug Fix
+- Deploying a dataset that contains strings with special characters (accents ñ,
+  emojis 😃, etc) now correctly encodes those characters
+
 ## 0.14.1 (July 19, 2018)
 
 ### Bug Fix

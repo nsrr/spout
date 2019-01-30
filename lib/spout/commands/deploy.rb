@@ -9,6 +9,7 @@ require "spout/helpers/quietly"
 require "spout/helpers/send_file"
 require "spout/helpers/semantic"
 require "spout/helpers/json_request"
+require "spout/helpers/send_json"
 
 # - **User Authorization**
 #   - User authenticates via token, the user must be a dataset editor
@@ -322,7 +323,7 @@ module Spout
 
         print "Launch Server Scripts: "
         params = { auth_token: @token, dataset: @slug, version: @version, folders: @created_folders.compact.uniq }
-        (json, _status) = Spout::Helpers::JsonRequest.post("#{@url}/api/v1/dictionary/refresh.json", params)
+        (json, _status) = Spout::Helpers::SendJson.post("#{@url}/api/v1/dictionary/refresh.json", params)
         if json.is_a?(Hash) && json["refresh"] == "success"
           puts "DONE".green
         else
@@ -338,7 +339,7 @@ module Spout
         end
         print "  Set Default Version: "
         params = { auth_token: @token, dataset: @slug, version: @version }
-        (json, _status) = Spout::Helpers::JsonRequest.post(
+        (json, _status) = Spout::Helpers::SendJson.post(
           "#{@url}/api/v1/dictionary/update_default_version.json", params
         )
         if json.is_a?(Hash) && json["version_update"] == "success"

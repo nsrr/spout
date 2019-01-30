@@ -13,7 +13,7 @@ require "spout/models/graphables"
 require "spout/models/tables"
 require "spout/helpers/config_reader"
 require "spout/helpers/send_file"
-require "spout/helpers/json_request"
+require "spout/helpers/send_json"
 require "spout/version"
 
 module Spout
@@ -175,7 +175,7 @@ module Spout
                    domain: (variable.domain ? variable.domain.deploy_params : nil),
                    forms: variable.forms.collect(&:deploy_params) }
         params[:variable][:spout_stats] = stats.to_json
-        (json, status) = Spout::Helpers::JsonRequest.post("#{@url}/api/v1/variables/create_or_update.json", params)
+        (json, status) = Spout::Helpers::SendJson.post("#{@url}/api/v1/variables/create_or_update.json", params)
         if json.is_a?(Hash) && status.is_a?(Net::HTTPSuccess)
           @progress[variable.id]["uploaded"] << @webserver_name
         else

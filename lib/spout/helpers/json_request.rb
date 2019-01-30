@@ -7,19 +7,11 @@ require "cgi"
 
 module Spout
   module Helpers
-    # Generates JSON web requests for GET, POST, and PATCH.
+    # Generates JSON web requests for GET.
     class JsonRequest
       class << self
         def get(url, *args)
           new(url, *args).get
-        end
-
-        def post(url, *args)
-          new(url, *args).post
-        end
-
-        def patch(url, *args)
-          new(url, *args).patch
         end
       end
 
@@ -41,6 +33,7 @@ module Spout
 
       def get
         return unless @error.nil?
+
         full_path = @url.path
         query = ([@url.query] + @params).flatten.compact.join("&")
         full_path += "?#{query}" if query.to_s != ""
@@ -50,22 +43,6 @@ module Spout
         [JSON.parse(response.body), response]
       rescue => e
         puts "GET Error: #{e}".red
-      end
-
-      def post
-        return unless @error.nil?
-        response = @http.start do |http|
-          http.post(@url.path, @params.flatten.compact.join("&"))
-        end
-        [JSON.parse(response.body), response]
-      rescue => e
-        puts "POST ERROR: #{e}".red
-        nil
-      end
-
-      def patch
-        @params << "_method=patch"
-        post
       end
 
       def nested_hash_to_params(args)
