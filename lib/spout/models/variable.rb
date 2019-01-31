@@ -26,7 +26,7 @@ module Spout
         @domain_name = nil
 
         json = begin
-                 JSON.parse(File.read(file_name))
+                 JSON.parse(File.read(file_name, encoding: "utf-8"))
                rescue => e
                  error = e.message
                  nil

@@ -100,7 +100,7 @@ module Spout
         print "Converting numeric values to floats"
         @variable_files.each_with_index do |variable_file, index|
           print "\rConverting numeric values to floats:#{'% 3d' % ((index + 1) * 100 / variable_count)}%"
-          json = JSON.parse(File.read(variable_file)) rescue json = nil
+          json = JSON.parse(File.read(variable_file, encoding: "utf-8")) rescue json = nil
           next unless json
           next unless @valid_ids.include?(json["id"].to_s.downcase) || @valid_ids.size == 0
           next unless %w(numeric integer).include?(json["type"])
@@ -122,7 +122,7 @@ module Spout
 
       def load_variable_domains!
         @variable_files.each do |variable_file|
-          json = JSON.parse(File.read(variable_file)) rescue json = nil
+          json = JSON.parse(File.read(variable_file, encoding: "utf-8")) rescue json = nil
           next unless json
           next unless json["type"] == "choices" || json["domain"].to_s.downcase.strip != ""
           domain = json["domain"].to_s.downcase
@@ -133,7 +133,7 @@ module Spout
 
       def get_json(file_name, file_type)
         file = Dir.glob("#{file_type.to_s.downcase}s/**/#{file_name.to_s.downcase}.json", File::FNM_CASEFOLD).first
-        JSON.parse(File.read(file))
+        JSON.parse(File.read(file, encoding: "utf-8"))
       rescue
         nil
       end

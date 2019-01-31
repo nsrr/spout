@@ -12,7 +12,7 @@ module Spout
 
       Dir.glob("variables/**/*.json").each do |file|
         define_method("test_variable_type: #{file}") do
-          assert_variable_type begin JSON.parse(File.read(file))["type"] rescue nil end
+          assert_variable_type begin JSON.parse(File.read(file, encoding: "utf-8"))["type"] rescue nil end
         end
       end
     end

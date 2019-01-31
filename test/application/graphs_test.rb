@@ -41,7 +41,7 @@ module ApplicationTests
       assert_match(/of 3: gender/, output)
       assert_match(/of 3: visit/, output)
 
-      json = JSON.parse(File.read(File.join(app_path, "graphs", "1.0.0", "gender.json"))) rescue json = { "charts" => {}, "tables" => {} }
+      json = JSON.parse(File.read(File.join(app_path, "graphs", "1.0.0", "gender.json"), encoding: "utf-8")) rescue json = { "charts" => {}, "tables" => {} }
       assert_equal %w(histogram age gender), json["charts"].keys
       assert_equal %w(histogram age gender), json["tables"].keys
 
@@ -62,7 +62,7 @@ module ApplicationTests
       assert_match(/of 3: gender/, output)
       assert_match(/of 3: visit/, output)
 
-      json = JSON.parse(File.read(File.join(app_path, "graphs", "1.0.0", "gender.json"))) rescue json = { "charts" => {}, "tables" => {} }
+      json = JSON.parse(File.read(File.join(app_path, "graphs", "1.0.0", "gender.json"), encoding: "utf-8")) rescue json = { "charts" => {}, "tables" => {} }
       assert_equal %w(histogram age gender), json["charts"].keys
       assert_equal %w(histogram age gender), json["tables"].keys
       assert_equal "-", json["tables"]["histogram"]["footers"].first.last["text"]

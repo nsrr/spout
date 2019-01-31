@@ -79,7 +79,7 @@ module Spout
 
       def load_current_progress
         @progress_file = File.join(@graphs_folder, ".progress.json")
-        @progress = JSON.parse(File.read(@progress_file)) rescue @progress = {}
+        @progress = JSON.parse(File.read(@progress_file, encoding: "utf-8")) rescue @progress = {}
         @progress = {} if !@progress.is_a?(Hash) || @clean || @progress["SPOUT_VERSION"] != Spout::VERSION::STRING
         @progress["SPOUT_VERSION"] = Spout::VERSION::STRING
       end

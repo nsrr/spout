@@ -6,7 +6,7 @@ module Spout
       # Verifies the format of a domain.
       def assert_domain_format(item)
         result = begin
-          json = JSON.parse(File.read(item))
+          json = JSON.parse(File.read(item, encoding: "utf-8"))
           if json.is_a?(Array)
             json.empty? || json.select { |o| !o.is_a?(Hash) }.empty?
           else

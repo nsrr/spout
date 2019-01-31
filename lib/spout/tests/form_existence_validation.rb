@@ -7,7 +7,7 @@ module Spout
         form_names = Dir.glob("forms/**/*.json").collect{|file| file.split("/").last.to_s.downcase.split(".json").first}
 
         result = begin
-          (form_names | JSON.parse(File.read(item))["forms"]).size == form_names.size
+          (form_names | JSON.parse(File.read(item, encoding: "utf-8"))["forms"]).size == form_names.size
         rescue JSON::ParserError
           false
         end
@@ -18,7 +18,7 @@ module Spout
       end
 
       Dir.glob("variables/**/*.json").each do |file|
-        if (not [nil, ""].include?(JSON.parse(File.read(file))["forms"]) rescue false)
+        if (not [nil, ""].include?(JSON.parse(File.read(file, encoding: "utf-8"))["forms"]) rescue false)
           define_method("test_form_exists: "+file) do
             assert_form_existence file
           end

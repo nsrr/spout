@@ -7,8 +7,11 @@ module Spout
     class JsonLoader
       def self.get_json(file_name, file_type)
         file = Dir.glob("#{file_type.to_s.downcase}s/**/#{file_name.to_s.downcase}.json", File::FNM_CASEFOLD).first
-        json = JSON.parse(File.read(file)) rescue json = nil
-        json
+        JSON.parse(File.read(file, encoding: "utf-8"))
+      rescue => e
+        puts "JsonLoader Warning".red
+        puts e.to_s.white
+        nil
       end
 
       def self.get_variable(variable_name)

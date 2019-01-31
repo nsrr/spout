@@ -215,10 +215,10 @@ Measurements,RdI3P,Respiratory Index,RDI Description,numeric,,,,ahi
         Dir.chdir(app_path) { Spout.launch ["import", "variables-import-uppercase-ids.csv"] }
       end
 
-      bmi_json = JSON.parse(File.read(File.join(app_path, "variables", "Demographics", "bmi.json")))
+      bmi_json = JSON.parse(File.read(File.join(app_path, "variables", "Demographics", "bmi.json"), encoding: "utf-8"))
       assert_equal "bmi", bmi_json["id"]
 
-      rdi3p_json = JSON.parse(File.read(File.join(app_path, "variables", "Measurements", "rdi3p.json")))
+      rdi3p_json = JSON.parse(File.read(File.join(app_path, "variables", "Measurements", "rdi3p.json"), encoding: "utf-8"))
       assert_equal "rdi3p", rdi3p_json["id"]
     end
 
@@ -232,7 +232,7 @@ Demographics,gender,Gender,Gender Description,choices,GDomain,,,gender
         Dir.chdir(app_path) { Spout.launch ["import", "variables-import-uppercase-domains-ids.csv"] }
       end
 
-      gender_json = JSON.parse(File.read(File.join(app_path, "variables", "Demographics", "gender.json")))
+      gender_json = JSON.parse(File.read(File.join(app_path, "variables", "Demographics", "gender.json"), encoding: "utf-8"))
       assert_equal "gdomain", gender_json["domain"]
     end
 
@@ -245,9 +245,9 @@ Measurements,RdI3P,Respiratory index for PT,RDI Description,numeric,,,,ahi
       util_capture do
         Dir.chdir(app_path) { Spout.launch ["import", "variables-import-all-caps-display-names.csv"] }
       end
-      bmi_json = JSON.parse(File.read(File.join(app_path, "variables", "Demographics", "bmi.json")))
+      bmi_json = JSON.parse(File.read(File.join(app_path, "variables", "Demographics", "bmi.json"), encoding: "utf-8"))
       assert_equal "Body Mass Index", bmi_json["display_name"]
-      rdi3p_json = JSON.parse(File.read(File.join(app_path, "variables", "Measurements", "rdi3p.json")))
+      rdi3p_json = JSON.parse(File.read(File.join(app_path, "variables", "Measurements", "rdi3p.json"), encoding: "utf-8"))
       assert_equal "Respiratory index for PT", rdi3p_json["display_name"]
     end
 

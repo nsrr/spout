@@ -5,7 +5,7 @@ module Spout
     module JsonValidation
       def assert_valid_json(item, msg = nil)
         result = begin
-          !!JSON.parse(File.read(item))
+          !!JSON.parse(File.read(item, encoding: "utf-8"))
         rescue JSON::ParserError => e
           error = e
           false

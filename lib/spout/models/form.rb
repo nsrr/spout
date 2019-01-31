@@ -20,7 +20,7 @@ module Spout
         @folder = file_name.to_s.gsub(/^#{dictionary_root}\/forms\/|#{@id}\.json$/, "")
 
         json = begin
-          JSON.parse(File.read(file_name))
+          JSON.parse(File.read(file_name, encoding: "utf-8"))
         rescue => e
           form_name = file_name.to_s.gsub(/^(.*)\/|\.json$/, "").downcase
           @errors << "Error Parsing #{form_name}.json: #{e.message}"

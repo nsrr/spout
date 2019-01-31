@@ -23,7 +23,7 @@ module Spout
       def load_json(column)
         file = Dir.glob("variables/**/#{column.to_s.downcase}.json", File::FNM_CASEFOLD).first
         @file_name_test = !file.nil?
-        @json = JSON.parse(File.read(file)) rescue @json = {}
+        @json = JSON.parse(File.read(file, encoding: "utf-8")) rescue @json = {}
         @json_id_test = (@json["id"].to_s.downcase == column)
       end
 
@@ -31,7 +31,7 @@ module Spout
         valid_values = []
         if @json["type"] == "choices" || domain_name != ""
           file = Dir.glob("domains/**/#{@json['domain'].to_s.downcase}.json", File::FNM_CASEFOLD).first
-          if json = JSON.parse(File.read(file)) rescue false
+          if json = JSON.parse(File.read(file, encoding: "utf-8")) rescue false
             valid_values = json.collect { |hash| hash["value"] }
           end
         end
@@ -55,7 +55,7 @@ module Spout
           true
         else
           domain_file = Dir.glob("domains/**/#{@json['domain'].to_s.downcase}.json", File::FNM_CASEFOLD).first
-          if domain_json = JSON.parse(File.read(domain_file)) rescue false
+          if domain_json = JSON.parse(File.read(domain_file, encoding: "utf-8")) rescue false
             return domain_json.is_a?(Array)
           end
           false

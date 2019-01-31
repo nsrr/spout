@@ -20,7 +20,7 @@ module Spout
 
         json = begin
           if File.exist?(file_name)
-            JSON.parse(File.read(file_name))
+            JSON.parse(File.read(file_name, encoding: "utf-8"))
           else
             @errors << "No corresponding #{@id}.json file found."
             nil

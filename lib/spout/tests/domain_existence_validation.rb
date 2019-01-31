@@ -10,7 +10,7 @@ module Spout
           file.split("/").last.to_s.downcase.split(".json").first
         end
         result = begin
-          domain_name = JSON.parse(File.read(item))["domain"]
+          domain_name = JSON.parse(File.read(item, encoding: "utf-8"))["domain"]
           domain_names.include?(domain_name)
         rescue JSON::ParserError
           domain_name = ""
@@ -21,7 +21,7 @@ module Spout
       end
 
       Dir.glob("variables/**/*.json").each do |file|
-        if (not [nil, ""].include?(JSON.parse(File.read(file))["domain"]) rescue false)
+        if (not [nil, ""].include?(JSON.parse(File.read(file, encoding: "utf-8"))["domain"]) rescue false)
           define_method("test_domain_exists: #{file}") do
             assert_domain_existence file
           end

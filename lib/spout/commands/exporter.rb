@@ -45,7 +45,7 @@ module Spout
                    %w(folder) + keys
                  end
           Dir.glob("#{type}/**/*.json").sort.each do |file|
-            json = JSON.parse(File.read(file)) rescue false
+            json = JSON.parse(File.read(file, encoding: "utf-8")) rescue false
             if json
               relative_folder = generic_folder_path(file, type)
               if include_domain_name
