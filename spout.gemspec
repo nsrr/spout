@@ -26,11 +26,8 @@ Gem::Specification.new do |spec|
                        "further validations."
   spec.homepage      = "https://github.com/sleepepi/spout"
 
-  # spec.required_ruby_version     = ">= 2.6.1"
-  # spec.required_rubygems_version = ">= 3.0.1"
-
-  spec.required_ruby_version     = ">= 2.5.1"
-  spec.required_rubygems_version = ">= 2.7.6"
+  spec.required_ruby_version     = ">= 2.6.1"
+  spec.required_rubygems_version = ">= 3.0.1"
 
   spec.license       = "MIT"
 
