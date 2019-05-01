@@ -1,7 +1,7 @@
 # Spout
 
-[![Build Status](https://travis-ci.com/sleepepi/spout.svg?branch=master)](https://travis-ci.com/sleepepi/spout)
-[![Code Climate](https://codeclimate.com/github/sleepepi/spout/badges/gpa.svg)](https://codeclimate.com/github/sleepepi/spout)
+[![Build Status](https://travis-ci.com/nsrr/spout.svg?branch=master)](https://travis-ci.com/nsrr/spout)
+[![Code Climate](https://codeclimate.com/github/nsrr/spout/badges/gpa.svg)](https://codeclimate.com/github/nsrr/spout)
 
 Turn your CSV data dictionary into a JSON repository. Collaborate with others to
 update the data dictionary in JSON format. Generate new Data Dictionary from the
